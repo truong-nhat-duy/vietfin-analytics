@@ -1,5 +1,6 @@
 # VIETFIN — Vietnam Corporate Financial Intelligence Platform
-<div align="center">
+<div align="center"> 
+<img src="logo.jpg" alt="VietFin Analytics Logo" width="200" style="border-radius: 50%;">
 
 # VIETFIN ANALYTICS
 ### Enterprise Financial Intelligence & Analytical Data Platform for the Vietnamese Stock Market
