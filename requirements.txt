@@ -1,4 +1,6 @@
 streamlit
 duckdb
 pandas
+scikit-learn
+plotly
 python-dotenv
