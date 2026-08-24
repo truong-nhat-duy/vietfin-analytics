@@ -1,0 +1,67 @@
+# Registry of data source connectors.
+#
+# status legend:
+#   active      -> implemented, uses a verified-permitted public API
+#   placeholder -> interface exists, NOT implemented; access terms not yet
+#                  verified for this environment, do not enable in
+#                  production pipelines until reviewed by a human
+#
+# Nothing in this file grants permission to bypass authentication,
+# CAPTCHA, rate limits, or access controls. See BaseCollector.
+
+sources:
+  vnstock:
+    display_name: "vnstock (SSI / VCI public market-data API)"
+    status: active
+    collector_class: vietfin.ingestion.sources.vnstock_source.VNStockUniverseCollector
+    covers_exchanges: [HOSE, HNX, UPCOM]
+    notes: >
+      Uses the open-source vnstock library, which wraps public brokerage
+      market-data APIs (SSI FastConnect, VCI) that are freely accessible
+      without authentication for listed-company reference data.
+
+  hose:
+    display_name: "Ho Chi Minh Stock Exchange (official site)"
+    status: placeholder
+    collector_class: vietfin.ingestion.sources.hose.HOSECollector
+    covers_exchanges: [HOSE]
+    notes: >
+      Direct scraping not implemented. Verify www.hsx.vn terms of use /
+      robots.txt and prefer an official open-data endpoint if one is
+      published before implementing.
+
+  hnx:
+    display_name: "Hanoi Stock Exchange (official site)"
+    status: placeholder
+    collector_class: vietfin.ingestion.sources.hnx.HNXCollector
+    covers_exchanges: [HNX, UPCOM]
+    notes: >
+      Direct scraping not implemented. HNX also operates UPCOM. Verify
+      hnx.vn terms of use / robots.txt before implementing.
+
+  upcom:
+    display_name: "UPCOM (via HNX)"
+    status: placeholder
+    collector_class: vietfin.ingestion.sources.upcom.UPCOMCollector
+    covers_exchanges: [UPCOM]
+    notes: >
+      Kept as a separate connector class for architectural symmetry, even
+      though UPCOM data is administratively part of HNX.
+
+  cafef:
+    display_name: "CafeF"
+    status: placeholder
+    collector_class: null
+    covers_exchanges: [HOSE, HNX, UPCOM]
+    notes: >
+      Explicitly not the sole/default source per project data policy.
+      Not implemented in Sprint 2.
+
+  official_disclosure:
+    display_name: "Company official disclosure pages"
+    status: placeholder
+    collector_class: null
+    covers_exchanges: [HOSE, HNX, UPCOM]
+    notes: >
+      Per-company IR pages, used from Sprint 3 onward for document
+      discovery, not for the company universe itself.

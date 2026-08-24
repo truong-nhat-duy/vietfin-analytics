@@ -1,0 +1,46 @@
+[project]
+name = "vietfin"
+version = "0.1.0"
+description = "Vietnam Corporate Financial Intelligence Platform"
+requires-python = ">=3.11"
+readme = "README.md"
+dependencies = [
+    "duckdb>=1.0.0",
+    "polars>=1.9.0",
+    "pyarrow>=17.0.0",
+    "pydantic>=2.8.0",
+    "pyyaml>=6.0.1",
+    "tenacity>=9.0.0",
+    "python-dotenv>=1.0.1",
+    "structlog>=24.4.0",
+    "vnstock>=3.2.0",
+    "pandas>=2.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-cov>=5.0.0",
+    "pytest-mock>=3.14.0",
+    "ruff>=0.6.0",
+    "mypy>=1.11.0",
+]
+api = [
+    "fastapi>=0.115.0",
+    "uvicorn>=0.31.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

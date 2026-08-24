@@ -1,0 +1,28 @@
+app:
+  name: vietfin
+  env: ${VIETFIN_ENV:development}
+  log_level: ${VIETFIN_LOG_LEVEL:INFO}
+
+database:
+  duckdb_path: ${VIETFIN_DUCKDB_PATH:data/vietfin.duckdb}
+  postgres_dsn: ${VIETFIN_POSTGRES_DSN:}
+
+storage:
+  raw_dir: data/raw
+  bronze_dir: data/bronze
+  silver_dir: data/silver
+  gold_dir: data/gold
+  exports_dir: data/exports
+
+ingestion:
+  request_timeout_seconds: 30
+  max_retries: 3
+  retry_backoff_seconds: 2
+  # Minimum seconds between requests to any single source (politeness /
+  # no rate-limit evasion — this THROTTLES us, it does not bypass anything)
+  min_request_interval_seconds: 1.0
+  pagination_page_size: 500
+
+quality:
+  mapping_confidence_auto_accept: 0.95
+  mapping_confidence_review_floor: 0.80
