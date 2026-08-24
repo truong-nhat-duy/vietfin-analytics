@@ -1,1 +1,4 @@
-MOTHERDUCK_TOKEN=your_motherduck_token_here  freeze 
+streamlit
+duckdb
+pandas
+python-dotenv
