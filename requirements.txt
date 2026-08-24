@@ -6,3 +6,5 @@ plotly
 python-dotenv
 numpy
 scikit-learn
+shap
+matplotlib
