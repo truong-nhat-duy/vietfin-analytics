@@ -57,35 +57,67 @@ T = {
 lang = "VI"
 txt = T[lang]
 
-# 3. Kết nối Cloud DW & Load Dữ liệu giả lập (Fallback nếu không có token)
+
+# 3. Kết nối Cloud DW MotherDuck
 load_dotenv()
 token = os.getenv("MOTHERDUCK_TOKEN")
 
+if not token:
+    st.error("❌ MOTHERDUCK_TOKEN not found in environment settings!")
+    st.stop()
+
+@st.cache_resource
+def get_connection():
+    return duckdb.connect(f"md:vietfin_db?token={token}")
+
+con = get_connection()
+
 @st.cache_data(ttl=3600)
 def load_gold_data():
-    # Tạo dữ liệu giả lập chuẩn xác cho quá trình phát triển (nếu không có DB thực)
-    np.random.seed(42)
-    tickers = ["VNM", "FPT", "VCB", "HPG", "VIC"] * 5
-    periods = [f"202{i}12" for i in range(1, 6)] * 5
-    periods.sort()
-    
-    return pd.DataFrame({
-        'ticker': tickers,
-        'report_period': periods,
-        'net_revenue': np.random.uniform(10000, 50000, 25),
-        'net_income': np.random.uniform(1000, 5000, 25),
-        'roe_pct': np.random.uniform(5, 30, 25),
-        'roa_pct': np.random.uniform(1, 15, 25),
-        'debt_to_equity': np.random.uniform(0.1, 3.0, 25),
-        'gross_margin_pct': np.random.uniform(10, 50, 25),
-        'net_margin_pct': np.random.uniform(5, 25, 25),
-        'daily_returns_volatility': np.random.uniform(0.01, 0.05, 25), # Dùng cho Sharpe
-        'risk_free_rate': 0.04
-    })
+    return con.execute("""
+        SELECT 
+            ticker, 
+            report_period, 
+            net_revenue, 
+            net_income, 
+            roe_pct, 
+            roa_pct, 
+            debt_to_equity, 
+            gross_margin_pct,
+            net_margin_pct
+        FROM gold_financial_ratios
+    """).df()
 
 df_raw = load_gold_data()
 
-# 4. Sidebar
+
+# 4. Thanh Điều Hướng (Sidebar)
+if os.path.exists("logo.jpg"):
+    st.sidebar.image("logo.jpg", width=110)
+
+# Language Selector
+lang_choice = st.sidebar.selectbox("🌐 Language / Ngôn ngữ", ["Tiếng Việt", "English"], index=0)
+lang = "VI" if lang_choice == "Tiếng Việt" else "EN"
+txt = T[lang]
+
+st.sidebar.title(txt["sidebar_header"])
+st.sidebar.caption(txt["sidebar_sub"])
+st.sidebar.divider()
+
+tickers = sorted(df_raw['ticker'].dropna().unique())
+selected_ticker = st.sidebar.selectbox(txt["ticker_select"], tickers, index=tickers.index("VNM") if "VNM" in tickers else 0)
+
+st.sidebar.subheader(txt["ml_settings"])
+k_clusters = st.sidebar.slider(txt["k_clusters"], min_value=2, max_value=6, value=3)
+contamination = st.sidebar.slider(txt["anomaly_thresh"], min_value=1, max_value=15, value=5) / 100.0
+
+# Header
+st.title(txt["title"])
+st.caption(txt["subtitle"])
+st.divider()
+
+
+# 6. Sidebar
 st.sidebar.title(txt["sidebar_header"])
 tickers = sorted(df_raw['ticker'].dropna().unique())
 selected_ticker = st.sidebar.selectbox(txt["ticker_select"], tickers, index=0)
@@ -94,21 +126,185 @@ st.title(txt["title"])
 st.caption(txt["subtitle"])
 st.divider()
 
-# 5. Khởi tạo các Tabs
+# 7. Khởi tạo các Tabs
+
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([txt["tab1"], txt["tab2"], txt["tab3"], txt["tab4"], txt["tab5"], txt["tab6"]])
 
 # --- Các Tab 1, 2, 3, 4 giữ nguyên logic cơ bản của bạn (rút gọn để tập trung Tab 5, 6) ---
+
+# ----------------------------------------------------
+# TAB 1: CORPORATE DEEP-DIVE & DUPONT ANALYSIS
+# ----------------------------------------------------
 with tab1:
-    st.success("Module DuPont & Phân tích cơ bản đã được tải thành công. (Đã thu gọn để hiển thị các tính năng mới)")
+    df_ticker = df_raw[df_raw['ticker'] == selected_ticker].sort_values("report_period").copy()
+    
+    if not df_ticker.empty:
+        latest = df_ticker.iloc[-1]
+        
+        # Financial Cards (High-Contrast White Design)
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            st.markdown(f'''
+                <div class="metric-card">
+                    <div class="metric-label">{txt["roe_label"]}</div>
+                    <div class="metric-value">{latest["roe_pct"]:.2f}%</div>
+                    <div class="metric-badge-pos">Profitability</div>
+                </div>
+            ''', unsafe_allow_html=True)
+        with c2:
+            st.markdown(f'''
+                <div class="metric-card">
+                    <div class="metric-label">{txt["roa_label"]}</div>
+                    <div class="metric-value">{latest["roa_pct"]:.2f}%</div>
+                    <div class="metric-badge-pos">Efficiency</div>
+                </div>
+            ''', unsafe_allow_html=True)
+        with c3:
+            st.markdown(f'''
+                <div class="metric-card">
+                    <div class="metric-label">{txt["de_label"]}</div>
+                    <div class="metric-value">{latest["debt_to_equity"]:.2f}x</div>
+                    <div class="metric-badge-pos">Capital Structure</div>
+                </div>
+            ''', unsafe_allow_html=True)
+        with c4:
+            st.markdown(f'''
+                <div class="metric-card">
+                    <div class="metric-label">{txt["margin_label"]}</div>
+                    <div class="metric-value">{latest["net_margin_pct"]:.2f}%</div>
+                    <div class="metric-badge-pos">Margin</div>
+                </div>
+            ''', unsafe_allow_html=True)
 
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # Plotly Charts (Plotly White Theme)
+        col_left, col_right = st.columns(2)
+        
+        with col_left:
+            st.markdown(f"#### 💰 {txt['chart_rev']}")
+            fig_rev = go.Figure()
+            fig_rev.add_trace(go.Bar(x=df_ticker['report_period'], y=df_ticker['net_revenue'], name="Revenue", marker_color="#1e3a8a"))
+            fig_rev.add_trace(go.Scatter(x=df_ticker['report_period'], y=df_ticker['net_income'], name="Net Income", yaxis="y2", line=dict(color="#059669", width=3)))
+            
+            fig_rev.update_layout(
+                template="plotly_white",
+                yaxis=dict(title="Revenue (VND)"),
+                yaxis2=dict(title="Net Income (VND)", overlaying="y", side="right"),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                margin=dict(l=20, r=20, t=30, b=20)
+            )
+            st.plotly_chart(fig_rev, use_container_width=True)
+
+        with col_right:
+            st.markdown(f"#### 📉 {txt['chart_ratios']}")
+            fig_ratios = px.line(
+                df_ticker, x="report_period", y=["roe_pct", "roa_pct", "gross_margin_pct", "net_margin_pct"],
+                markers=True, template="plotly_white",
+                color_discrete_sequence=["#1e3a8a", "#059669", "#d97706", "#2563eb"]
+            )
+            fig_ratios.update_layout(margin=dict(l=20, r=20, t=30, b=20))
+            st.plotly_chart(fig_ratios, use_container_width=True)
+
+        # DuPont Model
+        st.markdown(f"#### {txt['dupont_title']}")
+        st.latex(r"\text{ROE} = \text{ROA} \times \left(1 + \frac{\text{Debt}}{\text{Equity}}\right)")
+        
+        leverage_factor = 1 + (latest['debt_to_equity'] if pd.notnull(latest['debt_to_equity']) else 0)
+        st.info(txt['dupont_desc'].format(
+            roe=latest['roe_pct'] if pd.notnull(latest['roe_pct']) else 0,
+            roa=latest['roa_pct'] if pd.notnull(latest['roa_pct']) else 0,
+            lev=leverage_factor
+        ))
+    else:
+        st.warning("No financial data available for this ticker.")
+
+
+
+# ----------------------------------------------------
+# TAB 2: UNSUPERVISED ML (K-MEANS & PCA)
+# ----------------------------------------------------
 with tab2:
-    st.success("Module Machine Learning (K-Means & PCA) đã được tải thành công.")
+    st.markdown(f"### 🤖 {txt['pca_title']}")
 
+    feature_cols = ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']
+    df_ml = df_raw.sort_values("report_period").groupby("ticker").last().reset_index()
+    df_ml_clean = df_ml.dropna(subset=feature_cols).copy()
+
+    if len(df_ml_clean) >= k_clusters:
+        scaler = StandardScaler()
+        scaled_features = scaler.fit_transform(df_ml_clean[feature_cols])
+
+        # K-Means
+        kmeans = KMeans(n_clusters=k_clusters, random_state=42, n_init=10)
+        df_ml_clean['Cluster'] = "Cluster " + kmeans.fit_predict(scaled_features).astype(str)
+
+        # PCA 2D
+        pca = PCA(n_components=2)
+        pca_transformed = pca.fit_transform(scaled_features)
+        df_ml_clean['PCA_1'] = pca_transformed[:, 0]
+        df_ml_clean['PCA_2'] = pca_transformed[:, 1]
+        var_exp = pca.explained_variance_ratio_ * 100
+
+        fig_pca = px.scatter(
+            df_ml_clean, x='PCA_1', y='PCA_2', color='Cluster',
+            hover_name='ticker', hover_data=feature_cols,
+            labels={'PCA_1': f'PCA Component 1 ({var_exp[0]:.1f}%)', 'PCA_2': f'PCA Component 2 ({var_exp[1]:.1f}%)'},
+            template="plotly_white", color_discrete_sequence=px.colors.qualitative.Set1
+        )
+        fig_pca.update_traces(marker=dict(size=11, opacity=0.85))
+        st.plotly_chart(fig_pca, use_container_width=True)
+
+        st.markdown(f"#### {txt['cluster_profile']}")
+        cluster_profile = df_ml_clean.groupby('Cluster')[feature_cols].mean().reset_index()
+        st.dataframe(cluster_profile.style.highlight_max(axis=0, color="#dbeafe"), width="stretch")
+
+
+# ----------------------------------------------------
+# TAB 3: ANOMALY DETECTION (ISOLATION FOREST)
+# ----------------------------------------------------
 with tab3:
-    st.success("Module Anomaly Detection (Isolation Forest) đã được tải thành công.")
+    st.markdown(f"### 🚨 {txt['anomaly_title']}")
 
+    if len(df_ml_clean) > 10:
+        iso_forest = IsolationForest(contamination=contamination, random_state=42)
+        df_ml_clean['Anomaly_Score'] = iso_forest.fit_predict(scaled_features)
+        df_anomalies = df_ml_clean[df_ml_clean['Anomaly_Score'] == -1]
+        
+        col_m1, col_m2 = st.columns([1, 2])
+        with col_m1:
+            st.metric("Total Screened Stocks", len(df_ml_clean))
+            st.metric(txt["anomaly_count"], len(df_anomalies), delta=f"{len(df_anomalies)/len(df_ml_clean)*100:.1f}%", delta_color="inverse")
+        
+        with col_m2:
+            fig_anomaly = px.scatter(
+                df_ml_clean, x='roe_pct', y='debt_to_equity',
+                color=df_ml_clean['Anomaly_Score'].map({1: 'Normal', -1: 'Anomaly'}),
+                color_discrete_map={'Normal': '#1e3a8a', 'Anomaly': '#dc2626'},
+                hover_name='ticker', hover_data=['net_margin_pct'],
+                template="plotly_white"
+            )
+            st.plotly_chart(fig_anomaly, use_container_width=True)
+
+        st.dataframe(
+            df_anomalies[['ticker', 'roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']],
+            width="stretch"
+        )
+
+
+# ----------------------------------------------------
+# TAB 4: DATA WAREHOUSE CONSOLE
+# ----------------------------------------------------
 with tab4:
-    st.success("Data Warehouse Console đã được tải thành công.")
+    st.markdown(f"### {txt['data_console_title']}")
+    
+    col_f1, _ = st.columns(2)
+    with col_f1:
+        search_ticker = st.multiselect(txt["filter_ticker"], tickers, default=[selected_ticker])
+    
+    df_filtered = df_raw[df_raw['ticker'].isin(search_ticker)] if search_ticker else df_raw
+    st.dataframe(df_filtered, width="stretch")
+    st.caption(f"{txt['total_records']} **{len(df_filtered):,}**")
 
 # ----------------------------------------------------
 # TAB 5: MACRO, FX, RATES & SPATIAL MAP
