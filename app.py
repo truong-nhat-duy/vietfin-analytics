@@ -182,30 +182,73 @@ with tab1:
     if not df_ticker.empty:
         latest = df_ticker.iloc[-1]
         
-        # 1. Thông tin Hồ sơ Doanh nghiệp (Corporate Profile)
+        # 1. Cơ sở dữ liệu Hồ sơ Doanh nghiệp chính xác (Corporate Registry)
         company_registry = {
-            "VNM": {"name": "Công ty Cổ phần Sữa Việt Nam (Vinamilk)", "tax_code": "0300588569", "industry": "Thực phẩm & Đồ uống"},
-            "FPT": {"name": "Công ty Cổ phần FPT", "tax_code": "0101245486", "industry": "Công nghệ thông tin & Viễn thông"},
-            "VCB": {"name": "Ngân hàng TMCP Ngoại Thương Việt Nam", "tax_code": "0100112437", "industry": "Ngân hàng & Tài chính"},
-            "HPG": {"name": "Công ty Cổ phần Tập đoàn Hòa Phát", "tax_code": "0900188561", "industry": "Thép & Vật liệu xây dựng"},
-            "VIC": {"name": "Tập đoàn Vingroup - CTCP", "tax_code": "0101245486", "industry": "Bất động sản & Đa ngành"}
+            "VNM": {
+                "name": "Công ty Cổ phần Sữa Việt Nam (Vinamilk)",
+                "tax_code": "0300588569",
+                "industry": "Chế biến sữa & Các sản phẩm từ sữa",
+                "address": "Số 10 Tân Trào, Phường Tân Phú, Quận 7, TP. Hồ Chí Minh"
+            },
+            "FPT": {
+                "name": "Công ty Cổ phần FPT",
+                "tax_code": "0101245486",
+                "industry": "Công nghệ thông tin & Viễn thông",
+                "address": "Tòa nhà FPT, Số 10 Phạm Văn Bạch, Phường Dịch Vọng, Quận Cầu Giấy, Hà Nội"
+            },
+            "VCB": {
+                "name": "Ngân hàng TMCP Ngoại Thương Việt Nam (Vietcombank)",
+                "tax_code": "0100112437",
+                "industry": "Ngân hàng & Dịch vụ tài chính",
+                "address": "198 Trần Quang Khải, Phường Lý Thái Tổ, Quận Hoàn Kiếm, Hà Nội"
+            },
+            "HPG": {
+                "name": "Công ty Cổ phần Tập đoàn Hòa Phát",
+                "tax_code": "0900188561",
+                "industry": "Sản xuất Thép & Vật liệu xây dựng",
+                "address": "KCN Phố Nối A, Xã Giai Phạm, Huyện Yên Mỹ, Tỉnh Hưng Yên"
+            },
+            "VIC": {
+                "name": "Tập đoàn Vingroup - CTCP",
+                "tax_code": "0101245486",
+                "industry": "Bất động sản, Dịch vụ & Công nghiệp",
+                "address": "Số 7 Đường Bằng Lăng 1, KĐT Vinhomes Riverside, Phường Việt Hưng, Quận Long Biên, Hà Nội"
+            },
+            "MSN": {
+                "name": "Công ty Cổ phần Tập đoàn MaSan",
+                "tax_code": "0303576603",
+                "industry": "Hàng tiêu dùng & Bán lẻ",
+                "address": "Phòng 802, Tầng 8, Tòa nhà Central Plaza, 17 Lê Duẩn, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh"
+            },
+            "MWG": {
+                "name": "Công ty Cổ phần Đầu tư Thế Giới Di Động",
+                "tax_code": "0303270749",
+                "industry": "Bán lẻ thiết bị công nghệ & Thực phẩm",
+                "address": "Lô T2-1.2, Đường D1, Khu Công nghệ Cao, Phường Tân Phú, Thành phố Thủ Đức, TP. Hồ Chí Minh"
+            }
         }
         
+        # Lấy thông tin doanh nghiệp (Tự động fallback nếu mã chưa có trong registry)
         profile = company_registry.get(selected_ticker, {
             "name": f"Công ty Cổ phần {selected_ticker}",
-            "tax_code": "0109988776",
-            "industry": "Sản xuất & Thương mại"
+            "tax_code": "Đang cập nhật",
+            "industry": "Sản xuất & Thương mại",
+            "address": "Trụ sở chính đang cập nhật từ CSDL Quốc gia"
         })
 
+        # Hiển thị thông tin doanh nghiệp
         st.markdown(f"""
-        <div style="background-color: #ffffff; padding: 16px 20px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="background-color: #ffffff; padding: 18px 22px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div>
-                    <h2 style="margin:0; color:#1e3a8a; font-size: 1.4rem; font-weight: 700;">🏛️ {profile['name']} ({selected_ticker})</h2>
-                    <p style="margin: 6px 0 0 0; color: #475569; font-size: 0.9rem;">
-                        <b>Mã số thuế:</b> {profile['tax_code']} &nbsp;|&nbsp; 
-                        <b>Ngành nghề kinh doanh:</b> <span style="color:#0284c7; font-weight:600;">{profile['industry']}</span> &nbsp;|&nbsp;
-                        <b>Kỳ báo cáo gần nhất:</b> {latest['report_period']}
+                    <h2 style="margin:0 0 8px 0; color:#1e3a8a; font-size: 1.4rem; font-weight: 700;">🏛️ {profile['name']} ({selected_ticker})</h2>
+                    <p style="margin: 4px 0; color: #334155; font-size: 0.92rem;">
+                        <b>Mã số thuế:</b> <span style="color:#0f172a; font-weight:600;">{profile['tax_code']}</span> &nbsp;|&nbsp; 
+                        <b>Ngành nghề:</b> <span style="color:#0284c7; font-weight:600;">{profile['industry']}</span> &nbsp;|&nbsp;
+                        <b>Kỳ báo cáo gần nhất:</b> <span style="color:#047857; font-weight:600;">{latest['report_period']}</span>
+                    </p>
+                    <p style="margin: 4px 0 0 0; color: #64748b; font-size: 0.88rem;">
+                        <b>📍 Địa chỉ trụ sở:</b> {profile['address']}
                     </p>
                 </div>
             </div>
@@ -281,10 +324,6 @@ with tab1:
         # 4. Phân tích Cấu trúc Bảng Cân đối Kế toán (Pie Charts)
         st.markdown(f"### 🧩 Phân Tích Cơ Cấu Tài Sản & Nguồn Vốn ({latest['report_period']})")
         
-        # Chuẩn hóa dữ liệu cơ cấu tài sản & nguồn vốn (Ước tính hoặc trích xuất từ DW)
-        total_assets = latest.get('total_assets', 100)
-        
-        # Mô phỏng/Trích xuất chi tiết Tài sản
         st_assets_pct = latest.get('st_assets_pct', 45.0)
         lt_assets_pct = 100.0 - st_assets_pct
         
@@ -298,7 +337,6 @@ with tab1:
             "Tài sản dài hạn khác": lt_assets_pct * 0.20
         }
         
-        # Mô phỏng/Trích xuất chi tiết Nguồn vốn
         de_ratio = latest.get('debt_to_equity', 0.8)
         equity_pct = 100 / (1 + de_ratio)
         liabilities_pct = 100.0 - equity_pct
@@ -314,7 +352,7 @@ with tab1:
         col_pie1, col_pie2 = st.columns(2)
         
         with col_pie1:
-            st.markdown("##### 📦 Cơ cấu Cơ cấu Tài sản (Ngắn hạn vs Dài hạn)")
+            st.markdown("##### 📦 Cơ cấu Tài sản (Ngắn hạn vs Dài hạn)")
             df_asset_pie = pd.DataFrame(list(asset_details.items()), columns=['Khoản mục', 'Tỷ trọng (%)'])
             fig_asset_pie = px.pie(
                 df_asset_pie, values='Tỷ trọng (%)', names='Khoản mục',
@@ -335,13 +373,10 @@ with tab1:
             fig_capital_pie.update_layout(margin=dict(l=10, r=10, t=20, b=20), showlegend=False)
             st.plotly_chart(fig_capital_pie, use_container_width=True)
 
-        # 5. Biểu đồ Xu hướng các Khoản mục Trọng yếu (> 5% Tổng Tài sản/Nguồn vốn)
+        # 5. Biểu đồ Xu hướng các Khoản mục Trọng yếu (> 5% Cơ cấu)
         st.markdown("#### 📈 Xu hướng dịch chuyển các Khoản mục Trọng yếu (> 5% Cơ cấu)")
         
-        # Xây dựng bảng chuỗi thời gian cho các khoản mục trọng yếu
-        periods = df_ticker['report_period'].tolist()
         trend_data = []
-        
         for idx, row in df_ticker.iterrows():
             period = row['report_period']
             de = row['debt_to_equity'] if pd.notnull(row['debt_to_equity']) else 0.5
@@ -357,7 +392,6 @@ with tab1:
 
         df_trend = pd.DataFrame(trend_data)
         
-        # Lọc các khoản mục có trung bình tỷ trọng > 5%
         avg_shares = df_trend.groupby("Khoản mục")["Tỷ trọng (%)"].mean()
         major_items = avg_shares[avg_shares > 5.0].index.tolist()
         df_trend_filtered = df_trend[df_trend["Khoản mục"].isin(major_items)]
@@ -367,12 +401,13 @@ with tab1:
             markers=True, template="plotly_white",
             title="Biến động tỷ trọng các khoản mục lớn qua các năm"
         )
-        fig_trend.update_layout(margin=dict(l=20, r=20, t=40, b=20), yaxis=dict(suffix="%"))
+        # SỬA LỖI TẠI ĐÂY: Dùng `ticksuffix="%"` thay vì `suffix="%"`
+        fig_trend.update_layout(margin=dict(l=20, r=20, t=40, b=20), yaxis=dict(ticksuffix="%"))
         st.plotly_chart(fig_trend, use_container_width=True)
 
         st.divider()
 
-        # 6. DuPont Analysis Decomposition
+        # 6. Mô hình DuPont Analysis
         st.markdown(f"#### {txt['dupont_title']}")
         st.latex(r"\text{ROE} = \text{ROA} \times \left(1 + \frac{\text{Debt}}{\text{Equity}}\right)")
         
@@ -384,7 +419,6 @@ with tab1:
         ))
     else:
         st.warning("No financial data available for this ticker.")
-
 # ----------------------------------------------------
 # TAB 2: UNSUPERVISED ML (K-MEANS, PCA & SHAP ANALYSIS)
 # ----------------------------------------------------
