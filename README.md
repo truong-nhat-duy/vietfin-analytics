@@ -6,6 +6,7 @@
 ### Enterprise Financial Intelligence & Analytical Data Platform for the Vietnamese Stock Market
 <img src="logo.jpg" alt="VietFin Analytics Logo" width="200" style="border-radius: 50%;">
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://vietfin-analytics.streamlit.app)
 [![Python Version](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![OLAP Engine](https://img.shields.io/badge/Engine-DuckDB-FFF000?style=flat&logo=duckdb&logoColor=black)](https://duckdb.org/)
 [![Cloud Data Warehouse](https://img.shields.io/badge/Cloud-MotherDuck-FF6B00?style=flat)](https://motherduck.com/)
