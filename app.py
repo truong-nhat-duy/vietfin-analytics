@@ -33,7 +33,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 2. Dictionary Đa Ngôn Ngữ (Hoàn thiện đầy đủ các Key)
+# 2. Dictionary Đa Ngôn Ngữ
 T = {
     "VI": {
         "title": "VietFin Analytics — Nền Tảng Phân Tích Tài Chính & ML",
@@ -49,11 +49,11 @@ T = {
         "tab3": "🚨 Cảnh Báo Bất Thường",
         "tab4": "📋 Kho Dữ Liệu (OLAP)",
         "tab5": "🌍 Vĩ Mô, Tỷ Giá & Bản Đồ",
-        "tab6": "📈 BCTC 5 Năm & Xếp Hạng Tín Dụng",
+        "tab6": "📈 BCTC 5 Năm & Xếp Hạng",
         "roe_label": "Tỷ suất ROE",
         "roa_label": "Tỷ suất ROA",
         "de_label": "Nợ / VCSH (D/E)",
-        "margin_label": "Biên Lợi Nhuận Ròng",
+        "margin_label": "Biên LN Ròng",
         "chart_rev": "Doanh Thu & Lợi Nhuận Ròng Qua Các Kỳ",
         "chart_ratios": "Xu Hướng Các Chỉ Số Tài Chính",
         "dupont_title": "Mô Hình Phân Tích DuPont (ROE Decomposition)",
@@ -62,7 +62,7 @@ T = {
         "cluster_profile": "Đặc Tính Trung Bình Của Các Cụm",
         "anomaly_title": "Phát Hiện Cổ Phiếu Có Chỉ Số Bất Thường (Isolation Forest)",
         "anomaly_count": "Số Cổ Phiếu Bất Thường",
-        "data_console_title": "Truy Truy Vấn Kho Dữ Liệu Gold Financial Ratios",
+        "data_console_title": "Truy Vấn Kho Dữ Liệu Gold Financial Ratios",
         "filter_ticker": "Lọc theo mã cổ phiếu",
         "total_records": "Tổng số bản ghi trong kho dữ liệu:"
     },
@@ -136,7 +136,11 @@ def load_gold_data():
         df['daily_returns_volatility'] = 0.025
     return df
 
-df_raw = load_gold_data()
+try:
+    df_raw = load_gold_data()
+except Exception as e:
+    st.error(f"❌ Lỗi truy vấn Database: {e}")
+    st.stop()
 
 # 4. Thanh Điều Hướng (Sidebar)
 if os.path.exists("logo.jpg"):
@@ -150,7 +154,7 @@ st.sidebar.title(txt["sidebar_header"])
 st.sidebar.caption(txt["sidebar_sub"])
 st.sidebar.divider()
 
-tickers = sorted(df_raw['ticker'].dropna().unique())
+tickers = sorted(df_raw['ticker'].dropna().unique()) if not df_raw.empty else ["VNM"]
 default_index = tickers.index("VNM") if "VNM" in tickers else 0
 selected_ticker = st.sidebar.selectbox(txt["ticker_select"], tickers, index=default_index)
 
@@ -168,13 +172,22 @@ st.title(txt["title"])
 st.caption(txt["subtitle"])
 st.divider()
 
+# Khởi tạo giả lập df_profile nếu chưa có bảng này trong DB
+df_profile = pd.DataFrame({
+    'ticker': tickers,
+    'company_name': [f"Công ty Cổ phần {t}" for t in tickers],
+    'tax_code': ['Đang cập nhật'] * len(tickers),
+    'industry': ['Sản xuất & Thương mại'] * len(tickers),
+    'address': ['Đang cập nhật'] * len(tickers)
+})
+
 # 5. Khởi tạo các Tabs
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     txt["tab1"], txt["tab2"], txt["tab3"], txt["tab4"], txt["tab5"], txt["tab6"]
 ])
 
 # ----------------------------------------------------
-# TAB 1: CORPORATE DEEP-DIVE & DUPONT ANALYSIS (REAL DATA VERSION)
+# TAB 1: CORPORATE DEEP-DIVE & DUPONT ANALYSIS
 # ----------------------------------------------------
 with tab1:
     df_ticker = df_raw[df_raw['ticker'] == selected_ticker].sort_values("report_period").copy()
@@ -182,24 +195,17 @@ with tab1:
     if not df_ticker.empty:
         latest = df_ticker.iloc[-1]
         
-        # 1. Cơ sở dữ liệu Hồ sơ Doanh nghiệp (Lấy từ DataFrame df_profile thực tế thay vì hardcode)
-        # Giả định bạn có bảng df_profile chứa ['ticker', 'company_name', 'tax_code', 'industry', 'address']
+        # Sửa lỗi: Lấy từ df_profile đã được định nghĩa ở trên
         profile_row = df_profile[df_profile['ticker'] == selected_ticker]
         
-        if not profile_row.empty:
-            profile = {
-                "name": profile_row.iloc[0].get('company_name', f"Công ty Cổ phần {selected_ticker}"),
-                "tax_code": profile_row.iloc[0].get('tax_code', 'Đang cập nhật'),
-                "industry": profile_row.iloc[0].get('industry', 'Đang cập nhật'),
-                "address": profile_row.iloc[0].get('address', 'Đang cập nhật')
-            }
-        else:
-            profile = {
-                "name": f"Công ty Cổ phần {selected_ticker}",
-                "tax_code": "Đang cập nhật",
-                "industry": "Sản xuất & Thương mại",
-                "address": "Đang cập nhật từ CSDL Quốc gia"
-            }
+        profile = {
+            "name": profile_row.iloc[0].get('company_name', f"Công ty CP {selected_ticker}"),
+            "tax_code": profile_row.iloc[0].get('tax_code', 'Đang cập nhật'),
+            "industry": profile_row.iloc[0].get('industry', 'Đang cập nhật'),
+            "address": profile_row.iloc[0].get('address', 'Đang cập nhật')
+        } if not profile_row.empty else {
+            "name": f"Công ty CP {selected_ticker}", "tax_code": "N/A", "industry": "N/A", "address": "N/A"
+        }
 
         # Hiển thị thông tin doanh nghiệp
         st.markdown(f"""
@@ -220,7 +226,7 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
         
-        # 2. Executive Metric Cards (Dữ liệu thực từ df_raw)
+        # 2. Executive Metric Cards
         c1, c2, c3, c4 = st.columns(4)
         with c1:
             st.markdown(f'''
@@ -286,10 +292,9 @@ with tab1:
 
         st.divider()
 
-        # 4. Phân tích Cấu trúc Bảng Cân đối Kế toán (DỮ LIỆU THỰC TẾ TRONG KỲ GẦN NHẤT)
+        # 4. Phân tích Cấu trúc Bảng Cân đối Kế toán
         st.markdown(f"### 🧩 Phân Tích Cơ Cấu Tài Sản & Nguồn Vốn ({latest['report_period']})")
         
-        # Mapping các khoản mục tài sản trực tiếp từ DataFrame
         asset_details = {
             "Tiền & Tương đương tiền": latest.get('cash_and_equivalents', 0),
             "Phải thu ngắn hạn": latest.get('short_term_receivables', 0),
@@ -300,7 +305,6 @@ with tab1:
             "Tài sản dài hạn khác": latest.get('other_long_term_assets', 0)
         }
         
-        # Mapping các khoản mục nguồn vốn trực tiếp từ DataFrame
         capital_details = {
             "Nợ ngắn hạn": latest.get('short_term_debt', 0),
             "Nợ dài hạn": latest.get('long_term_debt', 0),
@@ -314,60 +318,70 @@ with tab1:
         with col_pie1:
             st.markdown("##### 📦 Cơ cấu Tài sản")
             df_asset_pie = pd.DataFrame(list(asset_details.items()), columns=['Khoản mục', 'Giá trị'])
-            # Lọc bỏ các khoản mục có giá trị 0 hoặc None để biểu đồ đẹp hơn
             df_asset_pie = df_asset_pie[df_asset_pie['Giá trị'] > 0] 
             
-            fig_asset_pie = px.pie(
-                df_asset_pie, values='Giá trị', names='Khoản mục',
-                hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel
-            )
-            fig_asset_pie.update_traces(textposition='inside', textinfo='percent+label')
-            fig_asset_pie.update_layout(margin=dict(l=10, r=10, t=20, b=20), showlegend=False)
-            st.plotly_chart(fig_asset_pie, use_container_width=True)
+            if not df_asset_pie.empty:
+                fig_asset_pie = px.pie(
+                    df_asset_pie, values='Giá trị', names='Khoản mục',
+                    hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel
+                )
+                fig_asset_pie.update_traces(textposition='inside', textinfo='percent+label')
+                fig_asset_pie.update_layout(margin=dict(l=10, r=10, t=20, b=20), showlegend=False)
+                st.plotly_chart(fig_asset_pie, use_container_width=True)
+            else:
+                st.info("Chưa có dữ liệu Cơ cấu Tài sản trong Database.")
 
         with col_pie2:
             st.markdown("##### 🏛️ Cơ cấu Nguồn vốn")
             df_capital_pie = pd.DataFrame(list(capital_details.items()), columns=['Khoản mục', 'Giá trị'])
             df_capital_pie = df_capital_pie[df_capital_pie['Giá trị'] > 0]
             
-            fig_capital_pie = px.pie(
-                df_capital_pie, values='Giá trị', names='Khoản mục',
-                hole=0.4, color_discrete_sequence=px.colors.qualitative.Set3
-            )
-            fig_capital_pie.update_traces(textposition='inside', textinfo='percent+label')
-            fig_capital_pie.update_layout(margin=dict(l=10, r=10, t=20, b=20), showlegend=False)
-            st.plotly_chart(fig_capital_pie, use_container_width=True)
+            if not df_capital_pie.empty:
+                fig_capital_pie = px.pie(
+                    df_capital_pie, values='Giá trị', names='Khoản mục',
+                    hole=0.4, color_discrete_sequence=px.colors.qualitative.Set3
+                )
+                fig_capital_pie.update_traces(textposition='inside', textinfo='percent+label')
+                fig_capital_pie.update_layout(margin=dict(l=10, r=10, t=20, b=20), showlegend=False)
+                st.plotly_chart(fig_capital_pie, use_container_width=True)
+            else:
+                st.info("Chưa có dữ liệu Cơ cấu Nguồn vốn trong Database.")
 
-        # 5. Biểu đồ Xu hướng các Khoản mục Trọng yếu (DỮ LIỆU THỰC TẾ)
+        # 5. Biểu đồ Xu hướng
         st.markdown("#### 📈 Xu hướng dịch chuyển các Khoản mục Trọng yếu (> 5% Cơ cấu)")
         
         trend_data = []
         for idx, row in df_ticker.iterrows():
             period = row['report_period']
-            total_assets = row.get('total_assets', 1) # Chống lỗi chia 0
+            total_assets = row.get('total_assets', 1) 
             total_capital = row.get('total_capital', total_assets)
             
-            trend_data.append({"Kỳ": period, "Khoản mục": "Vốn chủ sở hữu", "Tỷ trọng (%)": (row.get('owner_equity', 0) / total_capital) * 100})
-            trend_data.append({"Kỳ": period, "Khoản mục": "Nợ ngắn hạn", "Tỷ trọng (%)": (row.get('short_term_debt', 0) / total_capital) * 100})
-            trend_data.append({"Kỳ": period, "Khoản mục": "Nợ dài hạn", "Tỷ trọng (%)": (row.get('long_term_debt', 0) / total_capital) * 100})
-            trend_data.append({"Kỳ": period, "Khoản mục": "Tài sản cố định", "Tỷ trọng (%)": (row.get('fixed_assets', 0) / total_assets) * 100})
-            trend_data.append({"Kỳ": period, "Khoản mục": "Hàng tồn kho", "Tỷ trọng (%)": (row.get('inventory', 0) / total_assets) * 100})
-            trend_data.append({"Kỳ": period, "Khoản mục": "Tiền & Tương đương tiền", "Tỷ trọng (%)": (row.get('cash_and_equivalents', 0) / total_assets) * 100})
+            trend_data.extend([
+                {"Kỳ": period, "Khoản mục": "Vốn chủ sở hữu", "Tỷ trọng (%)": (row.get('owner_equity', 0) / total_capital) * 100},
+                {"Kỳ": period, "Khoản mục": "Nợ ngắn hạn", "Tỷ trọng (%)": (row.get('short_term_debt', 0) / total_capital) * 100},
+                {"Kỳ": period, "Khoản mục": "Nợ dài hạn", "Tỷ trọng (%)": (row.get('long_term_debt', 0) / total_capital) * 100},
+                {"Kỳ": period, "Khoản mục": "Tài sản cố định", "Tỷ trọng (%)": (row.get('fixed_assets', 0) / total_assets) * 100},
+                {"Kỳ": period, "Khoản mục": "Hàng tồn kho", "Tỷ trọng (%)": (row.get('inventory', 0) / total_assets) * 100},
+                {"Kỳ": period, "Khoản mục": "Tiền & Tương đương tiền", "Tỷ trọng (%)": (row.get('cash_and_equivalents', 0) / total_assets) * 100}
+            ])
 
         df_trend = pd.DataFrame(trend_data)
         
-        # Chỉ lấy những khoản mục có tỷ trọng trung bình > 5% qua các kỳ
+        # Sửa lỗi Plotly báo rỗng nếu CSDL không có dữ liệu 
         avg_shares = df_trend.groupby("Khoản mục")["Tỷ trọng (%)"].mean()
         major_items = avg_shares[avg_shares > 5.0].index.tolist()
         df_trend_filtered = df_trend[df_trend["Khoản mục"].isin(major_items)]
 
-        fig_trend = px.line(
-            df_trend_filtered, x="Kỳ", y="Tỷ trọng (%)", color="Khoản mục",
-            markers=True, template="plotly_white",
-            title="Biến động tỷ trọng các khoản mục lớn qua các năm"
-        )
-        fig_trend.update_layout(margin=dict(l=20, r=20, t=40, b=20), yaxis=dict(ticksuffix="%"))
-        st.plotly_chart(fig_trend, use_container_width=True)
+        if not df_trend_filtered.empty and not (df_trend_filtered['Tỷ trọng (%)'] == 0).all():
+            fig_trend = px.line(
+                df_trend_filtered, x="Kỳ", y="Tỷ trọng (%)", color="Khoản mục",
+                markers=True, template="plotly_white",
+                title="Biến động tỷ trọng các khoản mục lớn qua các năm"
+            )
+            fig_trend.update_layout(margin=dict(l=20, r=20, t=40, b=20), yaxis=dict(ticksuffix="%"))
+            st.plotly_chart(fig_trend, use_container_width=True)
+        else:
+            st.info("Chưa đủ dữ liệu các khoản mục chi tiết để thống kê xu hướng dài hạn.")
 
         st.divider()
 
@@ -376,30 +390,29 @@ with tab1:
         st.latex(r"\text{ROE} = \text{ROA} \times \left(1 + \frac{\text{Debt}}{\text{Equity}}\right)")
         
         leverage_factor = 1 + (latest.get('debt_to_equity', 0) if pd.notnull(latest.get('debt_to_equity', 0)) else 0)
-        st.info(txt.get('dupont_desc', 'Tỷ suất lợi nhuận ROE {roe:.2f}% được thúc đẩy bởi biên hiệu quả hoạt động ROA {roa:.2f}% và đòn bẩy tài chính {lev:.2f}x.').format(
-            roe=latest.get('roe_pct', 0),
-            roa=latest.get('roa_pct', 0),
-            lev=leverage_factor
+        st.info(txt.get('dupont_desc', 'Tỷ suất ROE {roe:.2f}% được thúc đẩy bởi ROA {roa:.2f}% và đòn bẩy tài chính {lev:.2f}x.').format(
+            roe=latest.get('roe_pct', 0), roa=latest.get('roa_pct', 0), lev=leverage_factor
         ))
     else:
         st.warning("No financial data available for this ticker.")
 
+# Chuẩn bị chung dữ liệu cho Tab 2 & Tab 3
+feature_cols = ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']
+df_ml = df_raw.sort_values("report_period").groupby("ticker").last().reset_index()
+df_ml_clean = df_ml.dropna(subset=feature_cols).copy()
+scaled_features = None
+
+if len(df_ml_clean) > 0:
+    scaler = StandardScaler()
+    scaled_features = scaler.fit_transform(df_ml_clean[feature_cols])
+
 # ----------------------------------------------------
-# TAB 2: UNSUPERVISED ML (K-MEANS, PCA & SHAP ANALYSIS)
+# TAB 2: UNSUPERVISED ML (K-MEANS, PCA & SHAP)
 # ----------------------------------------------------
 with tab2:
     st.markdown(f"### 🤖 {txt['pca_title']}")
 
-    feature_cols = ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']
-    
-    # 1. K-Means & PCA Section
-    df_ml = df_raw.sort_values("report_period").groupby("ticker").last().reset_index()
-    df_ml_clean = df_ml.dropna(subset=feature_cols).copy()
-
-    if len(df_ml_clean) >= k_clusters:
-        scaler = StandardScaler()
-        scaled_features = scaler.fit_transform(df_ml_clean[feature_cols])
-
+    if len(df_ml_clean) >= k_clusters and scaled_features is not None:
         kmeans = KMeans(n_clusters=k_clusters, random_state=42, n_init=10)
         df_ml_clean['Cluster'] = "Cluster " + kmeans.fit_predict(scaled_features).astype(str)
 
@@ -419,6 +432,7 @@ with tab2:
         st.plotly_chart(fig_pca, use_container_width=True)
 
         st.markdown(f"#### {txt['cluster_profile']}")
+        # Chỉ lấy numeric column để tính mean
         cluster_profile = df_ml_clean.groupby('Cluster')[feature_cols].mean().reset_index()
         st.dataframe(cluster_profile.style.highlight_max(axis=0, color="#dbeafe"), use_container_width=True)
     else:
@@ -426,11 +440,9 @@ with tab2:
 
     st.divider()
 
-    # 2. SHAP Analysis (Tác động của chỉ số đến Doanh thu & Lợi nhuận)
-    st.markdown("### 📊 Phân Tích Giá Trị SHAP (Tác Động Chỉ Số Đến Doanh Thu & Lợi Nhuận)")
-    st.caption("Mô hình SHAP (SHapley Additive exPlanations) đo lường chiều hướng và giá trị đóng góp của từng chỉ số tài chính đối với chỉ tiêu kinh doanh qua các năm.")
+    st.markdown("### 📊 Phân Tích Giá Trị SHAP")
+    st.caption("Mô hình SHAP đo lường chiều hướng và giá trị đóng góp của từng chỉ số tài chính.")
 
-    # Bộ lọc năm và mục tiêu phân tích
     col_shap1, col_shap2 = st.columns(2)
     with col_shap1:
         periods_available = ["Tất cả các năm"] + sorted(df_raw['report_period'].dropna().unique().tolist(), reverse=True)
@@ -443,12 +455,7 @@ with tab2:
             format_func=lambda x: "Doanh thu thuần (Net Revenue)" if x == "net_revenue" else "Lợi nhuận ròng (Net Income)"
         )
 
-    # Lọc dữ liệu theo kỳ chọn
-    if selected_period != "Tất cả các năm":
-        df_shap = df_raw[df_raw['report_period'] == selected_period].copy()
-    else:
-        df_shap = df_raw.copy()
-
+    df_shap = df_raw[df_raw['report_period'] == selected_period].copy() if selected_period != "Tất cả các năm" else df_raw.copy()
     df_shap_clean = df_shap.dropna(subset=feature_cols + [target_var]).copy()
 
     if len(df_shap_clean) >= 5:
@@ -466,7 +473,7 @@ with tab2:
             explainer = shap.TreeExplainer(rf_shap)
             shap_values = explainer.shap_values(X_shap)
 
-            st.markdown(f"#### Biểu đồ SHAP Summary Plot — Tác động lên **{('Doanh thu' if target_var == 'net_revenue' else 'Lợi nhuận')}** ({selected_period})")
+            st.markdown(f"#### Biểu đồ SHAP Summary Plot — Tác động lên **{('Doanh thu' if target_var == 'net_revenue' else 'Lợi nhuận')}**")
             
             fig_shap, ax = plt.subplots(figsize=(10, 4.5))
             shap.summary_plot(shap_values, X_shap, show=False)
@@ -475,20 +482,50 @@ with tab2:
             plt.close()
 
         except ImportError:
-            # Chế độ dự phòng khi chưa cài gói `shap`
             st.warning("⚠️ Thư viện `shap` chưa có sẵn. Đang hiển thị Mức độ tác động tương đối bằng Plotly:")
-            
             importances = rf_shap.feature_importances_
             df_imp = pd.DataFrame({'Chỉ số': feature_cols, 'Mức độ tác động': importances}).sort_values(by='Mức độ tác động', ascending=True)
             fig_imp = px.bar(
                 df_imp, x='Mức độ tác động', y='Chỉ số', orientation='h',
-                title=f"Mức độ ảnh hưởng đến {target_var} ({selected_period})",
                 template="plotly_white", color='Mức độ tác động', color_continuous_scale="Blues"
             )
             st.plotly_chart(fig_imp, use_container_width=True)
-
     else:
         st.warning("Chưa đủ tập dữ liệu (tối thiểu 5 mẫu) trong kỳ đã chọn để thực hiện phân tích SHAP.")
+
+# ----------------------------------------------------
+# TAB 3: ANOMALY DETECTION (ĐÃ BỔ SUNG FIX LỖI THIẾU TAB NÀY)
+# ----------------------------------------------------
+with tab3:
+    st.markdown(f"### 🚨 {txt['anomaly_title']}")
+    
+    if len(df_ml_clean) > 5 and scaled_features is not None:
+        # Sử dụng IsolationForest đã import ở đầu file
+        iso_forest = IsolationForest(contamination=contamination, random_state=42)
+        df_ml_clean['Anomaly_Score'] = iso_forest.fit_predict(scaled_features)
+        df_ml_clean['Status'] = df_ml_clean['Anomaly_Score'].map({1: 'Bình thường', -1: 'Bất thường (Anomaly)'})
+        
+        # Nếu chưa tính PCA ở tab2, thì tính lại để vẽ biểu đồ
+        if 'PCA_1' not in df_ml_clean.columns:
+            pca = PCA(n_components=2)
+            pca_transformed = pca.fit_transform(scaled_features)
+            df_ml_clean['PCA_1'] = pca_transformed[:, 0]
+            df_ml_clean['PCA_2'] = pca_transformed[:, 1]
+            
+        fig_anomaly = px.scatter(
+            df_ml_clean, x='PCA_1', y='PCA_2', color='Status',
+            hover_name='ticker', template="plotly_white",
+            color_discrete_map={'Bình thường': '#10b981', 'Bất thường (Anomaly)': '#ef4444'},
+            title="Biểu đồ phân tán chỉ ra các Doanh nghiệp có chỉ số Tài chính tách biệt"
+        )
+        fig_anomaly.update_traces(marker=dict(size=11, opacity=0.85))
+        st.plotly_chart(fig_anomaly, use_container_width=True)
+
+        anomalies = df_ml_clean[df_ml_clean['Status'] == 'Bất thường (Anomaly)']
+        st.markdown(f"**{txt['anomaly_count']}: {len(anomalies)}**")
+        st.dataframe(anomalies[['ticker', 'Status'] + feature_cols], use_container_width=True)
+    else:
+        st.warning("Chưa đủ số lượng dữ liệu (tối thiểu > 5 mã cổ phiếu) để chạy mô hình Phát hiện bất thường.")
 
 # ----------------------------------------------------
 # TAB 4: DATA WAREHOUSE CONSOLE
@@ -561,8 +598,6 @@ with tab6:
     st.markdown(f"### 📋 Báo Cáo Tài Chính 5 Năm & Xếp Hạng Tín Dụng ({selected_ticker})")
     
     st.markdown("#### Dữ liệu BCTC (Income Statement, Balance Sheet, Ratios)")
-    
-    # Hiển thị linh hoạt dữ liệu 5 kỳ của cổ phiếu được chọn
     df_ticker_5y = df_raw[df_raw['ticker'] == selected_ticker].sort_values("report_period").tail(5)
     
     if not df_ticker_5y.empty:
@@ -600,23 +635,25 @@ with tab6:
         """, unsafe_allow_html=True)
 
     with col_credit2:
-        st.markdown("#### 🧠 ML Model: Đánh giá Tầm quan trọng của Biến (Feature Importance)")
-        st.caption("Ứng dụng Random Forest Classifier để xác định biến tài chính ảnh hưởng lớn nhất đến Xếp hạng Tín dụng.")
+        st.markdown("#### 🧠 ML Model: Đánh giá Tầm quan trọng (Feature Importance)")
+        st.caption("Ứng dụng Random Forest Classifier xác định biến tài chính ảnh hưởng tới Xếp hạng Tín dụng.")
         
         features = df_raw[['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']].dropna()
-        target = ((features['roe_pct'] > 12) & (features['debt_to_equity'] < 2.0)).astype(int)
-        
-        if len(features) > 10 and len(np.unique(target)) > 1:
-            rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
-            rf_model.fit(features, target)
+        if len(features) > 10:
+            target = ((features['roe_pct'] > 12) & (features['debt_to_equity'] < 2.0)).astype(int)
             
-            importances = rf_model.feature_importances_
-            feature_names = features.columns
-            df_imp = pd.DataFrame({'Feature': feature_names, 'Importance': importances}).sort_values(by='Importance', ascending=True)
-            
-            fig_rf = px.bar(df_imp, x='Importance', y='Feature', orientation='h', 
-                            template='plotly_white', color='Importance', color_continuous_scale="Blues")
-            fig_rf.update_layout(margin=dict(l=20, r=20, t=20, b=20), height=250)
-            st.plotly_chart(fig_rf, use_container_width=True)
+            if len(np.unique(target)) > 1:
+                rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+                rf_model.fit(features, target)
+                
+                importances = rf_model.feature_importances_
+                df_imp = pd.DataFrame({'Feature': features.columns, 'Importance': importances}).sort_values(by='Importance', ascending=True)
+                
+                fig_rf = px.bar(df_imp, x='Importance', y='Feature', orientation='h', 
+                                template='plotly_white', color='Importance', color_continuous_scale="Blues")
+                fig_rf.update_layout(margin=dict(l=20, r=20, t=20, b=20), height=250)
+                st.plotly_chart(fig_rf, use_container_width=True)
+            else:
+                st.caption("Dữ liệu chỉ sinh ra một nhãn phân loại (không có biến thiên) nên không thể chạy Random Forest.")
         else:
-            st.caption("Không đủ sự biến thiên dữ liệu để chạy mô hình Random Forest.")
+            st.caption("Không đủ mẫu dữ liệu (>10 mẫu) để chạy mô hình Random Forest.")
