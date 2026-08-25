@@ -64,9 +64,11 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Iterator, Literal
 
+import pandas as pd
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from vietfin.ingestion.sources.base import RateLimiter, SourceAccessError
+from vietfin.ingestion.sources.parquet_safety import write_parquet_safely
 
 logger = logging.getLogger("vietfin.ingestion.financials")
 
@@ -118,7 +120,7 @@ class VNStockFinancialsCollector:
         bronze_dir: str | Path = "data/bronze",
         min_request_interval_seconds: float = 1.5,
         max_retries: int = 3,
-        source_backend: str = "KBS",  # "KBS", "VCI", or 
+        source_backend: str = "KBS",  # "KBS", "VCI", or "TCBS"
         lookback_years: int = 10,
         api_key: str | None = None,
     ) -> None:
@@ -233,8 +235,9 @@ class VNStockFinancialsCollector:
         # gap in that specific provider's coverage, not an error, so we
         # try another public, permitted source rather than give up.
         backends_to_try = [self.source_backend] + [
-            b for b in ("KBS", "VCI", ) if b != self.source_backend
-        ]
+            b for b in ("KBS", "VCI") if b != self.source_backend
+        ]  # TCBS removed -- confirmed live 2026-08-24 that Finance only
+           # accepts 'KBS' or 'VCI'; trying it wasted 3 retries per call.
 
         last_error: str | None = None
         for backend in backends_to_try:
@@ -260,10 +263,25 @@ class VNStockFinancialsCollector:
                         "%s/%s/%s: %s was empty, succeeded via fallback backend %s",
                         ticker, statement_type, period, self.source_backend, backend,
                     )
-                bronze_path = self._write_bronze(
-                    df, ticker, statement_type, period, retrieved_at, document_id
-                )
-                document_hash = self._hash_dataframe(df)
+                try:
+                    bronze_path = self._write_bronze(
+                        df, ticker, statement_type, period, retrieved_at, document_id
+                    )
+                    document_hash = self._hash_dataframe(df)
+                except Exception as exc:  # noqa: BLE001
+                    # Final safety net: even if _write_bronze's own
+                    # string-coercion fallback somehow fails, record this
+                    # as an error result rather than crashing the whole
+                    # multi-thousand-ticker batch job.
+                    self.logger.error(
+                        "Bronze write permanently failed for %s/%s/%s: %s",
+                        ticker, statement_type, period, exc,
+                    )
+                    return FetchResult(
+                        ticker=ticker, statement_type=statement_type, period=period, rows=0,
+                        bronze_path=None, document_id=document_id, document_hash=None,
+                        retrieved_at=retrieved_at, status="error", error=str(exc),
+                    )
                 return FetchResult(
                     ticker=ticker, statement_type=statement_type, period=period, rows=len(df),
                     bronze_path=str(bronze_path), document_id=document_id,
@@ -303,8 +321,15 @@ class VNStockFinancialsCollector:
         enriched["retrieved_at"] = retrieved_at.isoformat()
         enriched["document_id"] = document_id
 
-        enriched = enriched.astype(str)
-        enriched.to_parquet(out_path, index=False)
+        # BRONZE LAYER SAFETY NET: crashed live 2026-08-24 on ticker A32's
+        # 'ratio' statement -- pyarrow mis-inferred an 'item_en' object
+        # column as int64 because it was mostly blank, then hit one real
+        # string value and raised ArrowInvalid, killing an in-progress
+        # 1,970-ticker run. Bronze is a raw-fidelity layer, not a typed
+        # one (typing/coercion belongs in Silver normalization), so we
+        # sanitize before writing via the shared parquet_safety helper --
+        # one odd ticker must never crash a multi-hour batch job again.
+        write_parquet_safely(enriched, out_path)
         return out_path
 
     @staticmethod
