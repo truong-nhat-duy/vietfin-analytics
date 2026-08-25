@@ -181,9 +181,10 @@ df_profile = pd.DataFrame({
     'address': ['Đang cập nhật'] * len(tickers)
 })
 
+
 # 5. Khởi tạo các Tabs
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    txt["tab1"], txt["tab2"], txt["tab3"], txt["tab4"], txt["tab5"], txt["tab6"]
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    txt["tab1"], txt["tab2"], txt["tab3"], txt["tab4"], txt["tab5"], txt["tab6"], "👥 Lãnh đạo & Cổ đông"
 ])
 
 # ----------------------------------------------------
@@ -405,6 +406,92 @@ scaled_features = None
 if len(df_ml_clean) > 0:
     scaler = StandardScaler()
     scaled_features = scaler.fit_transform(df_ml_clean[feature_cols])
+
+# Thêm hàm load dữ liệu Profile từ MotherDuck
+@st.cache_data(ttl=3600)
+def load_corporate_profile():
+    try:
+        # Thay đổi tên cột cho khớp với schema thực tế bạn cào được
+        df = con.execute("""
+            SELECT 
+                ticker, 
+                company_name, 
+                tax_code, 
+                industry, 
+                headquarters AS address,
+                website,
+                established_year
+            FROM gold_corporate_overview
+        """).df()
+        return df
+    except Exception as e:
+        st.warning("⚠️ Chưa đồng bộ bảng gold_corporate_overview hoặc đang cập nhật.")
+        return pd.DataFrame()
+
+@st.cache_data(ttl=3600)
+def load_shareholders(ticker):
+    try:
+        df = con.execute(f"SELECT * FROM gold_corporate_shareholders WHERE ticker = '{ticker}'").df()
+        return df
+    except:
+        return pd.DataFrame()
+
+@st.cache_data(ttl=3600)
+def load_officers(ticker):
+    try:
+        df = con.execute(f"SELECT * FROM gold_corporate_officers WHERE ticker = '{ticker}'").df()
+        return df
+    except:
+        return pd.DataFrame()
+
+df_profile = load_corporate_profile()
+
+
+# --- BÊN TRONG TAB 1 (Cập nhật logic lấy profile) ---
+with tab1:
+    df_ticker = df_raw[df_raw['ticker'] == selected_ticker].sort_values("report_period").copy()
+    
+    if not df_ticker.empty:
+        latest = df_ticker.iloc[-1]
+        
+        # Lấy thông tin thật từ df_profile
+        profile_row = df_profile[df_profile['ticker'] == selected_ticker]
+        
+        if not profile_row.empty:
+            profile = {
+                "name": profile_row.iloc[0].get('company_name', f"Công ty CP {selected_ticker}"),
+                "tax_code": profile_row.iloc[0].get('tax_code', 'N/A'),
+                "industry": profile_row.iloc[0].get('industry', 'N/A'),
+                "address": profile_row.iloc[0].get('address', 'N/A'),
+                "website": profile_row.iloc[0].get('website', 'N/A'),
+                "established": profile_row.iloc[0].get('established_year', 'N/A')
+            }
+        else:
+            profile = {
+                "name": f"Công ty CP {selected_ticker}", "tax_code": "Đang cập nhật", 
+                "industry": "Đang cập nhật", "address": "Đang cập nhật",
+                "website": "N/A", "established": "N/A"
+            }
+
+        # Hiển thị UI mới có thêm Website và Năm thành lập
+        st.markdown(f"""
+        <div style="background-color: #ffffff; padding: 18px 22px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h2 style="margin:0 0 8px 0; color:#1e3a8a; font-size: 1.4rem; font-weight: 700;">🏛️ {profile['name']} ({selected_ticker})</h2>
+                    <p style="margin: 4px 0; color: #334155; font-size: 0.92rem;">
+                        <b>Mã số thuế:</b> <span style="color:#0f172a; font-weight:600;">{profile['tax_code']}</span> &nbsp;|&nbsp; 
+                        <b>Ngành nghề:</b> <span style="color:#0284c7; font-weight:600;">{profile['industry']}</span> &nbsp;|&nbsp;
+                        <b>Thành lập:</b> <span style="color:#0f172a; font-weight:600;">{profile['established']}</span>
+                    </p>
+                    <p style="margin: 4px 0 0 0; color: #64748b; font-size: 0.88rem;">
+                        <b>📍 Địa chỉ:</b> {profile['address']} <br>
+                        <b>🌐 Website:</b> <a href="{profile['website']}" target="_blank">{profile['website']}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 # ----------------------------------------------------
 # TAB 2: UNSUPERVISED ML (K-MEANS, PCA & SHAP)
@@ -657,3 +744,69 @@ with tab6:
                 st.caption("Dữ liệu chỉ sinh ra một nhãn phân loại (không có biến thiên) nên không thể chạy Random Forest.")
         else:
             st.caption("Không đủ mẫu dữ liệu (>10 mẫu) để chạy mô hình Random Forest.")
+# ----------------------------------------------------
+# TAB 7: CORPORATE GOVERNANCE (OFFICERS & SHAREHOLDERS)
+# ----------------------------------------------------
+with tab7:
+    st.markdown(f"### 👥 Quản trị Doanh nghiệp ({selected_ticker})")
+    
+    col_share, col_officer = st.columns([1, 1.2])
+    
+    # --- 1. BIỂU ĐỒ CƠ CẤU CỔ ĐÔNG ---
+    with col_share:
+        st.markdown("#### 🥧 Cơ cấu Cổ đông")
+        df_shareholders = load_shareholders(selected_ticker)
+        
+        if not df_shareholders.empty:
+            # Ghi chú: Đổi tên biến 'shareholder_name' và 'ownership_pct' 
+            # cho khớp với tên cột thực tế mà bạn đã cào về
+            name_col = 'shareholder_name' if 'shareholder_name' in df_shareholders.columns else df_shareholders.columns[1]
+            pct_col = 'ownership_pct' if 'ownership_pct' in df_shareholders.columns else 'ownership_percent' if 'ownership_percent' in df_shareholders.columns else df_shareholders.columns[2]
+            
+            # Chỉ lấy các cổ đông có tỷ lệ > 0 để vẽ biểu đồ cho đẹp
+            df_pie = df_shareholders[df_shareholders[pct_col] > 0]
+            
+            if not df_pie.empty:
+                fig_pie = px.pie(
+                    df_pie, 
+                    values=pct_col, 
+                    names=name_col,
+                    hole=0.45,
+                    color_discrete_sequence=px.colors.qualitative.Pastel
+                )
+                fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+                fig_pie.update_layout(
+                    showlegend=False, 
+                    margin=dict(t=20, b=20, l=10, r=10),
+                    annotations=[dict(text='Cổ đông', x=0.5, y=0.5, font_size=16, showarrow=False)]
+                )
+                st.plotly_chart(fig_pie, use_container_width=True)
+            else:
+                st.info("Không có dữ liệu tỷ lệ sở hữu hợp lệ để vẽ biểu đồ.")
+            
+            # Hiển thị thêm bảng data rút gọn bên dưới biểu đồ
+            st.dataframe(
+                df_shareholders[[name_col, pct_col]].style.format({pct_col: "{:.2f}%"}),
+                use_container_width=True, hide_index=True
+            )
+        else:
+            st.warning(f"Chưa có dữ liệu cơ cấu cổ đông cho mã {selected_ticker}.")
+
+    # --- 2. DANH SÁCH BAN LÃNH ĐẠO ---
+    with col_officer:
+        st.markdown("#### 👔 Danh sách Ban Lãnh đạo")
+        df_officers = load_officers(selected_ticker)
+        
+        if not df_officers.empty:
+            # Lọc bỏ cột ticker để giao diện gọn gàng hơn
+            display_cols = [c for c in df_officers.columns if c.lower() != 'ticker']
+            
+            # Hiển thị bảng ban lãnh đạo
+            st.dataframe(
+                df_officers[display_cols],
+                use_container_width=True, 
+                hide_index=True,
+                height=500  # Cố định chiều cao nếu danh sách dài
+            )
+        else:
+            st.warning(f"Chưa có dữ liệu ban lãnh đạo cho mã {selected_ticker}.")
