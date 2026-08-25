@@ -174,7 +174,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ----------------------------------------------------
-# TAB 1: CORPORATE DEEP-DIVE & DUPONT ANALYSIS
+# TAB 1: CORPORATE DEEP-DIVE & DUPONT ANALYSIS (REAL DATA VERSION)
 # ----------------------------------------------------
 with tab1:
     df_ticker = df_raw[df_raw['ticker'] == selected_ticker].sort_values("report_period").copy()
@@ -182,59 +182,24 @@ with tab1:
     if not df_ticker.empty:
         latest = df_ticker.iloc[-1]
         
-        # 1. Cơ sở dữ liệu Hồ sơ Doanh nghiệp chính xác (Corporate Registry)
-        company_registry = {
-            "VNM": {
-                "name": "Công ty Cổ phần Sữa Việt Nam (Vinamilk)",
-                "tax_code": "0300588569",
-                "industry": "Chế biến sữa & Các sản phẩm từ sữa",
-                "address": "Số 10 Tân Trào, Phường Tân Phú, Quận 7, TP. Hồ Chí Minh"
-            },
-            "FPT": {
-                "name": "Công ty Cổ phần FPT",
-                "tax_code": "0101245486",
-                "industry": "Công nghệ thông tin & Viễn thông",
-                "address": "Tòa nhà FPT, Số 10 Phạm Văn Bạch, Phường Dịch Vọng, Quận Cầu Giấy, Hà Nội"
-            },
-            "VCB": {
-                "name": "Ngân hàng TMCP Ngoại Thương Việt Nam (Vietcombank)",
-                "tax_code": "0100112437",
-                "industry": "Ngân hàng & Dịch vụ tài chính",
-                "address": "198 Trần Quang Khải, Phường Lý Thái Tổ, Quận Hoàn Kiếm, Hà Nội"
-            },
-            "HPG": {
-                "name": "Công ty Cổ phần Tập đoàn Hòa Phát",
-                "tax_code": "0900188561",
-                "industry": "Sản xuất Thép & Vật liệu xây dựng",
-                "address": "KCN Phố Nối A, Xã Giai Phạm, Huyện Yên Mỹ, Tỉnh Hưng Yên"
-            },
-            "VIC": {
-                "name": "Tập đoàn Vingroup - CTCP",
-                "tax_code": "0101245486",
-                "industry": "Bất động sản, Dịch vụ & Công nghiệp",
-                "address": "Số 7 Đường Bằng Lăng 1, KĐT Vinhomes Riverside, Phường Việt Hưng, Quận Long Biên, Hà Nội"
-            },
-            "MSN": {
-                "name": "Công ty Cổ phần Tập đoàn MaSan",
-                "tax_code": "0303576603",
-                "industry": "Hàng tiêu dùng & Bán lẻ",
-                "address": "Phòng 802, Tầng 8, Tòa nhà Central Plaza, 17 Lê Duẩn, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh"
-            },
-            "MWG": {
-                "name": "Công ty Cổ phần Đầu tư Thế Giới Di Động",
-                "tax_code": "0303270749",
-                "industry": "Bán lẻ thiết bị công nghệ & Thực phẩm",
-                "address": "Lô T2-1.2, Đường D1, Khu Công nghệ Cao, Phường Tân Phú, Thành phố Thủ Đức, TP. Hồ Chí Minh"
-            }
-        }
+        # 1. Cơ sở dữ liệu Hồ sơ Doanh nghiệp (Lấy từ DataFrame df_profile thực tế thay vì hardcode)
+        # Giả định bạn có bảng df_profile chứa ['ticker', 'company_name', 'tax_code', 'industry', 'address']
+        profile_row = df_profile[df_profile['ticker'] == selected_ticker]
         
-        # Lấy thông tin doanh nghiệp (Tự động fallback nếu mã chưa có trong registry)
-        profile = company_registry.get(selected_ticker, {
-            "name": f"Công ty Cổ phần {selected_ticker}",
-            "tax_code": "Đang cập nhật",
-            "industry": "Sản xuất & Thương mại",
-            "address": "Trụ sở chính đang cập nhật từ CSDL Quốc gia"
-        })
+        if not profile_row.empty:
+            profile = {
+                "name": profile_row.iloc[0].get('company_name', f"Công ty Cổ phần {selected_ticker}"),
+                "tax_code": profile_row.iloc[0].get('tax_code', 'Đang cập nhật'),
+                "industry": profile_row.iloc[0].get('industry', 'Đang cập nhật'),
+                "address": profile_row.iloc[0].get('address', 'Đang cập nhật')
+            }
+        else:
+            profile = {
+                "name": f"Công ty Cổ phần {selected_ticker}",
+                "tax_code": "Đang cập nhật",
+                "industry": "Sản xuất & Thương mại",
+                "address": "Đang cập nhật từ CSDL Quốc gia"
+            }
 
         # Hiển thị thông tin doanh nghiệp
         st.markdown(f"""
@@ -255,37 +220,37 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
         
-        # 2. Executive Metric Cards
+        # 2. Executive Metric Cards (Dữ liệu thực từ df_raw)
         c1, c2, c3, c4 = st.columns(4)
         with c1:
             st.markdown(f'''
                 <div class="metric-card">
-                    <div class="metric-label">{txt["roe_label"]}</div>
-                    <div class="metric-value">{latest["roe_pct"]:.2f}%</div>
+                    <div class="metric-label">{txt.get("roe_label", "ROE")}</div>
+                    <div class="metric-value">{latest.get("roe_pct", 0):.2f}%</div>
                     <div class="metric-badge-pos">Profitability</div>
                 </div>
             ''', unsafe_allow_html=True)
         with c2:
             st.markdown(f'''
                 <div class="metric-card">
-                    <div class="metric-label">{txt["roa_label"]}</div>
-                    <div class="metric-value">{latest["roa_pct"]:.2f}%</div>
+                    <div class="metric-label">{txt.get("roa_label", "ROA")}</div>
+                    <div class="metric-value">{latest.get("roa_pct", 0):.2f}%</div>
                     <div class="metric-badge-pos">Efficiency</div>
                 </div>
             ''', unsafe_allow_html=True)
         with c3:
             st.markdown(f'''
                 <div class="metric-card">
-                    <div class="metric-label">{txt["de_label"]}</div>
-                    <div class="metric-value">{latest["debt_to_equity"]:.2f}x</div>
+                    <div class="metric-label">{txt.get("de_label", "D/E Ratio")}</div>
+                    <div class="metric-value">{latest.get("debt_to_equity", 0):.2f}x</div>
                     <div class="metric-badge-pos">Capital Structure</div>
                 </div>
             ''', unsafe_allow_html=True)
         with c4:
             st.markdown(f'''
                 <div class="metric-card">
-                    <div class="metric-label">{txt["margin_label"]}</div>
-                    <div class="metric-value">{latest["net_margin_pct"]:.2f}%</div>
+                    <div class="metric-label">{txt.get("margin_label", "Net Margin")}</div>
+                    <div class="metric-value">{latest.get("net_margin_pct", 0):.2f}%</div>
                     <div class="metric-badge-pos">Margin</div>
                 </div>
             ''', unsafe_allow_html=True)
@@ -295,7 +260,7 @@ with tab1:
         # 3. Biểu đồ Doanh thu, Lợi nhuận & Chỉ số
         col_left, col_right = st.columns(2)
         with col_left:
-            st.markdown(f"#### 💰 {txt['chart_rev']}")
+            st.markdown(f"#### 💰 {txt.get('chart_rev', 'Doanh thu & Lợi nhuận')}")
             fig_rev = go.Figure()
             fig_rev.add_trace(go.Bar(x=df_ticker['report_period'], y=df_ticker['net_revenue'], name="Revenue", marker_color="#1e3a8a"))
             fig_rev.add_trace(go.Scatter(x=df_ticker['report_period'], y=df_ticker['net_income'], name="Net Income", yaxis="y2", line=dict(color="#059669", width=3)))
@@ -310,7 +275,7 @@ with tab1:
             st.plotly_chart(fig_rev, use_container_width=True)
 
         with col_right:
-            st.markdown(f"#### 📉 {txt['chart_ratios']}")
+            st.markdown(f"#### 📉 {txt.get('chart_ratios', 'Chỉ số sinh lời (%)')}")
             fig_ratios = px.line(
                 df_ticker, x="report_period", y=["roe_pct", "roa_pct", "gross_margin_pct", "net_margin_pct"],
                 markers=True, template="plotly_white",
@@ -321,41 +286,39 @@ with tab1:
 
         st.divider()
 
-        # 4. Phân tích Cấu trúc Bảng Cân đối Kế toán (Pie Charts)
+        # 4. Phân tích Cấu trúc Bảng Cân đối Kế toán (DỮ LIỆU THỰC TẾ TRONG KỲ GẦN NHẤT)
         st.markdown(f"### 🧩 Phân Tích Cơ Cấu Tài Sản & Nguồn Vốn ({latest['report_period']})")
         
-        st_assets_pct = latest.get('st_assets_pct', 45.0)
-        lt_assets_pct = 100.0 - st_assets_pct
-        
+        # Mapping các khoản mục tài sản trực tiếp từ DataFrame
         asset_details = {
-            "Tiền & Tương đương tiền": st_assets_pct * 0.35,
-            "Phải thu ngắn hạn": st_assets_pct * 0.40,
-            "Hàng tồn kho": st_assets_pct * 0.20,
-            "Tài sản ngắn hạn khác": st_assets_pct * 0.05,
-            "Tài sản cố định": lt_assets_pct * 0.65,
-            "Bất động sản đầu tư": lt_assets_pct * 0.15,
-            "Tài sản dài hạn khác": lt_assets_pct * 0.20
+            "Tiền & Tương đương tiền": latest.get('cash_and_equivalents', 0),
+            "Phải thu ngắn hạn": latest.get('short_term_receivables', 0),
+            "Hàng tồn kho": latest.get('inventory', 0),
+            "Tài sản ngắn hạn khác": latest.get('other_short_term_assets', 0),
+            "Tài sản cố định": latest.get('fixed_assets', 0),
+            "Bất động sản đầu tư": latest.get('investment_properties', 0),
+            "Tài sản dài hạn khác": latest.get('other_long_term_assets', 0)
         }
         
-        de_ratio = latest.get('debt_to_equity', 0.8)
-        equity_pct = 100 / (1 + de_ratio)
-        liabilities_pct = 100.0 - equity_pct
-        
+        # Mapping các khoản mục nguồn vốn trực tiếp từ DataFrame
         capital_details = {
-            "Nợ ngắn hạn": liabilities_pct * 0.70,
-            "Nợ dài hạn": liabilities_pct * 0.30,
-            "Vốn góp chủ sở hữu": equity_pct * 0.60,
-            "Lợi nhuận sau thuế chưa phân phối": equity_pct * 0.30,
-            "Quỹ & Vốn khác": equity_pct * 0.10
+            "Nợ ngắn hạn": latest.get('short_term_debt', 0),
+            "Nợ dài hạn": latest.get('long_term_debt', 0),
+            "Vốn góp chủ sở hữu": latest.get('owner_equity', 0),
+            "Lợi nhuận sau thuế chưa phân phối": latest.get('undistributed_earnings', 0),
+            "Quỹ & Vốn khác": latest.get('other_capital_and_funds', 0)
         }
 
         col_pie1, col_pie2 = st.columns(2)
         
         with col_pie1:
-            st.markdown("##### 📦 Cơ cấu Tài sản (Ngắn hạn vs Dài hạn)")
-            df_asset_pie = pd.DataFrame(list(asset_details.items()), columns=['Khoản mục', 'Tỷ trọng (%)'])
+            st.markdown("##### 📦 Cơ cấu Tài sản")
+            df_asset_pie = pd.DataFrame(list(asset_details.items()), columns=['Khoản mục', 'Giá trị'])
+            # Lọc bỏ các khoản mục có giá trị 0 hoặc None để biểu đồ đẹp hơn
+            df_asset_pie = df_asset_pie[df_asset_pie['Giá trị'] > 0] 
+            
             fig_asset_pie = px.pie(
-                df_asset_pie, values='Tỷ trọng (%)', names='Khoản mục',
+                df_asset_pie, values='Giá trị', names='Khoản mục',
                 hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel
             )
             fig_asset_pie.update_traces(textposition='inside', textinfo='percent+label')
@@ -363,35 +326,37 @@ with tab1:
             st.plotly_chart(fig_asset_pie, use_container_width=True)
 
         with col_pie2:
-            st.markdown("##### 🏛️ Cơ cấu Nguồn vốn (Nợ phải trả vs Vốn chủ)")
-            df_capital_pie = pd.DataFrame(list(capital_details.items()), columns=['Khoản mục', 'Tỷ trọng (%)'])
+            st.markdown("##### 🏛️ Cơ cấu Nguồn vốn")
+            df_capital_pie = pd.DataFrame(list(capital_details.items()), columns=['Khoản mục', 'Giá trị'])
+            df_capital_pie = df_capital_pie[df_capital_pie['Giá trị'] > 0]
+            
             fig_capital_pie = px.pie(
-                df_capital_pie, values='Tỷ trọng (%)', names='Khoản mục',
+                df_capital_pie, values='Giá trị', names='Khoản mục',
                 hole=0.4, color_discrete_sequence=px.colors.qualitative.Set3
             )
             fig_capital_pie.update_traces(textposition='inside', textinfo='percent+label')
             fig_capital_pie.update_layout(margin=dict(l=10, r=10, t=20, b=20), showlegend=False)
             st.plotly_chart(fig_capital_pie, use_container_width=True)
 
-        # 5. Biểu đồ Xu hướng các Khoản mục Trọng yếu (> 5% Cơ cấu)
+        # 5. Biểu đồ Xu hướng các Khoản mục Trọng yếu (DỮ LIỆU THỰC TẾ)
         st.markdown("#### 📈 Xu hướng dịch chuyển các Khoản mục Trọng yếu (> 5% Cơ cấu)")
         
         trend_data = []
         for idx, row in df_ticker.iterrows():
             period = row['report_period']
-            de = row['debt_to_equity'] if pd.notnull(row['debt_to_equity']) else 0.5
-            eq_pct = 100 / (1 + de)
-            liab_pct = 100 - eq_pct
+            total_assets = row.get('total_assets', 1) # Chống lỗi chia 0
+            total_capital = row.get('total_capital', total_assets)
             
-            trend_data.append({"Kỳ": period, "Khoản mục": "Vốn chủ sở hữu", "Tỷ trọng (%)": eq_pct})
-            trend_data.append({"Kỳ": period, "Khoản mục": "Nợ ngắn hạn", "Tỷ trọng (%)": liab_pct * 0.7})
-            trend_data.append({"Kỳ": period, "Khoản mục": "Nợ dài hạn", "Tỷ trọng (%)": liab_pct * 0.3})
-            trend_data.append({"Kỳ": period, "Khoản mục": "Tài sản cố định", "Tỷ trọng (%)": 35.0 + (idx % 3) * 2})
-            trend_data.append({"Kỳ": period, "Khoản mục": "Hàng tồn kho", "Tỷ trọng (%)": 18.0 - (idx % 2) * 1.5})
-            trend_data.append({"Kỳ": period, "Khoản mục": "Tiền & Tương đương tiền", "Tỷ trọng (%)": 12.0 + (idx % 2) * 3})
+            trend_data.append({"Kỳ": period, "Khoản mục": "Vốn chủ sở hữu", "Tỷ trọng (%)": (row.get('owner_equity', 0) / total_capital) * 100})
+            trend_data.append({"Kỳ": period, "Khoản mục": "Nợ ngắn hạn", "Tỷ trọng (%)": (row.get('short_term_debt', 0) / total_capital) * 100})
+            trend_data.append({"Kỳ": period, "Khoản mục": "Nợ dài hạn", "Tỷ trọng (%)": (row.get('long_term_debt', 0) / total_capital) * 100})
+            trend_data.append({"Kỳ": period, "Khoản mục": "Tài sản cố định", "Tỷ trọng (%)": (row.get('fixed_assets', 0) / total_assets) * 100})
+            trend_data.append({"Kỳ": period, "Khoản mục": "Hàng tồn kho", "Tỷ trọng (%)": (row.get('inventory', 0) / total_assets) * 100})
+            trend_data.append({"Kỳ": period, "Khoản mục": "Tiền & Tương đương tiền", "Tỷ trọng (%)": (row.get('cash_and_equivalents', 0) / total_assets) * 100})
 
         df_trend = pd.DataFrame(trend_data)
         
+        # Chỉ lấy những khoản mục có tỷ trọng trung bình > 5% qua các kỳ
         avg_shares = df_trend.groupby("Khoản mục")["Tỷ trọng (%)"].mean()
         major_items = avg_shares[avg_shares > 5.0].index.tolist()
         df_trend_filtered = df_trend[df_trend["Khoản mục"].isin(major_items)]
@@ -401,24 +366,24 @@ with tab1:
             markers=True, template="plotly_white",
             title="Biến động tỷ trọng các khoản mục lớn qua các năm"
         )
-        # SỬA LỖI TẠI ĐÂY: Dùng `ticksuffix="%"` thay vì `suffix="%"`
         fig_trend.update_layout(margin=dict(l=20, r=20, t=40, b=20), yaxis=dict(ticksuffix="%"))
         st.plotly_chart(fig_trend, use_container_width=True)
 
         st.divider()
 
         # 6. Mô hình DuPont Analysis
-        st.markdown(f"#### {txt['dupont_title']}")
+        st.markdown(f"#### {txt.get('dupont_title', 'Phân tích DuPont')}")
         st.latex(r"\text{ROE} = \text{ROA} \times \left(1 + \frac{\text{Debt}}{\text{Equity}}\right)")
         
-        leverage_factor = 1 + (latest['debt_to_equity'] if pd.notnull(latest['debt_to_equity']) else 0)
-        st.info(txt['dupont_desc'].format(
-            roe=latest['roe_pct'] if pd.notnull(latest['roe_pct']) else 0,
-            roa=latest['roa_pct'] if pd.notnull(latest['roa_pct']) else 0,
+        leverage_factor = 1 + (latest.get('debt_to_equity', 0) if pd.notnull(latest.get('debt_to_equity', 0)) else 0)
+        st.info(txt.get('dupont_desc', 'Tỷ suất lợi nhuận ROE {roe:.2f}% được thúc đẩy bởi biên hiệu quả hoạt động ROA {roa:.2f}% và đòn bẩy tài chính {lev:.2f}x.').format(
+            roe=latest.get('roe_pct', 0),
+            roa=latest.get('roa_pct', 0),
             lev=leverage_factor
         ))
     else:
         st.warning("No financial data available for this ticker.")
+
 # ----------------------------------------------------
 # TAB 2: UNSUPERVISED ML (K-MEANS, PCA & SHAP ANALYSIS)
 # ----------------------------------------------------
