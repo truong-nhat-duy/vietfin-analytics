@@ -137,6 +137,13 @@ def apply_custom_plotly_layout(fig):
 # ==========================================
 # 2. KẾT NỐI DỮ LIỆU MOTHERDUCK (GOLD LAYER)
 # ==========================================
+import os
+import duckdb
+import numpy as np
+import pandas as pd
+import streamlit as st
+from dotenv import load_dotenv
+from sklearn.preprocessing import StandardScaler
 
 load_dotenv()
 try:
@@ -210,6 +217,7 @@ def load_price_history(ticker):
     except Exception:
         return pd.DataFrame()
 
+# TẢI DỮ LIỆU
 df_raw = load_gold_ratios()
 df_profile = load_corporate_overview()
 
@@ -217,92 +225,53 @@ if df_raw.empty:
     st.warning(L["err_load"])
     st.stop()
 
+
+# ==========================================
+# 3. CHUẨN HÓA DỮ LIỆU TOÀN CỤC (GLOBAL PREPROCESSING)
 # ==========================================
 
-## ==========================================
-# 3. CHUẨN HÓA DỮ LIỆU TOÀN CỤC (ĐẶT Ở ĐÂY)
-# ==========================================
-# 3.1. Chuẩn hóa tên cột cho df_raw
-df_raw.columns = df_raw.columns.str.lower()
-if 'ticker' not in df_raw.columns and df_raw.index.name == 'ticker':
+# 3.1. Nếu mã cổ phiếu vô tình bị kẹt ở Index, đẩy nó ra thành cột
+if df_raw.index.name is not None and str(df_raw.index.name).lower().strip() in ['ticker', 'symbol', 'ma_ck', 'mã ck']:
     df_raw = df_raw.reset_index()
 
-# Đổi tên các cột phổ biến thành 'ticker' nếu có
-for col in ['symbol', 'ma_ck', 'stock_code', 'code']:
-    if col in df_raw.columns:
-        df_raw = df_raw.rename(columns={col: 'ticker'})
-        break
-
-# Dừng app báo lỗi nếu database thực sự không có bất kỳ cột mã cổ phiếu nào
-if 'ticker' not in df_raw.columns:
-    st.error(f"❌ LỖI: Dữ liệu fact_ratio_summary không có cột mã cổ phiếu. Các cột hiện có: {list(df_raw.columns)}")
-    st.stop()
-
-# 3.2. Chuẩn hóa tên cột cho df_profile
-if not df_profile.empty:
-    df_profile.columns = df_profile.columns.str.lower()
-    for col in ['symbol', 'ma_ck', 'stock_code', 'code']:
-        if col in df_profile.columns:
-            df_profile = df_profile.rename(columns={col: 'ticker'})
-            break
-
-# ==========================================
-# 4. LÀM SẠCH DỮ LIỆU CHO ML
-# ==========================================
-# Lúc này df_raw CHẮC CHẮN đã có cột 'ticker', ta mới thực hiện groupby
-feature_cols = ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']
-
-# Chỉ lấy các feature thực sự tồn tại trong dataframe
-existing_features = [c for c in feature_cols if c in df_raw.columns]
-
-df_ml = df_raw.sort_values("report_period").groupby("ticker").last().reset_index()
-df_ml_clean = df_ml.dropna(subset=existing_features).copy()
-
-scaled_features = None
-if len(df_ml_clean) >= 3: # Yêu cầu ít nhất 3 công ty để phân cụm
-    from sklearn.preprocessing import StandardScaler
-    scaled_features = StandardScaler().fit_transform(df_ml_clean[existing_features])
-
-# ==========================================
-# 0. CHUẨN HÓA DỮ LIỆU TOÀN CỤC (ĐẶT TRƯỚC KHI TẠO TABS)
-# ==========================================
-
-# 1. Nếu mã cổ phiếu vô tình bị kẹt ở Index, đẩy nó ra thành cột
-if df_raw.index.name is not None and df_raw.index.name.lower() in ['ticker', 'symbol', 'ma_ck', 'mã ck']:
-    df_raw = df_raw.reset_index()
-
-# 2. Xóa khoảng trắng và đưa tất cả tên cột về viết thường để dễ so sánh
+# 3.2. Xóa khoảng trắng và đưa tất cả tên cột về viết thường để dễ so sánh
 df_raw.columns = [str(c).lower().strip() for c in df_raw.columns]
 
-# 3. Tạo danh sách các tên cột phổ biến và ánh xạ về 'ticker'
+# 3.3. Tạo danh sách các tên cột phổ biến và ánh xạ về 'ticker'
 possible_ticker_cols = ['ticker', 'symbol', 'mã ck', 'ma_ck', 'mack', 'stock_code', 'code', 'stock']
 for col in possible_ticker_cols:
     if col in df_raw.columns:
         df_raw = df_raw.rename(columns={col: 'ticker'})
         break
 
-# 4. Kiểm tra an toàn: Dừng app và báo lỗi chi tiết nếu vẫn không tìm thấy
+# 3.4. Kiểm tra an toàn: Dừng app và báo lỗi chi tiết nếu vẫn không tìm thấy 'ticker'
 if 'ticker' not in df_raw.columns:
-    st.error(f"❌ LỖI DỮ LIỆU NGUỒN: Không tìm thấy cột mã chứng khoán. Danh sách các cột hiện tại: {list(df_raw.columns)}")
-    st.stop() # Dừng chạy code bên dưới để không in ra mớ lỗi dài dòng
+    st.error(f"❌ LỖI DỮ LIỆU NGUỒN: Không tìm thấy cột mã chứng khoán trong fact_ratio_summary. Danh sách các cột hiện tại: {list(df_raw.columns)}")
+    st.stop()
 
-# ---> LÀM TƯƠNG TỰ VỚI DF_PROFILE (NẾU CÓ) <---
+# 3.5. Làm tương tự với DF_PROFILE
 if 'df_profile' in locals() and not df_profile.empty:
+    if df_profile.index.name is not None and str(df_profile.index.name).lower().strip() in possible_ticker_cols:
+        df_profile = df_profile.reset_index()
+    
     df_profile.columns = [str(c).lower().strip() for c in df_profile.columns]
     for col in possible_ticker_cols:
         if col in df_profile.columns:
             df_profile = df_profile.rename(columns={col: 'ticker'})
             break
+
+
 # ==========================================
-# CHUẨN BỊ DỮ LIỆU CHO MACHINE LEARNING
+# 4. CHUẨN BỊ DỮ LIỆU CHO MACHINE LEARNING
 # ==========================================
+
 feature_cols = ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']
 
 # Đảm bảo các cột feature tồn tại để tránh lỗi
 existing_features = [col for col in feature_cols if col in df_raw.columns]
 
 if existing_features:
-    # Lấy kỳ báo cáo gần nhất của MỖI mã cổ phiếu (Group by ticker)
+    # Lấy kỳ báo cáo gần nhất của MỖI mã cổ phiếu (Group by ticker AN TOÀN vì đã chuẩn hóa ở trên)
     df_ml = df_raw.sort_values("report_period").groupby("ticker").last().reset_index()
     
     # Xóa các công ty bị thiếu dữ liệu tài chính (NaN)
@@ -310,15 +279,13 @@ if existing_features:
     
     scaled_features = None
     if len(df_ml_clean) >= 3: # Đảm bảo đủ ít nhất 3 công ty để chạy K-Means
-        from sklearn.preprocessing import StandardScaler
         scaled_features = StandardScaler().fit_transform(df_ml_clean[existing_features])
 else:
     df_ml_clean = pd.DataFrame()
     scaled_features = None
 
-
 # ==========================================
-# 3. SIDEBAR & HEADER BẢO BỔ SUNG LOGO
+# 3. SIDEBAR & HEADER 
 # ==========================================
 with st.sidebar:
     # Logo trên Sidebar (nếu có)
@@ -366,6 +333,42 @@ with col_title:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
+
+# ==========================================
+# BƯỚC PHÒNG THỦ: ÉP CHUẨN HÓA CỘT 'TICKER' TRƯỚC KHI VÀO TABS
+# ==========================================
+
+# 1. Ép viết thường toàn bộ tên cột của df_raw
+df_raw.columns = [str(c).lower().strip() for c in df_raw.columns]
+
+# 2. Nếu mã cổ phiếu đang là index, đẩy nó ra thành cột
+if df_raw.index.name is not None and str(df_raw.index.name).lower().strip() in ['ticker', 'symbol', 'ma_ck', 'code']:
+    df_raw = df_raw.reset_index()
+
+# 3. Đổi các tên phổ biến thành 'ticker'
+for col in ['symbol', 'ma_ck', 'mack', 'stock_code', 'code']:
+    if col in df_raw.columns:
+        df_raw = df_raw.rename(columns={col: 'ticker'})
+        break
+
+# 4. Kiểm tra xem df_ml_clean đã có 'ticker' chưa, nếu chưa thì tạo lại an toàn
+if 'df_ml_clean' not in locals() or 'ticker' not in df_ml_clean.columns:
+    feature_cols = ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']
+    existing_features = [col for col in feature_cols if col in df_raw.columns]
+    
+    if existing_features and 'ticker' in df_raw.columns:
+        df_ml = df_raw.sort_values("report_period").groupby("ticker").last().reset_index()
+        df_ml_clean = df_ml.dropna(subset=existing_features).copy()
+        if len(df_ml_clean) >= 3:
+            from sklearn.preprocessing import StandardScaler
+            scaled_features = StandardScaler().fit_transform(df_ml_clean[existing_features])
+        else:
+            scaled_features = None
+    else:
+        df_ml_clean = pd.DataFrame()
+        scaled_features = None
+
+
 # ==========================================
 # 4. KHU VỰC TABS PHÂN TÍCH
 # ==========================================
@@ -380,9 +383,8 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
 ])
 
 
-
 # ==========================================
-# TAB 1: TỔNG QUAN & DUPONT (CAFEF STYLE)
+# TAB 1: TỔNG QUAN 
 # ==========================================
 
 with tab1:
@@ -579,53 +581,66 @@ with tab1:
 # ==========================================
 # TAB 2: PHÂN CỤM ML (K-MEANS)
 # ==========================================
-
-
 with tab2:
     st.markdown("### 🤖 Phân Cụm Ngành & Doanh Nghiệp (K-Means)")
     
-    # Kiểm tra điều kiện dữ liệu
-    if len(df_ml_clean) >= k_clusters and scaled_features is not None:
-        
-        # 1. Khởi tạo và huấn luyện mô hình K-Means
-        kmeans = KMeans(n_clusters=k_clusters, random_state=42, n_init='auto')
-        cluster_labels = kmeans.fit_predict(scaled_features)
-        df_ml_clean['Cluster'] = ["Cụm " + str(c) for c in cluster_labels]
-        
-        # Đánh giá chất lượng phân cụm
-        sil_score = silhouette_score(scaled_features, cluster_labels)
-        st.caption(f"**Chỉ số Silhouette Score:** {sil_score:.2f} *(Càng gần 1.0 thì các cụm phân tách càng tốt)*")
-        
-        # 2. Giảm chiều dữ liệu với PCA
-        pca = PCA(n_components=2)
-        pca_t = pca.fit_transform(scaled_features)
-        df_ml_clean['PCA_1'], df_ml_clean['PCA_2'] = pca_t[:, 0], pca_t[:, 1]
-        
-        # Tỷ lệ phương sai được giữ lại
-        var_ratio = pca.explained_variance_ratio_
-        
-        # 3. Trực quan hóa tương tác với Plotly
-        fig_pca = px.scatter(
-            df_ml_clean, x='PCA_1', y='PCA_2', color='Cluster',
-            hover_name='ticker', 
-            hover_data=feature_cols, # Hiển thị các chỉ số tài chính gốc khi hover
-            color_discrete_sequence=px.colors.qualitative.Bold,
-            title=f"Bản đồ Không gian Doanh nghiệp (Giữ lại {(var_ratio.sum()*100):.1f}% thông tin)",
-            labels={'PCA_1': f'Thành phần chính 1 ({var_ratio[0]:.1%})', 
-                    'PCA_2': f'Thành phần chính 2 ({var_ratio[1]:.1%})'}
-        )
-        fig_pca.update_traces(marker=dict(size=10, opacity=0.8, line=dict(width=0.5, color='White')))
-        # Giả sử hàm apply_custom_plotly_layout đã được định nghĩa ở file của bạn
-        st.plotly_chart(apply_custom_plotly_layout(fig_pca), use_container_width=True)
-        
-        # 4. Phân tích Xu hướng Ngành (Cluster Profiling)
-        st.markdown("#### 📊 Đặc trưng của từng Cụm (Trung vị)")
-        # Tính toán giá trị trung vị của các tính năng tài chính gốc theo từng cụm
-        cluster_summary = df_ml_clean.groupby('Cluster')[feature_cols].median().reset_index()
-        st.dataframe(cluster_summary.style.background_gradient(cmap='Blues'), use_container_width=True)
-        
-    else:
-        st.warning("⚠️ Lượng dữ liệu hiện tại không đủ hoặc bị lỗi tỷ lệ (scaler). Cần ít nhất dữ liệu của {} doanh nghiệp hợp lệ.".format(k_clusters))
+    try:
+        # Kiểm tra điều kiện dữ liệu hợp lệ
+        if not df_ml_clean.empty and 'ticker' in df_ml_clean.columns and scaled_features is not None and len(df_ml_clean) >= k_clusters:
+            
+            from sklearn.cluster import KMeans
+            from sklearn.decomposition import PCA
+            from sklearn.metrics import silhouette_score
+            import plotly.express as px
+            
+            # 1. Khởi tạo và huấn luyện mô hình K-Means
+            kmeans = KMeans(n_clusters=k_clusters, random_state=42, n_init='auto')
+            cluster_labels = kmeans.fit_predict(scaled_features)
+            df_ml_clean['Cluster'] = ["Cụm " + str(c) for c in cluster_labels]
+            
+            # Đánh giá chất lượng phân cụm
+            sil_score = silhouette_score(scaled_features, cluster_labels)
+            st.caption(f"**Chỉ số Silhouette Score:** {sil_score:.2f} *(Càng gần 1.0 thì các cụm phân tách càng tốt)*")
+            
+            # 2. Giảm chiều dữ liệu với PCA
+            pca = PCA(n_components=2)
+            pca_t = pca.fit_transform(scaled_features)
+            df_ml_clean['PCA_1'], df_ml_clean['PCA_2'] = pca_t[:, 0], pca_t[:, 1]
+            
+            # Tỷ lệ phương sai được giữ lại
+            var_ratio = pca.explained_variance_ratio_
+            
+            # 3. Trực quan hóa tương tác với Plotly
+            fig_pca = px.scatter(
+                df_ml_clean, x='PCA_1', y='PCA_2', color='Cluster',
+                hover_name='ticker', 
+                hover_data=existing_features, # Sử dụng existing_features để tránh lỗi cột không tồn tại
+                color_discrete_sequence=px.colors.qualitative.Bold,
+                title=f"Bản đồ Không gian Doanh nghiệp (Giữ lại {(var_ratio.sum()*100):.1f}% thông tin)",
+                labels={'PCA_1': f'Thành phần chính 1 ({var_ratio[0]:.1%})', 
+                        'PCA_2': f'Thành phần chính 2 ({var_ratio[1]:.1%})'}
+            )
+            fig_pca.update_traces(marker=dict(size=10, opacity=0.8, line=dict(width=0.5, color='White')))
+            
+            # Nếu bạn có hàm apply_custom_plotly_layout thì dùng, nếu không thì dùng fig_pca trực tiếp
+            try:
+                st.plotly_chart(apply_custom_plotly_layout(fig_pca), use_container_width=True)
+            except NameError:
+                st.plotly_chart(fig_pca, use_container_width=True)
+            
+            # 4. Phân tích Xu hướng Ngành (Cluster Profiling)
+            st.markdown("#### 📊 Đặc trưng của từng Cụm (Trung vị)")
+            # Tính toán giá trị trung vị của các tính năng tài chính gốc theo từng cụm
+            cluster_summary = df_ml_clean.groupby('Cluster')[existing_features].median().reset_index()
+            st.dataframe(cluster_summary.style.background_gradient(cmap='Blues'), use_container_width=True)
+            
+        else:
+            st.warning(f"⚠️ Lượng dữ liệu hiện tại không đủ hoặc bị lỗi tỷ lệ. Cần ít nhất dữ liệu của {k_clusters} doanh nghiệp hợp lệ để chạy K-Means.")
+            if 'ticker' not in df_ml_clean.columns:
+                st.info("💡 Bảng df_ml_clean hiện không có cột 'ticker'. Hãy kiểm tra lại luồng dữ liệu gốc.")
+                
+    except Exception as e:
+        st.error(f"❌ Đã xảy ra lỗi trong quá trình phân cụm: {e}")
 
 # ==========================================
 
