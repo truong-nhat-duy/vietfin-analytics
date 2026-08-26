@@ -2181,3 +2181,171 @@
 2026-08-26 14:57:54,901 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for NPM123021: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
 2026-08-26 14:57:54,901 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for NPM123021: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
 2026-08-26 14:57:54,901 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for NPM123021: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:58:24,111 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for NPM123021: RetryError[<Future at 0x1e8e752f4a0 state=finished raised ValueError>]
+2026-08-26 14:58:24,126 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for NPM123022: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:58:24,126 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for NPM123022: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:58:24,141 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for NPM123022: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:58:24,141 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for NPM123022: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 14:58:24,141 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for NPM123022: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:58:54,266 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for NPM123022: RetryError[<Future at 0x1e8e78d2120 state=finished raised ValueError>]
+2026-08-26 14:58:54,270 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for NPM123023: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:58:54,270 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for NPM123023: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:58:54,282 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for NPM123023: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:58:54,282 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for NPM123023: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 14:58:54,282 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for NPM123023: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:20,788 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for NPM123023: RetryError[<Future at 0x1e8e79b7bf0 state=finished raised ValueError>]
+2026-08-26 14:59:20,791 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for NPM123024: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:20,806 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for NPM123024: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:20,806 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for NPM123024: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:20,806 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for NPM123024: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 14:59:20,806 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for NPM123024: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:44,620 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for NPM123024: RetryError[<Future at 0x1e8e61307a0 state=finished raised ValueError>]
+2026-08-26 14:59:44,867 INFO vietfin.scripts.collect_corporate_info: Progress 1275/1970 tickers | {'ok': 0, 'empty': 2, 'error': 1728, 'skipped': 4645}
+2026-08-26 14:59:44,883 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for NVL122001: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:44,883 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for NVL122001: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:44,898 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for NVL122001: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:44,898 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for NVL122001: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 14:59:44,898 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for NVL122001: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:45,187 INFO vietfin.scripts.collect_corporate_info: Progress 1300/1970 tickers | {'ok': 0, 'empty': 2, 'error': 1732, 'skipped': 4766}
+2026-08-26 14:59:47,557 INFO vietfin.scripts.collect_corporate_info: Progress 1325/1970 tickers | {'ok': 0, 'empty': 3, 'error': 1732, 'skipped': 4890}
+2026-08-26 14:59:47,851 INFO vietfin.scripts.collect_corporate_info: Progress 1350/1970 tickers | {'ok': 0, 'empty': 3, 'error': 1732, 'skipped': 5015}
+2026-08-26 14:59:48,160 INFO vietfin.scripts.collect_corporate_info: Progress 1375/1970 tickers | {'ok': 0, 'empty': 3, 'error': 1732, 'skipped': 5140}
+2026-08-26 14:59:48,528 INFO vietfin.scripts.collect_corporate_info: Progress 1400/1970 tickers | {'ok': 0, 'empty': 3, 'error': 1732, 'skipped': 5265}
+2026-08-26 14:59:48,907 INFO vietfin.scripts.collect_corporate_info: Progress 1425/1970 tickers | {'ok': 0, 'empty': 3, 'error': 1732, 'skipped': 5390}
+2026-08-26 14:59:49,221 INFO vietfin.scripts.collect_corporate_info: Progress 1450/1970 tickers | {'ok': 0, 'empty': 3, 'error': 1732, 'skipped': 5515}
+2026-08-26 14:59:49,551 INFO vietfin.scripts.collect_corporate_info: Progress 1475/1970 tickers | {'ok': 0, 'empty': 3, 'error': 1732, 'skipped': 5640}
+2026-08-26 14:59:49,872 INFO vietfin.scripts.collect_corporate_info: Progress 1500/1970 tickers | {'ok': 0, 'empty': 3, 'error': 1732, 'skipped': 5765}
+2026-08-26 14:59:50,172 INFO vietfin.scripts.collect_corporate_info: Progress 1525/1970 tickers | {'ok': 0, 'empty': 3, 'error': 1732, 'skipped': 5890}
+2026-08-26 14:59:50,250 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for SHB125010: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:50,266 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for SHB125010: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:50,266 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for SHB125010: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:50,266 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for SHB125010: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 14:59:50,266 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for SHB125010: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:50,281 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for SHB125017: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:50,281 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for SHB125017: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:50,281 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for SHB125017: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:50,281 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for SHB125017: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 14:59:50,297 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for SHB125017: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:50,517 INFO vietfin.scripts.collect_corporate_info: Progress 1550/1970 tickers | {'ok': 0, 'empty': 3, 'error': 1740, 'skipped': 6007}
+2026-08-26 14:59:50,838 INFO vietfin.scripts.collect_corporate_info: Progress 1575/1970 tickers | {'ok': 0, 'empty': 3, 'error': 1740, 'skipped': 6132}
+2026-08-26 14:59:51,152 INFO vietfin.scripts.collect_corporate_info: Progress 1600/1970 tickers | {'ok': 0, 'empty': 3, 'error': 1740, 'skipped': 6257}
+2026-08-26 14:59:51,997 INFO vietfin.scripts.collect_corporate_info: Progress 1625/1970 tickers | {'ok': 0, 'empty': 4, 'error': 1740, 'skipped': 6381}
+2026-08-26 14:59:52,060 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for TCX126011: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:52,076 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for TCX126011: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:52,076 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for TCX126011: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 14:59:52,076 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for TCX126011: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 14:59:52,076 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for TCX126011: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:18,542 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for TCX126011: RetryError[<Future at 0x1e8e79e8200 state=finished raised ValueError>]
+2026-08-26 15:00:18,637 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for TDP124010: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:18,645 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for TDP124010: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:18,645 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for TDP124010: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:18,645 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for TDP124010: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:00:18,653 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for TDP124010: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:18,791 INFO vietfin.scripts.collect_corporate_info: Progress 1650/1970 tickers | {'ok': 0, 'empty': 4, 'error': 1749, 'skipped': 6497}
+2026-08-26 15:00:19,113 INFO vietfin.scripts.collect_corporate_info: Progress 1675/1970 tickers | {'ok': 0, 'empty': 4, 'error': 1749, 'skipped': 6622}
+2026-08-26 15:00:19,157 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for TMS426010: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:19,176 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for TMS426010: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:19,176 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for TMS426010: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:19,176 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for TMS426010: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:00:19,176 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for TMS426010: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:41,980 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for TMS426010: RetryError[<Future at 0x1e8e60ed1c0 state=finished raised ValueError>]
+2026-08-26 15:00:42,080 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for TNG124027: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:42,090 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for TNG124027: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:42,090 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for TNG124027: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:42,090 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for TNG124027: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:00:42,090 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for TNG124027: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:00:42,241 INFO vietfin.scripts.collect_corporate_info: Progress 1700/1970 tickers | {'ok': 0, 'empty': 4, 'error': 1758, 'skipped': 6738}
+2026-08-26 15:00:42,592 INFO vietfin.scripts.collect_corporate_info: Progress 1725/1970 tickers | {'ok': 0, 'empty': 4, 'error': 1758, 'skipped': 6863}
+2026-08-26 15:00:43,005 INFO vietfin.scripts.collect_corporate_info: Progress 1750/1970 tickers | {'ok': 0, 'empty': 4, 'error': 1758, 'skipped': 6988}
+2026-08-26 15:01:06,962 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for UTT: RetryError[<Future at 0x1e8e78d37a0 state=finished raised ValueError>]
+2026-08-26 15:01:07,526 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VAB125020: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:01:07,531 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VAB125020: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:01:07,535 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VAB125020: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:01:07,535 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VAB125020: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:01:07,540 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VAB125020: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:01:42,158 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for VAB125020: RetryError[<Future at 0x1e8e65d3470 state=finished raised ValueError>]
+2026-08-26 15:01:42,172 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VAB125029: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:01:42,174 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VAB125029: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:01:42,190 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VAB125029: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:01:42,190 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VAB125029: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:01:42,237 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VAB125029: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:10,141 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for VAB125029: RetryError[<Future at 0x1e8e791af00 state=finished raised ValueError>]
+2026-08-26 15:02:10,141 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VAB125034: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:10,141 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VAB125034: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:10,141 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VAB125034: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:10,141 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VAB125034: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:02:10,157 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VAB125034: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,820 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for VAB125034: RetryError[<Future at 0x1e8e5a81130 state=finished raised ValueError>]
+2026-08-26 15:02:33,867 INFO vietfin.scripts.collect_corporate_info: Progress 1775/1970 tickers | {'ok': 0, 'empty': 6, 'error': 1774, 'skipped': 7095}
+2026-08-26 15:02:33,883 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VBA121033: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,899 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VBA121033: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,899 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VBA121033: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,899 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VBA121033: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:02:33,899 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VBA121033: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,914 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VBA123036: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,914 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VBA123036: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,914 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VBA123036: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,914 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VBA123036: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:02:33,914 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VBA123036: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,930 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VBA124019: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,930 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VBA124019: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,930 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VBA124019: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,930 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VBA124019: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:02:33,948 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VBA124019: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,948 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VBA125019: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,948 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VBA125019: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,962 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VBA125019: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:02:33,962 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VBA125019: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:02:33,962 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VBA125019: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:01,955 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for VBA125019: RetryError[<Future at 0x1e8e752c3b0 state=finished raised ValueError>]
+2026-08-26 15:03:01,970 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VBB124007: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:01,970 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VBB124007: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:01,986 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VBB124007: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:01,986 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VBB124007: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:03:01,986 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VBB124007: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:02,208 INFO vietfin.scripts.collect_corporate_info: Progress 1800/1970 tickers | {'ok': 0, 'empty': 6, 'error': 1795, 'skipped': 7199}
+2026-08-26 15:03:02,224 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VCK125005: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:02,224 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VCK125005: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:02,224 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VCK125005: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:02,224 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VCK125005: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:03:02,239 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VCK125005: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:26,574 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for VCK125005: RetryError[<Future at 0x1e8e791ba40 state=finished raised ValueError>]
+2026-08-26 15:03:26,885 INFO vietfin.scripts.collect_corporate_info: Progress 1825/1970 tickers | {'ok': 0, 'empty': 6, 'error': 1800, 'skipped': 7319}
+2026-08-26 15:03:27,135 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VHM121025: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,135 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VHM121025: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,150 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VHM121025: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,150 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VHM121025: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:03:27,152 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VHM121025: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,186 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VIC124003: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,186 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VIC124003: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,186 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VIC124003: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,186 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VIC124003: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:03:27,201 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VIC124003: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,236 INFO vietfin.scripts.collect_corporate_info: Progress 1850/1970 tickers | {'ok': 0, 'empty': 6, 'error': 1808, 'skipped': 7436}
+2026-08-26 15:03:27,236 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VIC124005: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,236 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VIC124005: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,248 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VIC124005: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,248 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VIC124005: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:03:27,253 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VIC124005: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,571 INFO vietfin.scripts.collect_corporate_info: Progress 1875/1970 tickers | {'ok': 0, 'empty': 6, 'error': 1812, 'skipped': 7557}
+2026-08-26 15:03:27,654 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VND125032: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,654 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VND125032: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,666 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VND125032: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:27,666 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VND125032: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:03:27,668 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VND125032: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:50,678 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch price history for VND125032: RetryError[<Future at 0x1e8e784db20 state=finished raised ValueError>]
+2026-08-26 15:03:50,678 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VND125033: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:50,692 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VND125033: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:50,697 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VND125033: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:50,698 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VND125033: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:03:50,702 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VND125033: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:50,911 INFO vietfin.scripts.collect_corporate_info: Progress 1900/1970 tickers | {'ok': 0, 'empty': 6, 'error': 1821, 'skipped': 7673}
+2026-08-26 15:03:50,995 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch overview for VPI124001: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:50,995 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch shareholders for VPI124001: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:50,995 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch VCI officers for VPI124001: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:50,995 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch KBS officers for VPI124001: Mã CK không h\u1ee3p l\u1ec7 ho\u1eb7c không ph\u1ea3i c\u1ed5 phi\u1ebfu.
+2026-08-26 15:03:51,011 WARNING vietfin.ingestion.vnstock_corporate: Failed to fetch ratio_summary for VPI124001: Mã ch\u1ee9ng khoán không h\u1ee3p l\u1ec7. Ch\u1ec9 c\u1ed5 phi\u1ebfu m\u1edbi có thông tin.
+2026-08-26 15:03:51,261 INFO vietfin.scripts.collect_corporate_info: Progress 1925/1970 tickers | {'ok': 0, 'empty': 6, 'error': 1825, 'skipped': 7794}
+2026-08-26 15:03:51,612 INFO vietfin.scripts.collect_corporate_info: Progress 1950/1970 tickers | {'ok': 0, 'empty': 6, 'error': 1825, 'skipped': 7919}
+2026-08-26 15:03:51,896 INFO vietfin.scripts.collect_corporate_info: Progress 1970/1970 tickers | {'ok': 0, 'empty': 6, 'error': 1825, 'skipped': 8019}
+2026-08-26 15:03:51,937 INFO vietfin.scripts.collect_corporate_info: Done. duration_s=1179 {'ok': 0, 'empty': 6, 'error': 1825, 'skipped': 8019} manifest=data\bronze\corporate_manifest.parquet
