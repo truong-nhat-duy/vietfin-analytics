@@ -1,26 +1,27 @@
-import os
 import duckdb
 
-# 1. Điền MotherDuck Token của bạn vào đây (hoặc đặt biến môi trường MOTHERDUCK_TOKEN)
-MOTHERDUCK_TOKEN = "CHEP_TOKEN_CUA_BAN_VAO_DAY"
-DATABASE_NAME = "vietfin_db"  # Tên Database trên Cloud
-PARQUET_PATH = "data/silver/financial_statements_long.parquet" # Đường dẫn file Parquet local
+# Đường dẫn DB cục bộ và Token MotherDuck
+LOCAL_DB_PATH = r"D:\vietfin\data\vietfin_gold.duckdb"
+MOTHERDUCK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRydW9uZ25oYXRkdXlAZ21haWwuY29tIiwibWRSZWdpb24iOiJhd3MtYXAtbm9ydGhlYXN0LTEiLCJzZXNzaW9uIjoidHJ1b25nbmhhdGR1eS5nbWFpbC5jb20iLCJwYXQiOiJET0ZaRjRMVWJfTWIyWG1ScEJGd3ZvQU05RVljMEZlZ0dKUE5FQWIwbGc0IiwidXNlcklkIjoiYzAxMDM4NzItMjljOS00MDMyLTljZGMtNGQ3NzVjOWFjZmM3IiwiaXNzIjoibWRfcGF0IiwicmVhZE9ubHkiOmZhbHNlLCJ0b2tlblR5cGUiOiJyZWFkX3dyaXRlIiwiaWF0IjoxNzg3NTY4OTQ3fQ.vqbt25sKhTTLBmeffS-AXC57Yfs5ooInwVQZ9nXjgug"
 
-def upload_parquet_to_cloud():
-    # Khởi tạo kết nối tới MotherDuck
-    con = duckdb.connect(f"md:{DATABASE_NAME}?token={MOTHERDUCK_TOKEN}")
+print("--- Đang kết nối tới MotherDuck Cloud ---")
+# Kết nối đồng thời DB local và DB MotherDuck
+con = duckdb.connect(f"md:vietfin_db?token={MOTHERDUCK_TOKEN}")
+con.execute(f"ATTACH '{LOCAL_DB_PATH}' AS local_db;")
 
-    print(f"Đang đẩy file {PARQUET_PATH} lên MotherDuck Cloud...")
+# Danh sách các bảng Gold
+tables = [
+    "dim_company",
+    "dim_officers",
+    "dim_shareholders",
+    "fact_daily_prices",
+    "fact_ratio_summary",
+    "fact_financials",
+]
 
-    # Tạo bảng mới (hoặc ghi đè) trực tiếp từ file Parquet local
-    con.execute(f"""
-        CREATE OR REPLACE TABLE silver_financial_statements AS 
-        SELECT * FROM read_parquet('{PARQUET_PATH}');
-    """)
+for t in tables:
+    print(f"Đang đồng bộ bảng {t} lên MotherDuck...")
+    con.execute(f"CREATE OR REPLACE TABLE vietfin_db.main.{t} AS SELECT * FROM local_db.main.{t};")
 
-    # Kiểm tra số bản ghi đã tải lên
-    result = con.execute("SELECT COUNT(*) FROM silver_financial_statements").fetchone()
-    print(f"Thành công! Đã đẩy {result[0]:,} dòng lên bảng 'silver_financial_statements' trên Cloud.")
-
-if __name__ == "__main__":
-    upload_parquet_to_cloud()
+print("✅ ĐÃ ĐỒNG BỘ TOÀN BỘ CƠ SỞ DỮ LIỆU LÊN MOTHERDUCK CLOUD THÀNH CÔNG!")
+con.close()

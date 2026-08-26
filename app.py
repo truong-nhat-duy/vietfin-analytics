@@ -14,6 +14,7 @@ from sklearn.ensemble import IsolationForest, RandomForestClassifier
 # ==========================================
 # 1. CẤU HÌNH TRANG & THIẾT KẾ ĐỒ HỌA (CSS)
 # ==========================================
+
 st.set_page_config(
     page_title="VietFin Intelligence | Quant & Corporate",
     page_icon="💠",
@@ -90,7 +91,7 @@ def apply_custom_plotly_layout(fig):
     return fig
 
 # ==========================================
-# 2. KẾT NỐI DỮ LIỆU THỰC TẾ
+# 2. KẾT NỐI DỮ LIỆU MOTHERDUCK (GOLD LAYER)
 # ==========================================
 load_dotenv()
 try:
@@ -99,7 +100,7 @@ except Exception:
     md_token = os.getenv("MOTHERDUCK_TOKEN")
 
 if not md_token:
-    st.error("❌ Chưa cấu hình MOTHERDUCK_TOKEN")
+    st.error("❌ Chưa cấu hình MOTHERDUCK_TOKEN trong secrets hoặc .env")
     st.stop()
 
 @st.cache_resource
@@ -111,38 +112,74 @@ con = get_db_connection()
 @st.cache_data(ttl=1800)
 def load_gold_ratios():
     try:
-        return con.execute("""
-            SELECT ticker, report_period, net_revenue, net_income, roe_pct, roa_pct, 
-                   debt_to_equity, gross_margin_pct, net_margin_pct
-            FROM gold_financial_ratios
-        """).df()
-    except: return pd.DataFrame()
+        # Cập nhật query từ bảng fact_ratio_summary
+        df = con.execute("SELECT * FROM fact_ratio_summary").df()
+        
+        # Đồng bộ tên cột nếu có sự lệch tiêu đề từ nguồn raw
+        col_map = {
+            'year': 'report_period', 'period': 'report_period',
+            'roe': 'roe_pct', 'roa': 'roa_pct',
+            'netMargin': 'net_margin_pct', 'grossMargin': 'gross_margin_pct',
+            'debtEquity': 'debt_to_equity'
+        }
+        df = df.rename(columns=col_map)
+        
+        # Đảm bảo có đủ các cột cần thiết cho ML
+        for c in ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct', 'net_revenue', 'net_income']:
+            if c not in df.columns:
+                df[c] = np.nan
+        if 'report_period' not in df.columns:
+            df['report_period'] = "Q/Y"
+        return df
+    except Exception as e:
+        return pd.DataFrame()
+
+@st.cache_data(ttl=1800)
+def load_financial_statements(ticker):
+    try:
+        # Truy vấn dữ liệu BCTC chuẩn hóa từ bảng fact_financials
+        return con.execute(f"SELECT * FROM fact_financials WHERE ticker = '{ticker}'").df()
+    except Exception:
+        return pd.DataFrame()
+
 
 @st.cache_data(ttl=1800)
 def load_corporate_overview():
-    try: return con.execute("SELECT * FROM gold_corporate_overview").df()
-    except: return pd.DataFrame()
+    try:
+        # Cập nhật query từ bảng dim_company
+        return con.execute("SELECT * FROM dim_company").df()
+    except Exception:
+        return pd.DataFrame()
 
 @st.cache_data(ttl=1800)
 def load_shareholders(ticker):
-    try: return con.execute(f"SELECT * FROM gold_corporate_shareholders WHERE ticker = '{ticker}'").df()
-    except: return pd.DataFrame()
+    try:
+        # Cập nhật query từ bảng dim_shareholders
+        return con.execute(f"SELECT * FROM dim_shareholders WHERE ticker = '{ticker}'").df()
+    except Exception:
+        return pd.DataFrame()
 
 @st.cache_data(ttl=1800)
 def load_officers(ticker):
-    try: return con.execute(f"SELECT * FROM gold_corporate_officers WHERE ticker = '{ticker}'").df()
-    except: return pd.DataFrame()
+    try:
+        # Cập nhật query từ bảng dim_officers
+        return con.execute(f"SELECT * FROM dim_officers WHERE ticker = '{ticker}'").df()
+    except Exception:
+        return pd.DataFrame()
 
 @st.cache_data(ttl=1800)
 def load_price_history(ticker):
-    try: return con.execute(f"SELECT * FROM gold_corporate_price_history WHERE ticker = '{ticker}'").df()
-    except: return pd.DataFrame()
+    try:
+        # Cập nhật query từ bảng fact_daily_prices
+        return con.execute(f"SELECT * FROM fact_daily_prices WHERE ticker = '{ticker}'").df()
+    except Exception:
+        return pd.DataFrame()
 
 df_raw = load_gold_ratios()
 df_profile = load_corporate_overview()
 
 if df_raw.empty:
-    st.warning("⚠️ Chưa nạp được dữ liệu từ MotherDuck. Vui lòng kiểm tra lại kết nối kho dữ liệu.")
+    st.warning("⚠️ Chưa nạp được dữ liệu từ kho MotherDuck (fact_ratio_summary). Vui lòng kiểm tra lại kết nối đồng bộ.")
     st.stop()
 
 # ==========================================
@@ -167,11 +204,11 @@ with st.sidebar:
         st.rerun()
 
 st.markdown(f"<h2>📊 Bảng Điều Khiển Tài Chính: <span style='color:#1e3a8a'>{selected_ticker}</span></h2>", unsafe_allow_html=True)
-st.caption("Truy xuất thời gian thực từ MotherDuck Data Warehouse")
+st.caption("Truy xuất thời gian thực từ MotherDuck Data Warehouse (Gold Layer)")
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ==========================================
-# 4. KHU VỰC TABS
+# 4. KHU VỰC TABS PHÂN TÍCH
 # ==========================================
 tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "🎯 Tổng Quan & DuPont", 
@@ -183,7 +220,9 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "👥 Quản Trị & Cổ Đông"
 ])
 
-# TAB 1: TỔNG QUAN
+# ==========================================
+
+# TAB 1: TỔNG QUAN & DUPONT
 with tab1:
     df_ticker = df_raw[df_raw['ticker'] == selected_ticker].sort_values("report_period").copy()
     
@@ -192,7 +231,7 @@ with tab1:
         
         p_row = df_profile[df_profile['ticker'] == selected_ticker] if not df_profile.empty and 'ticker' in df_profile.columns else pd.DataFrame()
         p_name = p_row.iloc[0].get('company_name', f"Công ty CP {selected_ticker}") if not p_row.empty else f"Công ty CP {selected_ticker}"
-        p_tax = p_row.iloc[0].get('tax_code', 'N/A') if not p_row.empty else "N/A"
+        p_tax = p_row.iloc[0].get('tax_id', p_row.iloc[0].get('tax_code', 'N/A')) if not p_row.empty else "N/A"
         p_ind = p_row.iloc[0].get('industry', 'N/A') if not p_row.empty else "N/A"
         p_web = p_row.iloc[0].get('website', 'N/A') if not p_row.empty else "N/A"
 
@@ -239,6 +278,8 @@ with tab1:
         st.markdown(f"Kỳ **{latest['report_period']}**: ROE = **{latest.get('roe_pct', 0):.2f}%** | ROA = **{latest.get('roa_pct', 0):.2f}%** | Đòn bẩy = **{(1 + de_val):.2f}x**")
         st.markdown("</div>", unsafe_allow_html=True)
 
+# ==========================================
+
 # LÀM SẠCH DỮ LIỆU CHO ML
 feature_cols = ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']
 df_ml = df_raw.sort_values("report_period").groupby("ticker").last().reset_index()
@@ -248,7 +289,9 @@ scaled_features = None
 if len(df_ml_clean) > 0:
     scaled_features = StandardScaler().fit_transform(df_ml_clean[feature_cols])
 
-# TAB 2: PHÂN CỤM ML (ĐÃ SỬA LỖI SIZES)
+# ==========================================
+
+# TAB 2: PHÂN CỤM ML (K-MEANS)
 with tab2:
     st.markdown("### 🤖 Phân Cụm Ngành & Doanh Nghiệp (K-Means)")
     if len(df_ml_clean) >= k_clusters and scaled_features is not None:
@@ -256,7 +299,6 @@ with tab2:
         pca_t = PCA(n_components=2).fit_transform(scaled_features)
         df_ml_clean['PCA_1'], df_ml_clean['PCA_2'] = pca_t[:, 0], pca_t[:, 1]
         
-        # Đã loại bỏ size='roe_pct' gây ra lỗi ValueError khi có chỉ số âm
         fig_pca = px.scatter(
             df_ml_clean, x='PCA_1', y='PCA_2', color='Cluster',
             hover_name='ticker', hover_data=feature_cols,
@@ -266,6 +308,8 @@ with tab2:
         st.plotly_chart(apply_custom_plotly_layout(fig_pca), use_container_width=True)
     else:
         st.info("Chưa đủ số lượng dữ liệu doanh nghiệp để phân cụm.")
+
+# ==========================================
 
 # TAB 3: ISOLATION FOREST
 with tab3:
@@ -292,20 +336,118 @@ with tab3:
     else:
         st.info("Chưa đủ dữ liệu để mô hình hóa bất thường.")
 
-# TAB 4: RAW DATA
+# ==========================================
+
+# TAB 4: BÁO CÁO TÀI CHÍNH CHUẨN HÓA (CAFEF STYLE)
 with tab4:
-    st.markdown("### 📋 Kho Dữ Liệu Thô (Gold Financial Ratios)")
-    st.dataframe(df_raw[df_raw['ticker'] == selected_ticker] if selected_ticker else df_raw, use_container_width=True)
+    st.markdown(f"### 📋 Báo Cáo Tài Chính Chuẩn Hóa ({selected_ticker})")
+    
+    # Bộ lọc Đơn vị tính (Rút gọn cách thể hiện)
+    unit_option = st.radio(
+        "Đơn vị tính:", 
+        options=["Giá trị gốc", "Triệu VNĐ", "Tỷ VNĐ"], 
+        horizontal=True,
+        index=2 # Mặc định chọn Tỷ VNĐ cho gọn (giống CafeF)
+    )
+    
+    unit_divider = 1
+    if unit_option == "Triệu VNĐ":
+        unit_divider = 1_000_000
+    elif unit_option == "Tỷ VNĐ":
+        unit_divider = 1_000_000_000
+
+    df_fin_all = load_financial_statements(selected_ticker)
+    
+    if not df_fin_all.empty:
+        fin_tab1, fin_tab2, fin_tab3, fin_tab4 = st.tabs([
+            "🏛️ Bảng Cân Đối Kế Toán", 
+            "📊 Kết Quả Kinh Doanh", 
+            "💸 Lưu Chuyển Tiền Tệ",
+            "🔢 Chỉ Số Tài Chính Thô"
+        ])
+        
+        # Hàm format số liệu chuẩn Việt Nam (1.000.000,50)
+        def format_vn_number(val):
+            if pd.isna(val): return ""
+            try:
+                v = float(val)
+                # Giữ 2 chữ số thập phân nếu có số lẻ, ngược lại làm tròn
+                s = f"{v:,.2f}" if v % 1 != 0 else f"{v:,.0f}"
+                if s.endswith(".00"): s = s[:-3]
+                # Đổi định dạng US (,) thành VN (.) và ngược lại
+                return s.replace(",", "X").replace(".", ",").replace("X", ".")
+            except:
+                return val
+
+        def render_statement(df_source, keyword_list):
+            # Lọc theo loại Báo cáo tài chính
+            type_col = next((c for c in df_source.columns if c.lower() in ['dataset', 'type', 'statement_type', 'report_type', 'path']), None)
+            
+            if type_col:
+                mask = df_source[type_col].astype(str).str.lower().apply(lambda x: any(k in x for k in keyword_list))
+                filtered_df = df_source[mask].copy()
+            else:
+                filtered_df = df_source.copy()
+            
+            if not filtered_df.empty:
+                disp_df = filtered_df.dropna(how='all', axis=1)
+                
+                # Ẩn các cột hệ thống không cần thiết hiển thị
+                cols_to_drop = ['ticker', type_col, 'dataset']
+                disp_df = disp_df.drop(columns=[c for c in cols_to_drop if c and c in disp_df.columns])
+                
+                # Xác định các cột số liệu (loại trừ các cột năm/kỳ để không bị chia nhỏ)
+                ignore_cols = ['year', 'period', 'quarter', 'month', 'id']
+                numeric_cols = [c for c in disp_df.select_dtypes(include=['number']).columns if not any(ign in c.lower() for ign in ignore_cols)]
+                
+                # Áp dụng chia Đơn vị tính và Format chuẩn VN
+                for col in numeric_cols:
+                    if unit_divider != 1:
+                        disp_df[col] = disp_df[col] / unit_divider
+                    disp_df[col] = disp_df[col].apply(format_vn_number)
+                
+                st.dataframe(disp_df, use_container_width=True, hide_index=True)
+            else:
+                st.info("Chưa tìm thấy dữ liệu chi tiết cho mục này.")
+
+        with fin_tab1:
+            st.markdown("#### 🏛️ Bảng Cân Đối Kế Toán (Balance Sheet)")
+            render_statement(df_fin_all, ['balance_sheet', 'balance', 'bs', 'can_doi'])
+
+        with fin_tab2:
+            st.markdown("#### 📊 Báo Cáo Kết Quả Hoạt Động Kinh Doanh (Income Statement)")
+            render_statement(df_fin_all, ['income_statement', 'income', 'is', 'ket_qua'])
+
+        with fin_tab3:
+            st.markdown("#### 💸 Báo Cáo Lưu Chuyển Tiền Tệ (Cash Flow)")
+            render_statement(df_fin_all, ['cash_flow', 'cashflow', 'cf', 'luu_chuyen'])
+
+        with fin_tab4:
+            st.markdown("#### 🔢 Chỉ Số Tài Chính Thô (Gold Financial Ratios)")
+            df_raw_disp = df_raw[df_raw['ticker'] == selected_ticker].copy() if selected_ticker else df_raw.copy()
+            
+            num_cols = df_raw_disp.select_dtypes(include=['number']).columns
+            for col in num_cols:
+                # Với bảng tỷ số, ta chỉ format chuẩn VN, không chia Tỷ/Triệu vì đây đa phần là % hoặc hệ số
+                df_raw_disp[col] = df_raw_disp[col].apply(format_vn_number)
+            
+            st.dataframe(df_raw_disp, use_container_width=True, hide_index=True)
+    else:
+        st.info(f"Chưa có dữ liệu Báo cáo tài chính chi tiết cho mã {selected_ticker}.")
+
+# ==========================================
 
 # TAB 5: LỊCH SỬ GIÁ
 with tab5:
     st.markdown(f"### 📈 Lịch Sử Giá ({selected_ticker})")
     df_price = load_price_history(selected_ticker)
     
-    if not df_price.empty and 'close' in df_price.columns:
+    if not df_price.empty:
+        close_col = 'close' if 'close' in df_price.columns else [c for c in df_price.columns if 'price' in c.lower()][0]
         date_col = 'trading_date' if 'trading_date' in df_price.columns else df_price.columns[1]
+        
         df_price = df_price.sort_values(date_col)
-        df_price['daily_return'] = df_price['close'].pct_change()
+        df_price['daily_return'] = df_price[close_col].astype(float).pct_change()
         
         avg_rt = df_price['daily_return'].mean() * 252
         vol = df_price['daily_return'].std() * np.sqrt(252)
@@ -316,11 +458,13 @@ with tab5:
         c2.markdown(f"<div class='glass-card text-center'><b>Biến Động Giá</b><br><span style='font-size:1.8rem; color:#d97706'>{vol*100:.2f}%</span></div>", unsafe_allow_html=True)
         c3.markdown(f"<div class='glass-card text-center'><b>Sharpe Ratio</b><br><span style='font-size:1.8rem; color:#2563eb'>{sharpe:.2f}</span></div>", unsafe_allow_html=True)
 
-        fig_p = px.area(df_price, x=date_col, y='close')
+        fig_p = px.area(df_price, x=date_col, y=close_col)
         fig_p.update_traces(line_color='#0ea5e9', fillcolor='rgba(14, 165, 233, 0.1)')
         st.plotly_chart(apply_custom_plotly_layout(fig_p), use_container_width=True)
     else:
         st.info(f"Chưa có dữ liệu biến động giá cho mã {selected_ticker}.")
+
+# ==========================================
 
 # TAB 6: XẾP HẠNG TÍN DỤNG
 with tab6:
@@ -359,6 +503,8 @@ with tab6:
                 st.plotly_chart(apply_custom_plotly_layout(fig_imp), use_container_width=True)
     else: st.info("Không đủ dữ liệu để xếp hạng tín dụng.")
 
+# ==========================================
+
 # TAB 7: CỔ ĐÔNG & BỘ MÁY
 with tab7:
     st.markdown(f"### 👥 Cơ Cấu Cổ Đông & Ban Lãnh Đạo ({selected_ticker})")
@@ -370,7 +516,9 @@ with tab7:
         df_sh = load_shareholders(selected_ticker)
         if not df_sh.empty:
             name_col = next((c for c in df_sh.columns if 'name' in c.lower() or 'shareholder' in c.lower()), df_sh.columns[1])
-            pct_col = next((c for c in df_sh.columns if 'pct' in c.lower() or 'percent' in c.lower() or 'rate' in c.lower()), df_sh.columns[2])
+            pct_col = next((c for c in df_sh.columns if 'pct' in c.lower() or 'percent' in c.lower() or 'rate' in c.lower() or 'ratio' in c.lower()), df_sh.columns[-1])
+            
+            df_sh[pct_col] = pd.to_numeric(df_sh[pct_col], errors='coerce').fillna(0)
             df_sh_clean = df_sh[df_sh[pct_col] > 0]
             
             if not df_sh_clean.empty:
