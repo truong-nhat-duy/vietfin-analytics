@@ -11,6 +11,13 @@ from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.ensemble import IsolationForest, RandomForestClassifier
 
+import os
+import duckdb
+import pandas as pd
+import numpy as np
+from dotenv import load_dotenv
+import streamlit as st
+
 # ==========================================
 # 1. CẤU HÌNH TRANG & THIẾT KẾ ĐỒ HỌA (CSS)
 # ==========================================
@@ -22,59 +29,100 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Khởi tạo trạng thái ngôn ngữ mặc định nếu chưa có
+if "lang" not in st.session_state:
+    st.session_state.lang = "VI"
+
+# Giao diện CSS tùy biến nâng cao (Giao diện Dark/Light kết hợp phong cách Fintech Cao cấp)
 st.markdown("""
 <style>
+    @import url('https://googleapis.com');
+    
     .stApp { 
-        background-color: #f4f7f9; 
+        background-color: #f8fafc; 
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
+    
+    /* Thiết kế thanh Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: #0f172a !important;
+        color: #f8fafc !important;
+    }
+    [data-testid="stSidebar"] .stMarkdown p, [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h3 {
+        color: #f8fafc !important;
+    }
+    [data-testid="stSidebar"] hr {
+        border-color: #334155 !important;
+    }
+    
+    /* Thiết kế Tabs phong cách hiện đại */
     .stTabs [data-baseweb="tab-list"] { 
-        gap: 12px; 
+        gap: 8px; 
         border: none; 
-        padding-bottom: 5px; 
+        padding: 6px;
+        background-color: #e2e8f0;
+        border-radius: 12px;
     }
     .stTabs [data-baseweb="tab"] { 
-        background-color: #ffffff; 
+        background-color: transparent; 
         border-radius: 8px; 
-        padding: 10px 20px; 
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
-        border: 1px solid #e2e8f0; 
+        padding: 8px 16px; 
+        border: none !important;
         font-weight: 600; 
-        color: #64748b; 
-        transition: all 0.3s ease; 
+        color: #475569; 
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .stTabs [data-baseweb="tab"]:hover { border-color: #94a3b8; }
+    .stTabs [data-baseweb="tab"]:hover { 
+        color: #0f172a;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
     .stTabs [aria-selected="true"] { 
-        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important; 
-        color: white !important; 
-        border: none !important; 
-        box-shadow: 0 4px 10px rgba(59,130,246,0.3) !important; 
+        background: #ffffff !important; 
+        color: #0f172a !important; 
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important; 
     }
+    
+    /* Thẻ Glassmorphism cao cấp */
     .glass-card {
         background: #ffffff;
         border-radius: 16px;
         padding: 24px;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02), 0 4px 6px -4px rgba(0, 0, 0, 0.02), 0 0 0 1px rgba(15, 23, 42, 0.05);
         border: 1px solid rgba(226, 232, 240, 0.8);
         margin-bottom: 24px;
     }
+    
+    /* Khối hiển thị chỉ số Metric mới */
     .metric-container {
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        border-radius: 14px;
+        padding: 18px 22px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .metric-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; }
+    .metric-container:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 16px -4px rgba(0, 0, 0, 0.04);
+        border-color: #cbd5e1;
+    }
+    .metric-label { 
+        font-size: 0.75rem; 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        color: #64748b; 
+        letter-spacing: 0.06em; 
+    }
     .metric-value { 
-        font-size: 2.2rem; font-weight: 900; margin: 8px 0; 
-        background: -webkit-linear-gradient(45deg, #1e3a8a, #0ea5e9);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        font-size: 2rem; 
+        font-weight: 800; 
+        margin: 6px 0 0 0; 
+        color: #0f172a;
+        letter-spacing: -0.02em;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -83,12 +131,47 @@ def apply_custom_plotly_layout(fig):
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)', 
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Inter, sans-serif", color="#334155"),
+        font=dict(family="Inter, sans-serif", color="#475569"),
         margin=dict(l=20, r=20, t=40, b=20),
-        xaxis=dict(showgrid=False, zeroline=False),
-        yaxis=dict(showgrid=True, gridcolor='#f1f5f9', zeroline=False)
+        xaxis=dict(showgrid=False, zeroline=False, tickfont=dict(color='#64748b')),
+        yaxis=dict(showgrid=True, gridcolor='#f1f5f9', zeroline=False, tickfont=dict(color='#64748b')),
+        hovermode="x unified",
+        dragmode="pan"
     )
     return fig
+
+# Tối ưu hóa từ điển đa ngôn ngữ (Dictionary)
+DICT = {
+    "VI": {
+        "err_token": "❌ Chưa cấu hình MOTHERDUCK_TOKEN trong secrets hoặc .env",
+        "err_load": "⚠️ Chưa nạp được dữ liệu từ kho MotherDuck (fact_ratio_summary). Vui lòng kiểm tra lại kết nối đồng bộ.",
+        "sys_caption": "Hệ thống Phân tích Định lượng & ML",
+        "lbl_lang": "🌐 Ngôn ngữ / Language",
+        "lbl_ticker": "🔍 Mã Cổ Phiếu Phân Tích",
+        "lbl_ml_cfg": "⚙️ Cấu hình Machine Learning",
+        "lbl_k": "Số cụm K-Means",
+        "lbl_anomaly": "Ngưỡng bất thường (Anomaly)",
+        "btn_refresh": "🔄 Làm mới dữ liệu",
+        "header_title": "📊 Bảng Điều Khiển Tài Chính",
+        "header_caption": "Truy xuất thời gian thực từ MotherDuck Data Warehouse (Gold Layer)"
+    },
+    "EN": {
+        "err_token": "❌ MOTHERDUCK_TOKEN is missing in secrets or .env file",
+        "err_load": "⚠️ Failed to fetch data from MotherDuck (fact_ratio_summary). Please check connections.",
+        "sys_caption": "Quantitative & ML Analytics System",
+        "lbl_lang": "🌐 Language / Ngôn ngữ",
+        "lbl_ticker": "🔍 Select Ticker Symbol",
+        "lbl_ml_cfg": "⚙️ Machine Learning Config",
+        "lbl_k": "K-Means Cluster Count",
+        "lbl_anomaly": "Anomaly Contamination Threshold",
+        "btn_refresh": "🔄 Refresh Data Warehouse",
+        "header_title": "📊 Financial Intelligence Dashboard",
+        "header_caption": "Real-time query pipelines powered by MotherDuck (Gold Layer)"
+    }
+}
+
+# Lấy nhãn ngôn ngữ hiện tại để gán vào UI
+L = DICT[st.session_state.lang]
 
 # ==========================================
 # 2. KẾT NỐI DỮ LIỆU MOTHERDUCK (GOLD LAYER)
@@ -100,7 +183,7 @@ except Exception:
     md_token = os.getenv("MOTHERDUCK_TOKEN")
 
 if not md_token:
-    st.error("❌ Chưa cấu hình MOTHERDUCK_TOKEN trong secrets hoặc .env")
+    st.error(L["err_token"])
     st.stop()
 
 @st.cache_resource
@@ -112,10 +195,7 @@ con = get_db_connection()
 @st.cache_data(ttl=1800)
 def load_gold_ratios():
     try:
-        # Cập nhật query từ bảng fact_ratio_summary
         df = con.execute("SELECT * FROM fact_ratio_summary").df()
-        
-        # Đồng bộ tên cột nếu có sự lệch tiêu đề từ nguồn raw
         col_map = {
             'year': 'report_period', 'period': 'report_period',
             'roe': 'roe_pct', 'roa': 'roa_pct',
@@ -124,29 +204,25 @@ def load_gold_ratios():
         }
         df = df.rename(columns=col_map)
         
-        # Đảm bảo có đủ các cột cần thiết cho ML
         for c in ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct', 'net_revenue', 'net_income']:
             if c not in df.columns:
                 df[c] = np.nan
         if 'report_period' not in df.columns:
             df['report_period'] = "Q/Y"
         return df
-    except Exception as e:
+    except Exception:
         return pd.DataFrame()
 
 @st.cache_data(ttl=1800)
 def load_financial_statements(ticker):
     try:
-        # Truy vấn dữ liệu BCTC chuẩn hóa từ bảng fact_financials
         return con.execute(f"SELECT * FROM fact_financials WHERE ticker = '{ticker}'").df()
     except Exception:
         return pd.DataFrame()
 
-
 @st.cache_data(ttl=1800)
 def load_corporate_overview():
     try:
-        # Cập nhật query từ bảng dim_company
         return con.execute("SELECT * FROM dim_company").df()
     except Exception:
         return pd.DataFrame()
@@ -154,7 +230,6 @@ def load_corporate_overview():
 @st.cache_data(ttl=1800)
 def load_shareholders(ticker):
     try:
-        # Cập nhật query từ bảng dim_shareholders
         return con.execute(f"SELECT * FROM dim_shareholders WHERE ticker = '{ticker}'").df()
     except Exception:
         return pd.DataFrame()
@@ -162,7 +237,6 @@ def load_shareholders(ticker):
 @st.cache_data(ttl=1800)
 def load_officers(ticker):
     try:
-        # Cập nhật query từ bảng dim_officers
         return con.execute(f"SELECT * FROM dim_officers WHERE ticker = '{ticker}'").df()
     except Exception:
         return pd.DataFrame()
@@ -170,7 +244,6 @@ def load_officers(ticker):
 @st.cache_data(ttl=1800)
 def load_price_history(ticker):
     try:
-        # Cập nhật query từ bảng fact_daily_prices
         return con.execute(f"SELECT * FROM fact_daily_prices WHERE ticker = '{ticker}'").df()
     except Exception:
         return pd.DataFrame()
@@ -179,33 +252,54 @@ df_raw = load_gold_ratios()
 df_profile = load_corporate_overview()
 
 if df_raw.empty:
-    st.warning("⚠️ Chưa nạp được dữ liệu từ kho MotherDuck (fact_ratio_summary). Vui lòng kiểm tra lại kết nối đồng bộ.")
+    st.warning(L["err_load"])
     st.stop()
 
 # ==========================================
 # 3. SIDEBAR & HEADER
 # ==========================================
 with st.sidebar:
+    # 3.1. Chèn Logo từ Github Repository
+    # Thay 'username/repo/main/logo.png' bằng đường dẫn URL raw thực tế của bạn trên GitHub
+    logo_url = "https://githubusercontent.com"
+    st.image(logo_url, use_container_width=True)
+    
     st.title("VietFin Pro")
-    st.caption("Hệ thống Phân tích Định lượng & ML")
+    st.caption(L["sys_caption"])
     st.divider()
 
+    # 3.2. Bộ chuyển đổi cấu hình song ngữ độc lập
+    lang_choice = st.selectbox(
+        L["lbl_lang"], 
+        ["Tiếng Việt (VI)", "English (EN)"], 
+        index=0 if st.session_state.lang == "VI" else 1
+    )
+    new_lang = "VI" if "Tiếng Việt" in lang_choice else "EN"
+    if new_lang != st.session_state.lang:
+        st.session_state.lang = new_lang
+        st.rerun()
+
+    st.divider()
+
+    # 3.3. Các bộ lọc tham số dữ liệu đầu vào
     tickers = sorted(df_raw['ticker'].dropna().unique())
     default_idx = tickers.index("VNM") if "VNM" in tickers else 0
-    selected_ticker = st.selectbox("🔍 Mã Cổ Phiếu Phân Tích", tickers, index=default_idx)
+    selected_ticker = st.selectbox(L["lbl_ticker"], tickers, index=default_idx)
 
-    st.subheader("⚙️ Cấu hình Machine Learning")
-    k_clusters = st.slider("Số cụm K-Means", min_value=2, max_value=6, value=3)
-    contamination = st.slider("Ngưỡng bất thường (Anomaly)", min_value=1, max_value=15, value=5) / 100.0
+    st.subheader(L["lbl_ml_cfg"])
+    k_clusters = st.slider(L["lbl_k"], min_value=2, max_value=6, value=3)
+    contamination = st.slider(L["lbl_anomaly"], min_value=1, max_value=15, value=5) / 100.0
 
     st.divider()
-    if st.button("🔄 Làm mới dữ liệu", use_container_width=True):
+    if st.button(L["btn_refresh"], use_container_width=True):
         st.cache_data.clear()
         st.rerun()
 
-st.markdown(f"<h2>📊 Bảng Điều Khiển Tài Chính: <span style='color:#1e3a8a'>{selected_ticker}</span></h2>", unsafe_allow_html=True)
-st.caption("Truy xuất thời gian thực từ MotherDuck Data Warehouse (Gold Layer)")
+# Khu vực Header hiển thị chính ngoài Dashboard
+st.markdown(f"<h2>{L['header_title']}: <span style='color:#1e3a8a'>{selected_ticker}</span></h2>", unsafe_allow_html=True)
+st.caption(L["header_caption"])
 st.markdown("<br>", unsafe_allow_html=True)
+
 
 # ==========================================
 # 4. KHU VỰC TABS PHÂN TÍCH
