@@ -2,8 +2,14 @@ import os
 import duckdb
 import pandas as pd
 import numpy as np
-from dotenv import load_dotenv
 import streamlit as st
+import plotly.express as px
+import plotly.graph_objects as go
+from dotenv import load_dotenv
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+from sklearn.ensemble import IsolationForest, RandomForestClassifier
 
 # ==========================================
 # 1. CẤU HÌNH TRANG & THIẾT KẾ ĐỒ HỌA (CSS)
@@ -16,85 +22,70 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Khởi tạo trạng thái ngôn ngữ mặc định
+# Khởi tạo trạng thái ngôn ngữ mặc định nếu chưa có
 if "lang" not in st.session_state:
     st.session_state.lang = "VI"
 
-# Giao diện FinTech Premium: Phối hợp dải màu Indigo - Slate & Emerald Cyan
+# Giao diện CSS tùy biến nâng cao (Giao diện Dark/Light kết hợp phong cách Fintech Cao cấp)
 st.markdown("""
 <style>
     @import url('https://googleapis.com');
     
-    /* Toàn bộ nền ứng dụng */
     .stApp { 
-        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); 
+        background-color: #f8fafc; 
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
-    /* Thiết kế thanh Sidebar đậm chất chuyên nghiệp */
+    /* Thiết kế thanh Sidebar */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%) !important;
-        box-shadow: 4px 0 25px rgba(15, 23, 42, 0.15);
+        background-color: #0f172a !important;
+        color: #f8fafc !important;
     }
-    [data-testid="stSidebar"] .stMarkdown p, 
-    [data-testid="stSidebar"] h1, 
-    [data-testid="stSidebar"] h3,
-    [data-testid="stSidebar"] label {
-        color: #f1f5f9 !important;
+    [data-testid="stSidebar"] .stMarkdown p, [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h3 {
+        color: #f8fafc !important;
     }
     [data-testid="stSidebar"] hr {
         border-color: #334155 !important;
     }
     
-    /* Tùy biến thanh chọn và thanh trượt trong Sidebar bớt đơn điệu */
-    [data-testid="stSidebar"] div[data-baseweb="select"] {
-        background-color: #1e293b !important;
-        border-radius: 8px;
-    }
-    
-    /* Thiết kế thanh Tabs dạng 'Pills' chuyển động mềm mại */
+    /* Thiết kế Tabs phong cách hiện đại */
     .stTabs [data-baseweb="tab-list"] { 
-        gap: 10px; 
+        gap: 8px; 
         border: none; 
-        padding: 8px;
-        background: rgba(226, 232, 240, 0.7);
-        border-radius: 14px;
-        backdrop-filter: blur(10px);
+        padding: 6px;
+        background-color: #e2e8f0;
+        border-radius: 12px;
     }
     .stTabs [data-baseweb="tab"] { 
         background-color: transparent; 
-        border-radius: 10px; 
-        padding: 10px 22px; 
+        border-radius: 8px; 
+        padding: 8px 16px; 
         border: none !important;
-        font-weight: 700; 
+        font-weight: 600; 
         color: #475569; 
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .stTabs [data-baseweb="tab"]:hover { 
-        color: #1e3a8a;
-        background-color: rgba(255, 255, 255, 0.6);
+        color: #0f172a;
+        background-color: rgba(255, 255, 255, 0.5);
     }
     .stTabs [aria-selected="true"] { 
-        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important; 
-        color: #ffffff !important; 
-        box-shadow: 0 8px 16px rgba(59, 130, 246, 0.25) !important; 
+        background: #ffffff !important; 
+        color: #0f172a !important; 
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important; 
     }
     
-    /* Thẻ Container có chiều sâu đồ họa (Card) */
+    /* Thẻ Glassmorphism cao cấp */
     .glass-card {
         background: #ffffff;
-        border-radius: 20px;
-        padding: 28px;
-        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02), 0 4px 6px -4px rgba(0, 0, 0, 0.02), 0 0 0 1px rgba(15, 23, 42, 0.05);
         border: 1px solid rgba(226, 232, 240, 0.8);
         margin-bottom: 24px;
-        transition: transform 0.3s ease;
-    }
-    .glass-card:hover {
-        transform: translateY(-2px);
     }
     
-    /* Hộp hiển thị Chỉ số (Metric) có viền Gradient */
+    /* Khối hiển thị chỉ số Metric mới */
     .metric-container {
         display: flex;
         flex-direction: column;
@@ -102,54 +93,29 @@ st.markdown("""
         justify-content: center;
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 22px;
-        box-shadow: 0 4px 6px rgba(15, 23, 42, 0.01);
-        position: relative;
-        overflow: hidden;
-    }
-    /* Tạo dải trang trí màu sắc ở cạnh trên hộp metric */
-    .metric-container::before {
-        content: "";
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 4px;
-        background: linear-gradient(90deg, #3b82f6, #0ea5e9);
+        border-radius: 14px;
+        padding: 18px 22px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .metric-container:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 16px -4px rgba(0, 0, 0, 0.04);
         border-color: #cbd5e1;
-        box-shadow: 0 16px 24px -8px rgba(15, 23, 42, 0.06);
     }
     .metric-label { 
         font-size: 0.75rem; 
         font-weight: 700; 
         text-transform: uppercase; 
         color: #64748b; 
-        letter-spacing: 0.08em; 
+        letter-spacing: 0.06em; 
     }
     .metric-value { 
-        font-size: 2.2rem; 
+        font-size: 2rem; 
         font-weight: 800; 
-        margin: 8px 0 0 0; 
-        background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.03em;
-    }
-    
-    /* Thiết kế lại nút bấm chính đẹp hơn */
-    .stButton>button {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 10px !important;
-        padding: 10px 20px !important;
-        font-weight: 600 !important;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
-        transition: all 0.2s !important;
-    }
-    .stButton>button:hover {
-        transform: translateY(-1px) !important;
-        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3) !important;
+        margin: 6px 0 0 0; 
+        color: #0f172a;
+        letter-spacing: -0.02em;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -161,12 +127,13 @@ def apply_custom_plotly_layout(fig):
         font=dict(family="Inter, sans-serif", color="#475569"),
         margin=dict(l=20, r=20, t=40, b=20),
         xaxis=dict(showgrid=False, zeroline=False, tickfont=dict(color='#64748b')),
-        yaxis=dict(showgrid=True, gridcolor='#e2e8f0', zeroline=False, tickfont=dict(color='#64748b')),
-        hovermode="x unified"
+        yaxis=dict(showgrid=True, gridcolor='#f1f5f9', zeroline=False, tickfont=dict(color='#64748b')),
+        hovermode="x unified",
+        dragmode="pan"
     )
     return fig
 
-# Từ điển nhãn ngữ cảnh đa ngôn ngữ
+# Tối ưu hóa từ điển đa ngôn ngữ (Dictionary)
 DICT = {
     "VI": {
         "err_token": "❌ Chưa cấu hình MOTHERDUCK_TOKEN trong secrets hoặc .env",
@@ -177,7 +144,7 @@ DICT = {
         "lbl_ml_cfg": "⚙️ Cấu hình Machine Learning",
         "lbl_k": "Số cụm K-Means",
         "lbl_anomaly": "Ngưỡng bất thường (Anomaly)",
-        "btn_refresh": "🔄 Làm mới kho dữ liệu",
+        "btn_refresh": "🔄 Làm mới dữ liệu",
         "header_title": "📊 Bảng Điều Khiển Tài Chính",
         "header_caption": "Truy xuất thời gian thực từ MotherDuck Data Warehouse (Gold Layer)"
     },
@@ -196,6 +163,7 @@ DICT = {
     }
 }
 
+# Lấy nhãn ngôn ngữ hiện tại để gán vào UI
 L = DICT[st.session_state.lang]
 
 # ==========================================
@@ -252,6 +220,27 @@ def load_corporate_overview():
     except Exception:
         return pd.DataFrame()
 
+@st.cache_data(ttl=1800)
+def load_shareholders(ticker):
+    try:
+        return con.execute(f"SELECT * FROM dim_shareholders WHERE ticker = '{ticker}'").df()
+    except Exception:
+        return pd.DataFrame()
+
+@st.cache_data(ttl=1800)
+def load_officers(ticker):
+    try:
+        return con.execute(f"SELECT * FROM dim_officers WHERE ticker = '{ticker}'").df()
+    except Exception:
+        return pd.DataFrame()
+
+@st.cache_data(ttl=1800)
+def load_price_history(ticker):
+    try:
+        return con.execute(f"SELECT * FROM fact_daily_prices WHERE ticker = '{ticker}'").df()
+    except Exception:
+        return pd.DataFrame()
+
 df_raw = load_gold_ratios()
 df_profile = load_corporate_overview()
 
@@ -263,22 +252,16 @@ if df_raw.empty:
 # 3. SIDEBAR & HEADER
 # ==========================================
 with st.sidebar:
-    # 3.1. Chèn Logo cục bộ "logo.jpg" vào vị trí đầu tiên của Sidebar kèm tiêu đề cạnh nhau
-    logo_path = "logo.jpg"
-    if os.path.exists(logo_path):
-        col_logo, col_title = st.columns([1, 2.5])
-        with col_logo:
-            st.image(logo_path, use_container_width=True)
-        with col_title:
-            st.markdown("<h2 style='margin-top:0px; color:#ffffff; font-weight:800;'>VietFin Pro</h2>", unsafe_allow_html=True)
-    else:
-        st.title("VietFin Pro")
-        st.warning("⚠️ File logo.jpg không tìm thấy tại thư mục app.")
-        
+    # 3.1. Chèn Logo từ Github Repository
+    # Thay 'username/repo/main/logo.png' bằng đường dẫn URL raw thực tế của bạn trên GitHub
+    logo_url = "https://githubusercontent.com"
+    st.image(logo_url, use_container_width=True)
+    
+    st.title("VietFin Pro")
     st.caption(L["sys_caption"])
     st.divider()
 
-    # 3.2. Bộ chuyển đổi cấu hình song ngữ
+    # 3.2. Bộ chuyển đổi cấu hình song ngữ độc lập
     lang_choice = st.selectbox(
         L["lbl_lang"], 
         ["Tiếng Việt (VI)", "English (EN)"], 
@@ -291,7 +274,24 @@ with st.sidebar:
 
     st.divider()
 
-    # 3.3. Các bộ lọc tham số
+    # 3.3. Các bộ lọc tham số dữ liệu đầu vào
+    tickers = sorted(df_raw['ticker'].dropna().unique())
+    default_idx = tickers.index("VNM") if "VNM" in tickers else 0
+    selected_ticker = st.selectbox(L["lbl_ticker"], tickers, index=default_idx)
+
+    st.subheader(L["lbl_ml_cfg"])
+    k_clusters = st.slider(L["lbl_k"], min_value=2, max_value=6, value=3)
+    contamination = st.slider(L["lbl_anomaly"], min_value=1, max_value=15, value=5) / 100.0
+
+    st.divider()
+    if st.button(L["btn_refresh"], use_container_width=True):
+        st.cache_data.clear()
+        st.rerun()
+
+# Khu vực Header hiển thị chính ngoài Dashboard
+st.markdown(f"<h2>{L['header_title']}: <span style='color:#1e3a8a'>{selected_ticker}</span></h2>", unsafe_allow_html=True)
+st.caption(L["header_caption"])
+st.markdown("<br>", unsafe_allow_html=True)
 
 # ==========================================
 # 4. KHU VỰC TABS PHÂN TÍCH
