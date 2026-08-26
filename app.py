@@ -338,6 +338,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 # BƯỚC PHÒNG THỦ: ÉP CHUẨN HÓA CỘT 'TICKER' TRƯỚC KHI VÀO TABS
 # ==========================================
 
+
 # 1. Ép viết thường toàn bộ tên cột của df_raw
 df_raw.columns = [str(c).lower().strip() for c in df_raw.columns]
 
@@ -367,6 +368,7 @@ if 'df_ml_clean' not in locals() or 'ticker' not in df_ml_clean.columns:
     else:
         df_ml_clean = pd.DataFrame()
         scaled_features = None
+
 
 
 # ==========================================
