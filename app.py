@@ -342,12 +342,12 @@ with tab3:
 with tab4:
     st.markdown(f"### 📋 Báo Cáo Tài Chính Chuẩn Hóa ({selected_ticker})")
     
-    # Bộ lọc Đơn vị tính (Rút gọn cách thể hiện)
+    # Bộ lọc Đơn vị tính
     unit_option = st.radio(
         "Đơn vị tính:", 
         options=["Giá trị gốc", "Triệu VNĐ", "Tỷ VNĐ"], 
         horizontal=True,
-        index=2 # Mặc định chọn Tỷ VNĐ cho gọn (giống CafeF)
+        index=2 # Mặc định chọn Tỷ VNĐ cho gọn
     )
     
     unit_divider = 1
@@ -356,7 +356,15 @@ with tab4:
     elif unit_option == "Tỷ VNĐ":
         unit_divider = 1_000_000_000
 
+    # Tải dữ liệu (Lưu ý: Cần đảm bảo hàm này trả về DataFrame hợp lệ)
     df_fin_all = load_financial_statements(selected_ticker)
+    
+    # KHẮC PHỤC LỖI: Cần tải dữ liệu cho df_raw trước khi gọi ở tab 4
+    # Bạn thay hàm load_financial_ratios bằng hàm thực tế bạn đang dùng nhé
+    try:
+        df_raw = load_financial_ratios(selected_ticker) 
+    except NameError:
+        df_raw = pd.DataFrame() # Fallback an toàn nếu chưa có hàm
     
     if not df_fin_all.empty:
         fin_tab1, fin_tab2, fin_tab3, fin_tab4 = st.tabs([
@@ -366,18 +374,20 @@ with tab4:
             "🔢 Chỉ Số Tài Chính Thô"
         ])
         
-        # Hàm format số liệu chuẩn Việt Nam (1.000.000,50)
+        # Hàm format số liệu chuẩn Việt Nam (VD: 1.000.000,50)
         def format_vn_number(val):
-            if pd.isna(val): return ""
+            if pd.isna(val) or val == "": 
+                return ""
             try:
                 v = float(val)
                 # Giữ 2 chữ số thập phân nếu có số lẻ, ngược lại làm tròn
                 s = f"{v:,.2f}" if v % 1 != 0 else f"{v:,.0f}"
-                if s.endswith(".00"): s = s[:-3]
+                if s.endswith(".00"): 
+                    s = s[:-3]
                 # Đổi định dạng US (,) thành VN (.) và ngược lại
                 return s.replace(",", "X").replace(".", ",").replace("X", ".")
-            except:
-                return val
+            except ValueError:
+                return val # Trả về nguyên gốc nếu không phải số
 
         def render_statement(df_source, keyword_list):
             # Lọc theo loại Báo cáo tài chính
@@ -394,9 +404,9 @@ with tab4:
                 
                 # Ẩn các cột hệ thống không cần thiết hiển thị
                 cols_to_drop = ['ticker', type_col, 'dataset']
-                disp_df = disp_df.drop(columns=[c for c in cols_to_drop if c and c in disp_df.columns])
+                disp_df = disp_df.drop(columns=[c for c in cols_to_drop if c in disp_df.columns])
                 
-                # Xác định các cột số liệu (loại trừ các cột năm/kỳ để không bị chia nhỏ)
+                # Xác định các cột số liệu (loại trừ các cột năm/kỳ)
                 ignore_cols = ['year', 'period', 'quarter', 'month', 'id']
                 numeric_cols = [c for c in disp_df.select_dtypes(include=['number']).columns if not any(ign in c.lower() for ign in ignore_cols)]
                 
@@ -424,14 +434,22 @@ with tab4:
 
         with fin_tab4:
             st.markdown("#### 🔢 Chỉ Số Tài Chính Thô (Gold Financial Ratios)")
-            df_raw_disp = df_raw[df_raw['ticker'] == selected_ticker].copy() if selected_ticker else df_raw.copy()
-            
-            num_cols = df_raw_disp.select_dtypes(include=['number']).columns
-            for col in num_cols:
-                # Với bảng tỷ số, ta chỉ format chuẩn VN, không chia Tỷ/Triệu vì đây đa phần là % hoặc hệ số
-                df_raw_disp[col] = df_raw_disp[col].apply(format_vn_number)
-            
-            st.dataframe(df_raw_disp, use_container_width=True, hide_index=True)
+            if not df_raw.empty:
+                # Lọc dữ liệu theo ticker nếu có cột ticker
+                if 'ticker' in df_raw.columns and selected_ticker:
+                    df_raw_disp = df_raw[df_raw['ticker'] == selected_ticker].copy()
+                else:
+                    df_raw_disp = df_raw.copy()
+                
+                num_cols = df_raw_disp.select_dtypes(include=['number']).columns
+                for col in num_cols:
+                    # Với bảng tỷ số, chỉ format chuẩn VN, không chia Tỷ/Triệu
+                    df_raw_disp[col] = df_raw_disp[col].apply(format_vn_number)
+                
+                st.dataframe(df_raw_disp, use_container_width=True, hide_index=True)
+            else:
+                st.info("Chưa có dữ liệu Chỉ số tài chính cho mã này.")
+                
     else:
         st.info(f"Chưa có dữ liệu Báo cáo tài chính chi tiết cho mã {selected_ticker}.")
 
