@@ -335,43 +335,6 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 
 # ==========================================
-# BƯỚC PHÒNG THỦ: ÉP CHUẨN HÓA CỘT 'TICKER' TRƯỚC KHI VÀO TABS
-# ==========================================
-
-
-# 1. Ép viết thường toàn bộ tên cột của df_raw
-df_raw.columns = [str(c).lower().strip() for c in df_raw.columns]
-
-# 2. Nếu mã cổ phiếu đang là index, đẩy nó ra thành cột
-if df_raw.index.name is not None and str(df_raw.index.name).lower().strip() in ['ticker', 'symbol', 'ma_ck', 'code']:
-    df_raw = df_raw.reset_index()
-
-# 3. Đổi các tên phổ biến thành 'ticker'
-for col in ['symbol', 'ma_ck', 'mack', 'stock_code', 'code']:
-    if col in df_raw.columns:
-        df_raw = df_raw.rename(columns={col: 'ticker'})
-        break
-
-# 4. Kiểm tra xem df_ml_clean đã có 'ticker' chưa, nếu chưa thì tạo lại an toàn
-if 'df_ml_clean' not in locals() or 'ticker' not in df_ml_clean.columns:
-    feature_cols = ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']
-    existing_features = [col for col in feature_cols if col in df_raw.columns]
-    
-    if existing_features and 'ticker' in df_raw.columns:
-        df_ml = df_raw.sort_values("report_period").groupby("ticker").last().reset_index()
-        df_ml_clean = df_ml.dropna(subset=existing_features).copy()
-        if len(df_ml_clean) >= 3:
-            from sklearn.preprocessing import StandardScaler
-            scaled_features = StandardScaler().fit_transform(df_ml_clean[existing_features])
-        else:
-            scaled_features = None
-    else:
-        df_ml_clean = pd.DataFrame()
-        scaled_features = None
-
-
-
-# ==========================================
 # 4. KHU VỰC TABS PHÂN TÍCH
 # ==========================================
 tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
