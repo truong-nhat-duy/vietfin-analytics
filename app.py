@@ -137,6 +137,7 @@ def apply_custom_plotly_layout(fig):
 # ==========================================
 # 2. KẾT NỐI DỮ LIỆU MOTHERDUCK (GOLD LAYER)
 # ==========================================
+
 load_dotenv()
 try:
     md_token = st.secrets["MOTHERDUCK_TOKEN"]
@@ -218,25 +219,49 @@ if df_raw.empty:
 
 # ==========================================
 
-# LÀM SẠCH DỮ LIỆU CHO ML
+## ==========================================
+# 3. CHUẨN HÓA DỮ LIỆU TOÀN CỤC (ĐẶT Ở ĐÂY)
+# ==========================================
+# 3.1. Chuẩn hóa tên cột cho df_raw
+df_raw.columns = df_raw.columns.str.lower()
+if 'ticker' not in df_raw.columns and df_raw.index.name == 'ticker':
+    df_raw = df_raw.reset_index()
+
+# Đổi tên các cột phổ biến thành 'ticker' nếu có
+for col in ['symbol', 'ma_ck', 'stock_code', 'code']:
+    if col in df_raw.columns:
+        df_raw = df_raw.rename(columns={col: 'ticker'})
+        break
+
+# Dừng app báo lỗi nếu database thực sự không có bất kỳ cột mã cổ phiếu nào
+if 'ticker' not in df_raw.columns:
+    st.error(f"❌ LỖI: Dữ liệu fact_ratio_summary không có cột mã cổ phiếu. Các cột hiện có: {list(df_raw.columns)}")
+    st.stop()
+
+# 3.2. Chuẩn hóa tên cột cho df_profile
+if not df_profile.empty:
+    df_profile.columns = df_profile.columns.str.lower()
+    for col in ['symbol', 'ma_ck', 'stock_code', 'code']:
+        if col in df_profile.columns:
+            df_profile = df_profile.rename(columns={col: 'ticker'})
+            break
+
+# ==========================================
+# 4. LÀM SẠCH DỮ LIỆU CHO ML
+# ==========================================
+# Lúc này df_raw CHẮC CHẮN đã có cột 'ticker', ta mới thực hiện groupby
 feature_cols = ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']
+
+# Chỉ lấy các feature thực sự tồn tại trong dataframe
+existing_features = [c for c in feature_cols if c in df_raw.columns]
+
 df_ml = df_raw.sort_values("report_period").groupby("ticker").last().reset_index()
-df_ml_clean = df_ml.dropna(subset=feature_cols).copy()
+df_ml_clean = df_ml.dropna(subset=existing_features).copy()
 
 scaled_features = None
-if len(df_ml_clean) > 0:
-    scaled_features = StandardScaler().fit_transform(df_ml_clean[feature_cols])
-
-
-# Chuẩn hóa toàn bộ tên cột thành chữ thường để tránh lỗi đánh máy
-df_raw.columns = df_raw.columns.str.lower()
-df_ml_clean.columns = df_ml_clean.columns.str.lower()
-
-# Nếu 'ticker' đang là Index, hãy reset nó về thành cột thông thường
-if 'ticker' not in df_raw.columns and 'ticker' in df_raw.index.names:
-    df_raw = df_raw.reset_index()
-if 'ticker' not in df_ml_clean.columns and 'ticker' in df_ml_clean.index.names:
-    df_ml_clean = df_ml_clean.reset_index()
+if len(df_ml_clean) >= 3: # Yêu cầu ít nhất 3 công ty để phân cụm
+    from sklearn.preprocessing import StandardScaler
+    scaled_features = StandardScaler().fit_transform(df_ml_clean[existing_features])
 
 # ==========================================
 # 0. CHUẨN HÓA DỮ LIỆU TOÀN CỤC (ĐẶT TRƯỚC KHI TẠO TABS)
@@ -290,6 +315,7 @@ if existing_features:
 else:
     df_ml_clean = pd.DataFrame()
     scaled_features = None
+
 
 # ==========================================
 # 3. SIDEBAR & HEADER BẢO BỔ SUNG LOGO
