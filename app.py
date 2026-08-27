@@ -288,8 +288,9 @@ with tab1:
     if not df_ticker.empty:
         latest = df_ticker.iloc[-1].to_dict()
         
+        # Mặc định thông tin ban đầu
         p_name = f"Công ty Cổ phần {selected_ticker}"
-        p_tax = p_web = p_address = p_phone = p_email = p_ceo = p_mcap = "N/A"
+        p_tax = p_web = p_address = p_phone = p_email = p_ceo = p_mcap = p_ind = p_cluster = "N/A"
         
         region_keywords = {
             'hồ chí minh': 'Hồ Chí Minh', 'hcm': 'Hồ Chí Minh', 'tp.hcm': 'Hồ Chí Minh',
@@ -300,41 +301,42 @@ with tab1:
             'hải dương': 'Hải Dương', 'bắc ninh': 'Bắc Ninh', 'long an': 'Long An'
         }
         
+        # Áp dụng chính xác tên cột từ bảng vietfin_db.dim_company
         if not df_profile.empty:
             p_row = df_profile[df_profile['ticker'] == selected_ticker]
             if not p_row.empty:
                 row_data = p_row.iloc[0]
                 
-                p_name = clean_val(row_data.get('company_name', row_data.get('organ_name')), p_name)
-                p_tax = clean_val(row_data.get('tax_id', row_data.get('tax_code')))
-                p_address = clean_val(row_data.get('address', row_data.get('headquarters')))
-                p_phone = clean_val(row_data.get('phone'))
-                p_email = clean_val(row_data.get('email'))
-                p_ceo = clean_val(row_data.get('ceo', row_data.get('director')))
-                p_web = clean_val(row_data.get('website'))
+                # Khớp các trường từ dim_company
+                p_name = clean_val(row_data.get('company_name'), p_name)
+                p_tax = clean_val(row_data.get('tax_id'))
+                p_address = clean_val(row_data.get('address'))
+                p_ind = clean_val(row_data.get('sector_level1'))
                 p_icb = clean_val(row_data.get('icb_code'))
                 
-                raw_mcap = row_data.get('market_cap')
-                if pd.notna(raw_mcap):
+                # Các trường không có trong dim_company sẽ lấy an toàn từ row_data hoặc df_raw
+                p_phone = clean_val(row_data.get('phone'))
+                p_email = clean_val(row_data.get('email'))
+                p_ceo = clean_val(row_data.get('ceo'))
+                p_web = clean_val(row_data.get('website'))
+                
+                # Ưu tiên lấy vốn hóa từ dim_company, nếu không có thì lấy từ df_raw (latest)
+                raw_mcap = row_data.get('market_cap', latest.get('market_cap', latest.get('marketcap')))
+                if pd.notna(raw_mcap) and raw_mcap != 0:
                     try:
                         p_mcap = f"{float(raw_mcap):,.0f} Tỷ VNĐ"
-                    except ValueError:
+                    except (ValueError, TypeError):
                         p_mcap = clean_val(raw_mcap)
                 
-                for ind_col in ['industry', 'icb_name', 'industry_name', 'sector', 'sector_level1']:
-                    if ind_col in row_data and pd.notna(row_data[ind_col]):
-                        val_str = clean_val(row_data[ind_col])
-                        if val_str != "N/A":
-                            p_ind = val_str
-                            break
-                        
+                # Phân tích vùng miền & cụm ngành Porter từ địa chỉ và sector_level1
                 sector_level1 = clean_val(row_data.get('sector_level1'), p_ind)
                 company_region = "Khác"
-                addr_lower = p_address.lower()
-                for key, region_name in region_keywords.items():
-                    if key in addr_lower:
-                        company_region = region_name
-                        break
+                if p_address != "N/A":
+                    addr_lower = p_address.lower()
+                    for key, region_name in region_keywords.items():
+                        if key in addr_lower:
+                            company_region = region_name
+                            break
                 
                 if sector_level1 != "N/A":
                     p_cluster = f"Cụm {sector_level1} - {company_region}"
