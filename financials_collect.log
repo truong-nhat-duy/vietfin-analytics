@@ -1,0 +1,486 @@
+2026-08-27 12:44:16,342 INFO vietfin.scripts.collect_financial_statements: Starting collection: 885 tickers x 4 statement types x 2 periods (resume=True)
+2026-08-27 12:44:22,340 INFO vnai.beam.auth: API key setup completed
+2026-08-27 12:44:22,340 INFO vietfin.ingestion.vnstock_finance: vnstock registered with provided API key
+2026-08-27 12:44:24,806 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:24,806 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:28,737 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:28,737 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:32,939 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:32,939 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:35,690 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:35,690 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:38,701 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:38,701 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:42,383 INFO vietfin.scripts.collect_financial_statements: Progress 25/885 tickers | ok=0 empty=5 error=0 skipped=195
+2026-08-27 12:44:42,766 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:42,766 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:45,096 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:45,096 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:48,581 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:48,581 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:51,853 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:51,853 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:54,865 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:54,865 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:58,829 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:44:58,829 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:02,411 INFO vietfin.scripts.collect_financial_statements: Progress 50/885 tickers | ok=0 empty=11 error=0 skipped=389
+2026-08-27 12:45:02,727 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:02,727 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:05,209 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:05,209 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:08,192 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:08,192 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:11,876 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:11,876 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:14,674 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:14,674 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:18,222 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:18,222 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:21,071 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:21,085 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:24,620 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:24,620 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:28,002 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:28,002 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:31,252 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:31,252 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:34,868 INFO vietfin.scripts.collect_financial_statements: Progress 75/885 tickers | ok=0 empty=21 error=0 skipped=579
+2026-08-27 12:45:34,884 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:34,884 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:37,849 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:37,849 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:41,565 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:41,565 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:44,814 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:44,814 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:47,796 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:47,796 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:51,761 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:51,761 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:54,544 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:54,544 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:57,493 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:45:57,493 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:01,363 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:01,363 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:04,291 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:04,291 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:07,007 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:07,007 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:10,589 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:10,589 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:13,787 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:13,787 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:16,803 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:16,803 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:20,485 INFO vietfin.scripts.collect_financial_statements: Progress 100/885 tickers | ok=0 empty=35 error=0 skipped=765
+2026-08-27 12:46:20,552 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:20,552 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:23,268 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:23,268 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:26,301 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:26,301 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:30,964 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:30,965 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:33,605 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:33,605 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:36,596 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:36,596 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:40,279 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:40,279 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:43,592 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:43,592 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:46,624 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:46,624 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:49,824 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:49,824 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:52,933 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:52,933 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:55,875 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:55,875 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:59,599 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:46:59,599 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:02,249 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:02,249 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:05,795 INFO vietfin.scripts.collect_financial_statements: Progress 125/885 tickers | ok=0 empty=49 error=0 skipped=951
+2026-08-27 12:47:05,827 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:05,827 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:08,911 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:08,911 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:47:08,911 INFO vietfin.ingestion.vnstock_finance: MNB/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:47:08,943 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:08,943 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:11,606 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:11,606 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:47:11,613 INFO vietfin.ingestion.vnstock_finance: MNB/balance_sheet/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:47:11,624 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:11,624 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:14,393 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:14,393 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:17,604 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:17,604 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:20,231 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:20,231 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:23,463 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:23,463 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:23,479 INFO vietfin.ingestion.vnstock_finance: MNB/cash_flow/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:47:23,496 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:23,496 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:24,675 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:24,675 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:26,144 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:26,144 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:29,732 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:29,732 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:47:29,732 INFO vietfin.ingestion.vnstock_finance: MND/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:47:29,749 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:29,749 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:32,466 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:32,466 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:35,192 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:35,192 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:37,438 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:37,439 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:41,360 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:41,360 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:41,377 INFO vietfin.ingestion.vnstock_finance: MND/cash_flow/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:47:41,391 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:41,391 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:44,885 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:44,885 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:46,224 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:46,224 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:49,060 INFO vietfin.ingestion.vnstock_finance: MND/ratio/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:47:49,078 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:49,078 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:52,483 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:52,483 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:47:52,483 INFO vietfin.ingestion.vnstock_finance: MPC/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:47:52,500 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:52,500 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:55,640 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:55,640 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:47:55,647 INFO vietfin.ingestion.vnstock_finance: MPC/balance_sheet/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:47:55,667 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:55,667 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:58,233 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:47:58,233 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:01,105 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:01,105 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:03,573 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:03,573 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:06,456 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:06,456 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:06,456 INFO vietfin.ingestion.vnstock_finance: MPC/cash_flow/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:48:06,473 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:06,473 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:07,689 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:07,689 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:09,227 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:09,227 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:13,037 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:13,037 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:48:13,037 INFO vietfin.ingestion.vnstock_finance: MPT/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:48:13,055 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:13,055 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:16,036 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:16,036 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:48:16,039 INFO vietfin.ingestion.vnstock_finance: MPT/balance_sheet/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:48:16,068 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:16,068 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:18,719 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:18,719 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:21,685 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:21,685 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:24,182 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:24,183 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:27,033 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:27,033 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:27,033 INFO vietfin.ingestion.vnstock_finance: MPT/cash_flow/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:48:27,050 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:27,050 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:28,700 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:28,700 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:30,200 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:30,200 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:33,014 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:33,014 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:48:33,014 INFO vietfin.ingestion.vnstock_finance: MPY/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:48:33,031 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:33,031 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:36,080 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:36,080 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:39,284 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:39,284 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:42,295 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:42,295 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:45,308 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:45,309 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:48,527 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:48,527 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:49,559 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:49,559 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:52,409 INFO vietfin.ingestion.vnstock_finance: MPY/ratio/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:48:52,441 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:52,441 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:55,892 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:55,892 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:48:55,908 INFO vietfin.ingestion.vnstock_finance: MQB/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:48:55,924 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:55,924 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:58,856 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:48:58,856 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:01,806 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:01,806 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:04,071 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:04,071 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:07,637 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:07,637 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:10,169 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:10,169 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:11,501 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:11,501 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:17,954 INFO vietfin.ingestion.vnstock_finance: MQB/ratio/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:49:17,967 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:17,967 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:21,816 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:21,816 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:49:21,816 INFO vietfin.ingestion.vnstock_finance: MQN/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:49:21,832 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:21,832 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:24,748 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:24,748 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:27,464 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:27,464 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:29,713 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:29,713 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:33,130 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:33,130 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:35,782 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:35,782 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:37,028 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:37,028 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:39,995 INFO vietfin.ingestion.vnstock_finance: MQN/ratio/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:49:40,011 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:40,011 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:43,705 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:43,705 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:49:43,721 INFO vietfin.ingestion.vnstock_finance: MRF/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:49:43,752 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:43,752 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:46,409 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:46,409 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:49,527 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:49,527 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:52,187 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:52,187 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:55,582 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:55,582 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:55,586 INFO vietfin.ingestion.vnstock_finance: MRF/cash_flow/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:49:55,605 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:55,605 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:58,938 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:49:58,938 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:00,208 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:00,218 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:03,021 INFO vietfin.ingestion.vnstock_finance: MRF/ratio/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:50:03,036 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:03,036 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:06,520 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:06,520 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:06,533 INFO vietfin.ingestion.vnstock_finance: MSB/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:50:06,552 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:06,552 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:09,555 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:09,555 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:09,555 INFO vietfin.ingestion.vnstock_finance: MSB/balance_sheet/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:50:09,572 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:09,572 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:12,127 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:12,127 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:15,066 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:15,066 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:17,583 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:17,583 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:20,147 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:20,147 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:20,163 INFO vietfin.ingestion.vnstock_finance: MSB/cash_flow/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:50:20,182 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:20,182 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:21,431 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:21,431 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:22,897 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:22,897 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:26,796 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:26,796 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:50:26,813 INFO vietfin.ingestion.vnstock_finance: MSH/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:50:26,829 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:26,829 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:29,896 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:29,896 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:50:29,912 INFO vietfin.ingestion.vnstock_finance: MSH/balance_sheet/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:50:29,929 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:29,929 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:32,497 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:32,497 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:36,093 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:36,093 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:38,792 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:38,792 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:43,357 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:43,357 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:43,357 INFO vietfin.ingestion.vnstock_finance: MSH/cash_flow/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:50:43,374 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:43,374 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:44,691 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:44,691 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:46,155 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:46,155 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:49,355 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:49,355 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:50:49,372 INFO vietfin.ingestion.vnstock_finance: MSN/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:50:49,389 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:49,389 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:52,525 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:52,525 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:50:52,525 INFO vietfin.ingestion.vnstock_finance: MSN/balance_sheet/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:50:52,554 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:52,554 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:55,287 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:55,287 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:58,354 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:50:58,354 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:00,852 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:00,852 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:03,700 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:03,700 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:03,701 INFO vietfin.ingestion.vnstock_finance: MSN/cash_flow/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:51:03,718 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:03,718 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:04,867 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:04,867 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:06,367 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:06,367 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:09,649 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:09,649 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:51:09,649 INFO vietfin.ingestion.vnstock_finance: MSR/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:51:09,680 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:09,680 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:13,313 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:13,313 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:51:13,315 INFO vietfin.ingestion.vnstock_finance: MSR/balance_sheet/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:51:13,332 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:13,332 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:15,747 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:15,747 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:18,729 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:18,729 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:21,113 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:21,113 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:23,828 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:23,828 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:23,828 INFO vietfin.ingestion.vnstock_finance: MSR/cash_flow/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:51:23,845 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:23,845 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:25,111 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:25,111 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:26,577 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:26,577 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:29,859 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:29,860 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 12:51:29,860 INFO vietfin.ingestion.vnstock_finance: MST/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 12:51:29,877 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 12:51:29,877 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:14 - vnstock.core.utils.client - ERROR - API request failed: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2026-08-27 13:03:14,597 ERROR vnstock.core.utils.client: API request failed: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2026-08-27 13:03:14,597 WARNING vietfin.ingestion.vnstock_finance: Failed to fetch MST/balance_sheet/quarter via VCI after retries: API request failed: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2026-08-27 13:03:14,613 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:14,613 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:20,270 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:20,270 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:25,295 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:25,295 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:28,038 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:28,038 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:31,886 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:31,886 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:31,889 INFO vietfin.ingestion.vnstock_finance: MST/cash_flow/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 13:03:31,907 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:31,907 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:32,758 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:32,758 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:34,189 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:34,189 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:37,902 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:37,902 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 13:03:37,902 INFO vietfin.ingestion.vnstock_finance: MTA/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 13:03:37,934 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:37,934 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:40,935 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:40,935 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 13:03:40,952 INFO vietfin.ingestion.vnstock_finance: MTA/balance_sheet/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 13:03:40,970 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:40,970 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:43,534 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:43,534 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:46,755 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:46,755 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:49,200 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:49,200 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:53,265 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:53,265 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:53,796 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:53,796 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:55,314 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:55,314 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:58,588 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:58,589 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 13:03:58,595 INFO vietfin.ingestion.vnstock_finance: MTB/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 13:03:58,613 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:03:58,613 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:02,278 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:02,278 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:05,061 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:05,061 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:07,944 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:07,944 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:11,376 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:11,376 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:11,376 INFO vietfin.ingestion.vnstock_finance: MTB/cash_flow/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 13:04:11,393 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:11,393 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:14,828 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:14,828 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:16,058 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:16,058 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:19,508 INFO vietfin.ingestion.vnstock_finance: MTB/ratio/quarter: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 13:04:19,523 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:19,523 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:23,039 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:23,039 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+2026-08-27 13:04:23,039 INFO vietfin.ingestion.vnstock_finance: MTG/balance_sheet/year: KBS was empty, succeeded via fallback backend VCI
+2026-08-27 13:04:23,071 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
+2026-08-27 13:04:23,072 INFO vnstock.core.utils.field.mapper: Loaded 162 built-in KBS field mappings
