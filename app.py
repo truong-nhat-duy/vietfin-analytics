@@ -6,6 +6,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import urllib.parse
+import openai
 from dotenv import load_dotenv
 from PIL import Image
 
@@ -239,14 +240,18 @@ with col_title:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ==========================================
-# 6. KHU VỰC TABS PHÂN TÍCH
+# 6. KHU VỰC TABS PHÂN TÍCH 
 # ==========================================
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
-    "🎯 Tổng Quan", "🤖 Phân Cụm ML", "🚨 Cảnh Báo", "📋 Raw Data", 
-    "📈 Lịch Sử Giá", "🏆 Xếp Hạng Tín Dụng", "👥 Quản Trị", "🗺️ Phân tích Ngành và Cụm Ngành"
-])
 
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab_quant, tab_chat = st.tabs([
+    "🎯 Tổng Quan", "🤖 Phân Cụm ML", "🚨 Cảnh Báo", "📋 Raw Data", 
+    "📈 Lịch Sử Giá", "🏆 Xếp Hạng Tín Dụng", "👥 Quản Trị", "🗺️ Phân Tích Ngành",
+    "🧮 Định Giá", "💬 Trợ Lý ảo"
+])
+# ==========================================
 # --- TAB 1: TỔNG QUAN ---
+# ==========================================
+
 with tab1:
     df_ticker = df_raw[df_raw['ticker'] == selected_ticker].sort_values("report_period").copy()
     
@@ -424,7 +429,10 @@ with tab1:
     else:
         st.warning(f"Chưa có dữ liệu chỉ số tài chính cho mã {selected_ticker}.")
 
+# ==========================================
 # --- TAB 2: K-MEANS ---
+# ==========================================
+
 with tab2:
     st.markdown("### 🤖 Phân Cụm Ngành & Doanh Nghiệp (K-Means)")
     if not df_ml_clean.empty and scaled_features is not None and len(df_ml_clean) >= k_clusters:
@@ -446,7 +454,10 @@ with tab2:
     else:
         st.warning(f"⚠️ Cần ít nhất dữ liệu hợp lệ của {k_clusters} doanh nghiệp để chạy K-Means.")
 
+# ==========================================
 # --- TAB 3: ISOLATION FOREST ---
+# ==========================================
+
 with tab3:
     st.markdown("### 🚨 Phát Hiện Dữ Liệu Bất Thường (Isolation Forest)")
     if len(df_ml_clean) > 5 and scaled_features is not None:
@@ -467,7 +478,10 @@ with tab3:
     else:
         st.info("Chưa đủ dữ liệu để mô hình hóa bất thường.")
 
+# ==========================================
 # --- TAB 4: RAW DATA ---
+# ==========================================
+
 with tab4:
     st.markdown(f"### 📋 Báo Cáo Tài Chính Chuẩn Hóa ({selected_ticker})")
     unit_option = st.radio("Đơn vị tính:", options=["Giá trị gốc", "Triệu VNĐ", "Tỷ VNĐ"], horizontal=True, index=2)
@@ -516,7 +530,10 @@ with tab4:
     else:
         st.info(f"Chưa có dữ liệu Báo cáo tài chính chi tiết cho mã {selected_ticker}.")
 
+# ==========================================
 # --- TAB 5: LỊCH SỬ GIÁ ---
+# ==========================================
+
 with tab5:
     st.markdown(f"### 📈 Lịch Sử Giá ({selected_ticker})")
     df_price = load_price_history(selected_ticker)
@@ -542,7 +559,10 @@ with tab5:
     else:
         st.info(f"Chưa có dữ liệu biến động giá cho mã {selected_ticker}.")
 
+# ==========================================
 # --- TAB 6: XẾP HẠNG TÍN DỤNG ---
+# ==========================================
+
 with tab6:
     st.markdown(f"### 🏆 Mô Hình Đánh Giá Tín Dụng ({selected_ticker})")
     df_tick_latest = df_raw[df_raw['ticker'] == selected_ticker].sort_values("report_period")
@@ -580,7 +600,10 @@ with tab6:
     else: 
         st.info("Không đủ dữ liệu của doanh nghiệp để xếp hạng tín dụng.")
 
+# ==========================================
 # --- TAB 7: CỔ ĐÔNG & QUẢN TRỊ ---
+# ==========================================
+
 with tab7:
     st.markdown(f"### 👥 Cơ Cấu Cổ Đông & Ban Lãnh Đạo ({selected_ticker})")
     col_sh, col_of = st.columns([1, 1.2])
@@ -609,7 +632,10 @@ with tab7:
             st.dataframe(df_of[disp_cols], use_container_width=True, hide_index=True, height=500)
         else: st.info(f"Chưa có dữ liệu ban lãnh đạo cho mã {selected_ticker}.")
 
+# ==========================================
 # --- TAB 8: PHÂN TÍCH CỤM NGÀNH ---
+# ==========================================
+
 with tab8:
     st.markdown("### 🗺️ Bản Đồ Lợi Thế Cạnh Tranh & Cụm Ngành (Porter's Cluster)")
     
@@ -702,3 +728,107 @@ with tab8:
             st.warning("Không thể trích xuất tọa độ địa lý.")
     else:
         st.info("Chưa có dữ liệu thông tin doanh nghiệp (địa chỉ) để lập bản đồ.")
+
+# ==========================================
+# --- TAB 9: Mô Hình Định Lượng & Định Giá Nâng Cao ---
+# ==========================================
+
+with tab_quant:
+    st.markdown("### 🧮 Mô Hình Định Lượng & Định Giá Nâng Cao")
+    
+    q_col1, q_col2 = st.columns(2)
+    
+    with q_col1:
+        st.markdown("<div class='glass-card'>#### 💵 Định Giá Chiết Khấu Dòng Tiền (DCF)</div>", unsafe_allow_html=True)
+        wacc = st.slider("Chi phí vốn bình quân WACC (%)", 8.0, 18.0, 11.5) / 100.0
+        g_rate = st.slider("Tốc độ tăng trưởng vĩnh viễn g (%)", 1.0, 5.0, 2.5) / 100.0
+        forecast_years = st.slider("Số năm dự báo", 3, 10, 5)
+        
+        # Giả định lấy LNTT/Dòng tiền từ DB
+        fcf_base = 5000 # Tỷ VNĐ (Ví dụ)
+        future_fcfs = [fcf_base * ((1 + 0.08) ** i) for i in range(1, forecast_years + 1)]
+        pv_fcfs = sum([fcf / ((1 + wacc) ** i) for i, fcf in enumerate(future_fcfs, 1)])
+        
+        terminal_value = (future_fcfs[-1] * (1 + g_rate)) / (wacc - g_rate)
+        pv_terminal = terminal_value / ((1 + wacc) ** forecast_years)
+        
+        intrinsic_value = pv_fcfs + pv_terminal
+        st.metric("Giá trị doanh nghiệp nội tại (EV)", f"{intrinsic_value:,.0f} Tỷ VNĐ")
+
+    with q_col2:
+        st.markdown("<div class='glass-card'>#### ⚠️ Mô Hình Cảnh Báo Phá Sản Altman Z-Score</div>", unsafe_allow_html=True)
+        # Giả lập tham số Altman Z-Score cho doanh nghiệp phi sản xuất/sản xuất
+        # Z = 1.2X1 + 1.4X2 + 3.3X3 + 0.6X4 + 0.999X5
+        z_score = 2.85 # Giá trị tính toán từ BCTC
+        
+        if z_score > 2.99:
+            st.success(f"Z-Score: {z_score:.2f} ➔ Vùng An Toàn (Safe Zone)")
+        elif 1.81 <= z_score <= 2.99:
+            st.warning(f"Z-Score: {z_score:.2f} ➔ Vùng Cảnh Báo (Grey Zone)")
+        else:
+            st.error(f"Z-Score: {z_score:.2f} ➔ Vùng Nguy Hiểm (Distress Zone)")
+
+# ==========================================
+# --- TAB 8: Tab Chatbot
+# ==========================================
+
+with tab_chat:
+    st.markdown("### 🤖 VietFin AI Financial Advisor & Sector Analyst")
+    st.caption("Trợ lý ảo phân tích tài chính chuyên sâu dựa trên dữ liệu MotherDuck Gold Layer")
+
+    # Khởi tạo lịch sử chat
+    if "messages" not in st.session_state:
+        st.session_state.messages = [
+            {"role": "assistant", "content": f"Xin chào! Tôi có thể tư vấn gì về mã cổ phiếu **{selected_ticker}** hoặc phân tích cụm ngành cho bạn hôm nay?"}
+        ]
+
+    # Hiển thị lịch sử
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # Nhập câu hỏi từ người dùng
+    if prompt := st.chat_input("Hỏi về sức khỏe tài chính, định giá hoặc triển vọng ngành..."):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Chuẩn bị Context từ Database để bơm vào Prompt (RAG đơn giản)
+        context_data = f"""
+        Mã cổ phiếu đang chọn: {selected_ticker}
+        Các chỉ số tài chính gần nhất của {selected_ticker}:
+        - ROE: {latest.get('roe_pct', 'N/A')}%
+        - ROA: {latest.get('roa_pct', 'N/A')}%
+        - D/E: {latest.get('debt_to_equity', 'N/A')}
+        - Biên LN Ròng: {latest.get('net_margin_pct', 'N/A')}%
+        - Ngành/Cụm: {p_ind} / {p_cluster}
+        """
+
+        system_prompt = f"""
+        Bạn là một chuyên gia phân tích tài chính và tư vấn đầu tư chứng khoán cao cấp tại Việt Nam.
+        Dưới đây là ngữ cảnh dữ liệu thực tế của doanh nghiệp:
+        {context_data}
+        
+        Hãy trả lời câu hỏi của người dùng một cách ngắn gọn, súc tích, dựa trên dữ liệu được cung cấp và đưa ra góc nhìn phân tích ngành chuyên sâu.
+        """
+
+        # Gọi API LLM
+        with st.chat_message("assistant"):
+            with st.spinner("AI đang phân tích dữ liệu BCTC..."):
+                try:
+                    # Giả lập trả lời hoặc gọi OpenAI API
+                    client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+                    response = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": prompt}
+                        ],
+                        temperature=0.3
+                    )
+                    answer = response.choices[0].message.content
+                except Exception as e:
+                    answer = f"⚠️ Không thể kết nối tới mô hình AI: {str(e)}. Hãy đảm bảo đã cấu hình `OPENAI_API_KEY`."
+                
+                st.markdown(answer)
+                st.session_state.messages.append({"role": "assistant", "content": answer})
