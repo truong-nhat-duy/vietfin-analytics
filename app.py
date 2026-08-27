@@ -6,9 +6,15 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import urllib.parse
-import openai
 from dotenv import load_dotenv
 from PIL import Image
+
+# Safe OpenAI Import
+try:
+    import openai
+    HAS_OPENAI = True
+except ImportError:
+    HAS_OPENAI = False
 
 # Machine Learning Modules
 from sklearn.preprocessing import StandardScaler
@@ -57,6 +63,24 @@ def get_coords_from_address(address):
         if k in addr_lower:
             return lat, lon, 14  # Tọa độ tỉnh/thành, Zoom in
     return 16.0, 106.0, 5
+
+def create_compatible_scatter_map(df, lat, lon, zoom, center, height=300, color=None, size=None, size_max=45, hover_name=None, hover_data=None, color_discrete_sequence=None):
+    """Tự động tương thích với cả Plotly 5.x (scatter_mapbox) và Plotly 6.x+ (scatter_map)"""
+    scatter_func = getattr(px, "scatter_map", None) or getattr(px, "scatter_mapbox")
+    style_param = "map_style" if hasattr(px, "scatter_map") else "mapbox_style"
+    
+    kwargs = {
+        "lat": lat, "lon": lon, "zoom": zoom, "center": center,
+        style_param: "open-street-map", "height": height
+    }
+    if color: kwargs["color"] = color
+    if size: kwargs["size"] = size
+    if size_max: kwargs["size_max"] = size_max
+    if hover_name: kwargs["hover_name"] = hover_name
+    if hover_data: kwargs["hover_data"] = hover_data
+    if color_discrete_sequence: kwargs["color_discrete_sequence"] = color_discrete_sequence
+
+    return scatter_func(df, **kwargs)
 
 # ==========================================
 # 1. CẤU HÌNH TRANG & THIẾT KẾ ĐỒ HỌA
@@ -239,6 +263,11 @@ with col_title:
     """, unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)
 
+# Khởi tạo thông tin toàn cục an toàn
+latest = {}
+p_ind = "N/A"
+p_cluster = "Chưa xác định"
+
 # ==========================================
 # 6. KHU VỰC TABS PHÂN TÍCH 
 # ==========================================
@@ -246,8 +275,9 @@ st.markdown("<br>", unsafe_allow_html=True)
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab_quant, tab_chat = st.tabs([
     "🎯 Tổng Quan", "🤖 Phân Cụm ML", "🚨 Cảnh Báo", "📋 Raw Data", 
     "📈 Lịch Sử Giá", "🏆 Xếp Hạng Tín Dụng", "👥 Quản Trị", "🗺️ Phân Tích Ngành",
-    "🧮 Định Giá", "💬 Trợ Lý ảo"
+    "🧮 Định Giá", "💬 Trợ Lý AI"
 ])
+
 # ==========================================
 # --- TAB 1: TỔNG QUAN ---
 # ==========================================
@@ -256,11 +286,10 @@ with tab1:
     df_ticker = df_raw[df_raw['ticker'] == selected_ticker].sort_values("report_period").copy()
     
     if not df_ticker.empty:
-        latest = df_ticker.iloc[-1]
+        latest = df_ticker.iloc[-1].to_dict()
         
         p_name = f"Công ty Cổ phần {selected_ticker}"
-        p_tax = p_ind = p_icb = p_web = p_address = p_phone = p_email = p_ceo = p_mcap = "N/A"
-        p_cluster = "Chưa xác định"
+        p_tax = p_web = p_address = p_phone = p_email = p_ceo = p_mcap = "N/A"
         
         region_keywords = {
             'hồ chí minh': 'Hồ Chí Minh', 'hcm': 'Hồ Chí Minh', 'tp.hcm': 'Hồ Chí Minh',
@@ -310,10 +339,8 @@ with tab1:
                 if sector_level1 != "N/A":
                     p_cluster = f"Cụm {sector_level1} - {company_region}"
 
-        # Thẻ Web
         web_display = f'<a href="{p_web if p_web.startswith("http") else "http://" + p_web}" target="_blank" style="color:#2563eb; text-decoration:none;">{p_web}</a>' if p_web != "N/A" else "N/A"
 
-        # Bố cục 2 cột cho Khối Thông tin và Bản đồ Động Plotly
         col_info, col_map = st.columns([1.8, 1])
         
         with col_info:
@@ -326,7 +353,7 @@ with tab1:
                 </div>
                 
                 <div style="display: flex; gap: 20px; flex-wrap: wrap; border-top: 1px solid #e2e8f0; padding-top: 15px;">
-                    <div><span style="color:#64748b; font-size:0.75rem; font-weight:700;">MÃ NGÀNH (ICB)</span><br><b style="color:#0ea5e9">{p_icb} - {p_ind}</b></div>
+                    <div><span style="color:#64748b; font-size:0.75rem; font-weight:700;">NGÀNH</span><br><b style="color:#0ea5e9">{p_ind}</b></div>
                     <div><span style="color:#64748b; font-size:0.75rem; font-weight:700;">PHÂN LỚP THEO PORTER</span><br><b style="color:#8b5cf6">🧩 {p_cluster}</b></div>
                     <div><span style="color:#64748b; font-size:0.75rem; font-weight:700;">VỐN HÓA</span><br><b style="color:#10b981">{p_mcap}</b></div>
                     <div><span style="color:#64748b; font-size:0.75rem; font-weight:700;">MÃ SỐ THUẾ</span><br><b style="color:#334155">{p_tax}</b></div>
@@ -337,24 +364,18 @@ with tab1:
             """, unsafe_allow_html=True)
             
         with col_map:
-            # Sinh Bản Đồ Động Plotly
             lat, lon, zoom_level = get_coords_from_address(p_address)
             df_loc = pd.DataFrame({'lat': [lat], 'lon': [lon], 'company': [p_name], 'address': [p_address]})
             
-            fig_loc = px.scatter_mapbox(
+            fig_loc = create_compatible_scatter_map(
                 df_loc, lat="lat", lon="lon", 
                 hover_name="company", 
                 hover_data={"lat": False, "lon": False, "address": True},
                 zoom=zoom_level, center={"lat": lat, "lon": lon},
-                mapbox_style="carto-positron"
+                height=260
             )
             fig_loc.update_traces(marker=dict(size=18, color="#ef4444", opacity=0.85))
-            fig_loc.update_layout(
-                margin={"r":0,"t":0,"l":0,"b":20}, 
-                height=260,
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)"
-            )
+            fig_loc.update_layout(margin={"r":0,"t":0,"l":0,"b":20}, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
             st.plotly_chart(fig_loc, use_container_width=True)
 
         st.markdown("#### 📊 Chỉ Số Tài Chính Cốt Lõi | Financial Ratios")
@@ -569,7 +590,8 @@ with tab6:
     
     if not df_tick_latest.empty:
         last_rec = df_tick_latest.iloc[-1]
-        de_ratio, roe_val = last_rec.get('debt_to_equity', 0) if pd.notnull(last_rec.get('debt_to_equity', 0)) else 0, last_rec.get('roe_pct', 0) if pd.notnull(last_rec.get('roe_pct', 0)) else 0
+        de_ratio = last_rec.get('debt_to_equity', 0) if pd.notnull(last_rec.get('debt_to_equity', 0)) else 0
+        roe_val = last_rec.get('roe_pct', 0) if pd.notnull(last_rec.get('roe_pct', 0)) else 0
         
         if de_ratio < 1.0 and roe_val > 15: rating, color, risk = "AAA", "#10b981", "Rủi ro cực thấp"
         elif de_ratio < 2.0 and roe_val > 10: rating, color, risk = "A+", "#3b82f6", "Rủi ro thấp"
@@ -665,7 +687,6 @@ with tab8:
 
         df_geo = df_profile.copy()
         
-        # Đảm bảo cột sector_level1 tồn tại
         if 'sector_level1' not in df_geo.columns:
             ind_cols = [c for c in ['industry', 'icb_name', 'industry_name', 'sector'] if c in df_geo.columns]
             df_geo['sector_level1'] = df_geo[ind_cols[0]] if ind_cols else 'Chưa phân loại'
@@ -684,7 +705,7 @@ with tab8:
             c1, c2 = st.columns([2, 1])
             with c1:
                 st.markdown("<div class='glass-card'>#### 📍 Bản Đồ Không Gian Ngành Nghề & Quy Mô</div>", unsafe_allow_html=True)
-                fig_map = px.scatter_mapbox(
+                fig_map = create_compatible_scatter_map(
                     df_geo, lat="lat", lon="lon", color="sector_level1", 
                     size="mcap_numeric", size_max=45,
                     hover_name="company_name" if "company_name" in df_geo.columns else "ticker", 
@@ -695,8 +716,7 @@ with tab8:
                         "lat": False, "lon": False
                     },
                     color_discrete_sequence=px.colors.qualitative.Alphabet,
-                    zoom=4.8, center={"lat": 16.0, "lon": 106.0},
-                    mapbox_style="carto-positron", height=650
+                    zoom=4.8, center={"lat": 16.0, "lon": 106.0}, height=650
                 )
                 fig_map.update_layout(
                     margin={"r":0,"t":0,"l":0,"b":0}, 
@@ -730,7 +750,7 @@ with tab8:
         st.info("Chưa có dữ liệu thông tin doanh nghiệp (địa chỉ) để lập bản đồ.")
 
 # ==========================================
-# --- TAB 9: Mô Hình Định Lượng & Định Giá Nâng Cao ---
+# --- TAB 9: ĐỊNH GIÁ ---
 # ==========================================
 
 with tab_quant:
@@ -744,8 +764,7 @@ with tab_quant:
         g_rate = st.slider("Tốc độ tăng trưởng vĩnh viễn g (%)", 1.0, 5.0, 2.5) / 100.0
         forecast_years = st.slider("Số năm dự báo", 3, 10, 5)
         
-        # Giả định lấy LNTT/Dòng tiền từ DB
-        fcf_base = 5000 # Tỷ VNĐ (Ví dụ)
+        fcf_base = 5000
         future_fcfs = [fcf_base * ((1 + 0.08) ** i) for i in range(1, forecast_years + 1)]
         pv_fcfs = sum([fcf / ((1 + wacc) ** i) for i, fcf in enumerate(future_fcfs, 1)])
         
@@ -757,9 +776,7 @@ with tab_quant:
 
     with q_col2:
         st.markdown("<div class='glass-card'>#### ⚠️ Mô Hình Cảnh Báo Phá Sản Altman Z-Score</div>", unsafe_allow_html=True)
-        # Giả lập tham số Altman Z-Score cho doanh nghiệp phi sản xuất/sản xuất
-        # Z = 1.2X1 + 1.4X2 + 3.3X3 + 0.6X4 + 0.999X5
-        z_score = 2.85 # Giá trị tính toán từ BCTC
+        z_score = 2.85
         
         if z_score > 2.99:
             st.success(f"Z-Score: {z_score:.2f} ➔ Vùng An Toàn (Safe Zone)")
@@ -769,31 +786,27 @@ with tab_quant:
             st.error(f"Z-Score: {z_score:.2f} ➔ Vùng Nguy Hiểm (Distress Zone)")
 
 # ==========================================
-# --- TAB 8: Tab Chatbot
+# --- TAB 10: TRỢ LÝ AI ---
 # ==========================================
 
 with tab_chat:
-    st.markdown("### 🤖 VietFin AI Financial Advisor & Sector Analyst")
+    st.markdown("### 💬 VietFin AI Financial Advisor & Sector Analyst")
     st.caption("Trợ lý ảo phân tích tài chính chuyên sâu dựa trên dữ liệu MotherDuck Gold Layer")
 
-    # Khởi tạo lịch sử chat
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {"role": "assistant", "content": f"Xin chào! Tôi có thể tư vấn gì về mã cổ phiếu **{selected_ticker}** hoặc phân tích cụm ngành cho bạn hôm nay?"}
         ]
 
-    # Hiển thị lịch sử
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # Nhập câu hỏi từ người dùng
     if prompt := st.chat_input("Hỏi về sức khỏe tài chính, định giá hoặc triển vọng ngành..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # Chuẩn bị Context từ Database để bơm vào Prompt (RAG đơn giản)
         context_data = f"""
         Mã cổ phiếu đang chọn: {selected_ticker}
         Các chỉ số tài chính gần nhất của {selected_ticker}:
@@ -812,23 +825,25 @@ with tab_chat:
         Hãy trả lời câu hỏi của người dùng một cách ngắn gọn, súc tích, dựa trên dữ liệu được cung cấp và đưa ra góc nhìn phân tích ngành chuyên sâu.
         """
 
-        # Gọi API LLM
         with st.chat_message("assistant"):
             with st.spinner("AI đang phân tích dữ liệu BCTC..."):
-                try:
-                    # Giả lập trả lời hoặc gọi OpenAI API
-                    client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-                    response = client.chat.completions.create(
-                        model="gpt-4o-mini",
-                        messages=[
-                            {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": prompt}
-                        ],
-                        temperature=0.3
-                    )
-                    answer = response.choices[0].message.content
-                except Exception as e:
-                    answer = f"⚠️ Không thể kết nối tới mô hình AI: {str(e)}. Hãy đảm bảo đã cấu hình `OPENAI_API_KEY`."
-                
+                if HAS_OPENAI and (os.getenv("OPENAI_API_KEY") or getattr(st, "secrets", {}).get("OPENAI_API_KEY")):
+                    try:
+                        api_key = os.getenv("OPENAI_API_KEY") or st.secrets["OPENAI_API_KEY"]
+                        client = openai.OpenAI(api_key=api_key)
+                        response = client.chat.completions.create(
+                            model="gpt-4o-mini",
+                            messages=[
+                                {"role": "system", "content": system_prompt},
+                                {"role": "user", "content": prompt}
+                            ],
+                            temperature=0.3
+                        )
+                        answer = response.choices[0].message.content
+                    except Exception as e:
+                        answer = f"⚠️ Không thể kết nối tới mô hình AI: {str(e)}"
+                else:
+                    answer = f"🤖 **Tóm Tắt Phân Tích Fast-Track ({selected_ticker}):** ROE đạt {latest.get('roe_pct', 'N/A')}%, Tỷ lệ Nợ/VCSH ở mức {latest.get('debt_to_equity', 'N/A')}x. *(Vui lòng cài đặt gói `openai` và cấu hình `OPENAI_API_KEY` để nhận phản hồi LLM sinh động)*."
+
                 st.markdown(answer)
                 st.session_state.messages.append({"role": "assistant", "content": answer})
