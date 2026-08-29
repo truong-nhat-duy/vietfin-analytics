@@ -144,14 +144,18 @@ con = get_db_connection()
 def load_gold_ratios():
     try:
         df = con.execute("SELECT * FROM fact_ratio_summary").df()
+        # Đã sửa lại tên cột gross_margin và after_tax_profit_margin chuẩn theo DB
         col_map = {
-            'year': 'report_period', 'period': 'report_period',
+            'year': 'report_period', 'period': 'report_period', 'quarter': 'report_period',
             'roe': 'roe_pct', 'roa': 'roa_pct',
-            'netMargin': 'net_margin_pct', 'grossMargin': 'gross_margin_pct',
+            'after_tax_profit_margin': 'net_margin_pct', 
+            'gross_margin': 'gross_margin_pct',
             'debtEquity': 'debt_to_equity'
         }
         df = df.rename(columns=col_map)
-        for c in ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct', 'net_revenue', 'net_income']:
+        
+        # Bỏ net_revenue và net_income khỏi danh sách tạo NaN ảo
+        for c in ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']:
             if c not in df.columns: df[c] = np.nan
         if 'report_period' not in df.columns: df['report_period'] = "Q/Y"
         return df
@@ -226,10 +230,18 @@ existing_features = [col for col in feature_cols if col in df_raw.columns]
 if existing_features and not df_raw.empty:
     df_ml_time = df_raw.copy()
     
-    # Đảm bảo xử lý cột net_income để tránh lỗi y_shap chứa NaN
-    if 'net_income' not in df_ml_time.columns:
-        target_col = [c for c in df_ml_time.columns if 'loi_nhuan' in c.lower() or 'income' in c.lower()]
-        df_ml_time['net_income'] = df_ml_time[target_col[0]] if target_col else 0.0
+    # GHÉP DỮ LIỆU NET_INCOME THẬT TỪ fact_financials VÀO DỮ LIỆU ML
+    try:
+        # Lấy cột lợi nhuận từ Database
+        df_all_fin = con.execute("SELECT ticker, report_period, net_income FROM fact_financials").df()
+        # Merge dựa trên mã cổ phiếu và kỳ báo cáo
+        df_ml_time = pd.merge(df_ml_time, df_all_fin, on=['ticker', 'report_period'], how='left')
+        # Điền 0 cho những dòng không có dữ liệu để tránh lỗi NaN
+        df_ml_time['net_income'] = df_ml_time['net_income'].fillna(0.0)
+    except Exception:
+        # Fallback an toàn nếu lỗi kết nối DB
+        if 'net_income' not in df_ml_time.columns:
+            df_ml_time['net_income'] = 0.0
 
     df_ml = df_ml_time.sort_values("report_period").groupby("ticker").last().reset_index()
     
@@ -394,30 +406,56 @@ with tab1:
         c5.markdown(f'<div class="metric-container"><div class="metric-label">Biên LN Gộp</div><div class="metric-value">{v_gm}%</div></div>', unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
-
-        st.markdown("#### 💰 Kết Quả Kinh Doanh | Financial Performance")
+       	st.markdown("#### 💰 Kết Quả Kinh Doanh | Financial Performance")
         period_mode = st.radio("Kỳ thời gian | Period View:", options=["Theo Quý | Quarterly", "Theo Năm | Yearly"], horizontal=True)
 
-        df_chart = df_ticker.copy().fillna(0)
+        df_chart = df_ticker.copy()
+
+        # 1. LOẠI BỎ CỘT RỖNG CŨ (NẾU CÓ) ĐỂ CHUẨN BỊ LẤY DỮ LIỆU THẬT
+        if 'net_revenue' in df_chart.columns:
+            df_chart = df_chart.drop(columns=['net_revenue', 'net_income'], errors='ignore')
+            
+        # 2. GHÉP DỮ LIỆU DOANH THU & LỢI NHUẬN THẬT TỪ BẢNG df_fin
+        if not df_fin.empty and 'report_period' in df_fin.columns:
+            df_fin_sub = df_fin[['report_period', 'net_revenue', 'net_income']].drop_duplicates(subset=['report_period'])
+            df_chart = pd.merge(df_chart, df_fin_sub, on='report_period', how='left')
+            
+        df_chart = df_chart.fillna(0)
+
+        # 3. LỌC VÀ TỔNG HỢP THEO KỲ THỜI GIAN
         if "Năm" in period_mode:
             df_chart_y = df_chart[~df_chart['report_period'].astype(str).str.contains('Q', case=False, na=False)]
             if not df_chart_y.empty:
                 df_chart = df_chart_y
             else:
                 df_chart['year_extracted'] = df_chart['report_period'].astype(str).str.extract(r'(\d{4})')
-                df_chart = df_chart.groupby('year_extracted', as_index=False).agg({'net_revenue': 'sum', 'net_income': 'sum', 'roe_pct': 'mean', 'roa_pct': 'mean'}).rename(columns={'year_extracted': 'report_period'})
+                df_chart = df_chart.groupby('year_extracted', as_index=False).agg({
+                    'net_revenue': 'sum', 
+                    'net_income': 'sum', 
+                    'roe_pct': 'mean', 
+                    'roa_pct': 'mean'
+                }).rename(columns={'year_extracted': 'report_period'})
         else:
             df_chart_q = df_chart[df_chart['report_period'].astype(str).str.contains('Q', case=False, na=False)]
-            if not df_chart_q.empty: df_chart = df_chart_q
+            if not df_chart_q.empty: 
+                df_chart = df_chart_q
 
+        # 4. VẼ BIỂU ĐỒ KẾT QUẢ KINH DOANH
         col_chart1, col_chart2 = st.columns([3, 2])
+
         with col_chart1:
             st.caption("Doanh thu bán hàng (Cột) & Lợi nhuận sau thuế (Đường)")
             fig_rev = go.Figure()
             fig_rev.add_trace(go.Bar(x=df_chart['report_period'], y=df_chart['net_revenue'], name="Doanh Thu", marker_color="#2563eb"))
             fig_rev.add_trace(go.Scatter(x=df_chart['report_period'], y=df_chart['net_income'], name="LNST", yaxis="y2", line=dict(color="#0ea5e9", width=3), mode="lines+markers"))
-            fig_rev.update_layout(yaxis=dict(title="Doanh thu (Tỷ VNĐ)"), yaxis2=dict(title="LNST (Tỷ VNĐ)", overlaying="y", side="right"), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+            
+            fig_rev.update_layout(
+                yaxis=dict(title="Doanh thu (Tỷ VNĐ)"), 
+                yaxis2=dict(title="LNST (Tỷ VNĐ)", overlaying="y", side="right"), 
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
             st.plotly_chart(apply_custom_plotly_layout(fig_rev), use_container_width=True)
+
 
         with col_chart2:
             st.caption("Xu hướng Chỉ số Sinh lời (%)")
