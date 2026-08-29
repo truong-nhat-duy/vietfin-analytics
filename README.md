@@ -268,6 +268,6 @@ pytest tests/ -v --cov=src/vietfin
 * [ ] **Phase 7:** Continuous Deployment & Automated Data Refresh via **GitHub Actions**.
 
 ```
-é).*
+
 
 ```
