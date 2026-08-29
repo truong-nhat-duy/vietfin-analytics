@@ -1,0 +1,866 @@
+=== BÁO CÁO CHẨN ĐOÁN DỮ LIỆU VIETFIN (MOTHERDUCK) ===
+
+==================================================
+📦 BẢNG: dim_company
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ ticker (VARCHAR)
+  ▪ company_name (VARCHAR)
+  ▪ tax_id (VARCHAR)
+  ▪ address (VARCHAR)
+  ▪ phone (VARCHAR)
+  ▪ email (VARCHAR)
+  ▪ website (VARCHAR)
+  ▪ ceo (VARCHAR)
+  ▪ market_cap (DOUBLE)
+  ▪ icb_code (INTEGER)
+  ▪ sector_level1 (VARCHAR)
+  ▪ industry_level2 (VARCHAR)
+  ▪ detail_industry_level4 (VARCHAR)
+  ▪ exchange (VARCHAR)
+  ▪ retrieved_at (VARCHAR)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 1525
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: []
+  - Các cột chứa ROA: []
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - ticker: Full 100% dữ liệu
+  - company_name: Full 100% dữ liệu
+  - tax_id: Full 100% dữ liệu
+  - address: Full 100% dữ liệu
+  - phone: Full 100% dữ liệu
+  - email: Rỗng 12/1525 dòng (0.79%)
+  - website: Rỗng 2/1525 dòng (0.13%)
+  - ceo: Rỗng 1/1525 dòng (0.07%)
+  - market_cap: Full 100% dữ liệu
+  - icb_code: Rỗng 1525/1525 dòng (100.0%)
+  - sector_level1: Full 100% dữ liệu
+  - industry_level2: Full 100% dữ liệu
+  - detail_industry_level4: Full 100% dữ liệu
+  - exchange: Full 100% dữ liệu
+  - retrieved_at: Full 100% dữ liệu
+
+==================================================
+📦 BẢNG: dim_officers
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ symbol (VARCHAR)
+  ▪ officer_name (VARCHAR)
+  ▪ officer_position (VARCHAR)
+  ▪ officer_own_percent (DOUBLE)
+  ▪ officer_own_quantity (DOUBLE)
+  ▪ update_date (VARCHAR)
+  ▪ _officer_source (VARCHAR)
+  ▪ from_date (VARCHAR)
+  ▪ position (VARCHAR)
+  ▪ name (VARCHAR)
+  ▪ position_en (VARCHAR)
+  ▪ owner_code (VARCHAR)
+  ▪ ticker (VARCHAR)
+  ▪ dataset (VARCHAR)
+  ▪ source_name (VARCHAR)
+  ▪ source_url (VARCHAR)
+  ▪ retrieved_at (VARCHAR)
+  ▪ document_id (VARCHAR)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 23048
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: []
+  - Các cột chứa ROA: []
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - symbol: Rỗng 15702/23048 dòng (68.13%)
+  - officer_name: Rỗng 15702/23048 dòng (68.13%)
+  - officer_position: Rỗng 15702/23048 dòng (68.13%)
+  - officer_own_percent: Rỗng 15702/23048 dòng (68.13%)
+  - officer_own_quantity: Rỗng 15702/23048 dòng (68.13%)
+  - update_date: Rỗng 15702/23048 dòng (68.13%)
+  - _officer_source: Full 100% dữ liệu
+  - from_date: Rỗng 7346/23048 dòng (31.87%)
+  - position: Rỗng 7346/23048 dòng (31.87%)
+  - name: Rỗng 7346/23048 dòng (31.87%)
+  - position_en: Rỗng 7346/23048 dòng (31.87%)
+  - owner_code: Rỗng 7346/23048 dòng (31.87%)
+  - ticker: Full 100% dữ liệu
+  - dataset: Full 100% dữ liệu
+  - source_name: Full 100% dữ liệu
+  - source_url: Full 100% dữ liệu
+  - retrieved_at: Full 100% dữ liệu
+  - document_id: Full 100% dữ liệu
+
+==================================================
+📦 BẢNG: dim_shareholders
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ symbol (VARCHAR)
+  ▪ update_date (VARCHAR)
+  ▪ ticker (VARCHAR)
+  ▪ dataset (VARCHAR)
+  ▪ source_name (VARCHAR)
+  ▪ source_url (VARCHAR)
+  ▪ retrieved_at (VARCHAR)
+  ▪ document_id (VARCHAR)
+  ▪ share_holder (VARCHAR)
+  ▪ quantity (DOUBLE)
+  ▪ share_own_percent (DOUBLE)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 25857
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: []
+  - Các cột chứa ROA: []
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - symbol: Full 100% dữ liệu
+  - update_date: Full 100% dữ liệu
+  - ticker: Full 100% dữ liệu
+  - dataset: Full 100% dữ liệu
+  - source_name: Full 100% dữ liệu
+  - source_url: Full 100% dữ liệu
+  - retrieved_at: Full 100% dữ liệu
+  - document_id: Full 100% dữ liệu
+  - share_holder: Full 100% dữ liệu
+  - quantity: Full 100% dữ liệu
+  - share_own_percent: Full 100% dữ liệu
+
+==================================================
+📦 BẢNG: fact_daily_prices
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ ticker (VARCHAR)
+  ▪ dataset (VARCHAR)
+  ▪ source_name (VARCHAR)
+  ▪ source_url (VARCHAR)
+  ▪ retrieved_at (VARCHAR)
+  ▪ document_id (VARCHAR)
+  ▪ time (TIMESTAMP_NS)
+  ▪ open (DOUBLE)
+  ▪ high (DOUBLE)
+  ▪ low (DOUBLE)
+  ▪ close (DOUBLE)
+  ▪ volume (DOUBLE)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 1901126
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: []
+  - Các cột chứa ROA: []
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - ticker: Full 100% dữ liệu
+  - dataset: Full 100% dữ liệu
+  - source_name: Full 100% dữ liệu
+  - source_url: Full 100% dữ liệu
+  - retrieved_at: Full 100% dữ liệu
+  - document_id: Full 100% dữ liệu
+  - time: Full 100% dữ liệu
+  - open: Full 100% dữ liệu
+  - high: Full 100% dữ liệu
+  - low: Full 100% dữ liệu
+  - close: Full 100% dữ liệu
+  - volume: Full 100% dữ liệu
+
+==================================================
+📦 BẢNG: fact_financials
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ ticker (VARCHAR)
+  ▪ period (VARCHAR)
+  ▪ report_period (VARCHAR)
+  ▪ net_revenue (DOUBLE)
+  ▪ gross_profit (DOUBLE)
+  ▪ net_income (DOUBLE)
+  ▪ total_assets (DOUBLE)
+  ▪ total_liabilities (DOUBLE)
+  ▪ total_equity (DOUBLE)
+  ▪ roe_pct (DOUBLE)
+  ▪ roa_pct (DOUBLE)
+  ▪ debt_to_equity (DOUBLE)
+  ▪ gross_margin_pct (DOUBLE)
+  ▪ net_margin_pct (DOUBLE)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 4621
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: ['roe_pct']
+  - Các cột chứa ROA: ['roa_pct']
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - ticker: Full 100% dữ liệu
+  - period: Full 100% dữ liệu
+  - report_period: Full 100% dữ liệu
+  - net_revenue: Rỗng 512/4621 dòng (11.08%)
+  - gross_profit: Rỗng 512/4621 dòng (11.08%)
+  - net_income: Rỗng 423/4621 dòng (9.15%)
+    -> 💡 Chú ý: Biến Lợi nhuận có dữ liệu rỗng. Cần xử lý kỹ cho mô hình SHAP và định giá.
+  - total_assets: Rỗng 384/4621 dòng (8.31%)
+  - total_liabilities: Rỗng 339/4621 dòng (7.34%)
+  - total_equity: Rỗng 5/4621 dòng (0.11%)
+  - roe_pct: Rỗng 461/4621 dòng (9.98%)
+  - roa_pct: Rỗng 813/4621 dòng (17.59%)
+  - debt_to_equity: Rỗng 373/4621 dòng (8.07%)
+  - gross_margin_pct: Rỗng 550/4621 dòng (11.9%)
+  - net_margin_pct: Rỗng 558/4621 dòng (12.08%)
+
+==================================================
+📦 BẢNG: fact_ratio_summary
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ symbol (VARCHAR)
+  ▪ ticker (VARCHAR)
+  ▪ dataset (VARCHAR)
+  ▪ source_name (VARCHAR)
+  ▪ source_url (VARCHAR)
+  ▪ retrieved_at (VARCHAR)
+  ▪ document_id (VARCHAR)
+  ▪ year (VARCHAR)
+  ▪ quarter (DOUBLE)
+  ▪ ratio_ttm_id (DOUBLE)
+  ▪ ratio_type (VARCHAR)
+  ▪ organ_code (VARCHAR)
+  ▪ year_report (DOUBLE)
+  ▪ number_of_shares_mkt_cap (DOUBLE)
+  ▪ market_cap (DOUBLE)
+  ▪ dividend_yield (DOUBLE)
+  ▪ pe (DOUBLE)
+  ▪ pb (DOUBLE)
+  ▪ ps (DOUBLE)
+  ▪ price_to_cash_flow (DOUBLE)
+  ▪ ev_to_ebitda (DOUBLE)
+  ▪ cash_ratio (DOUBLE)
+  ▪ quick_ratio (DOUBLE)
+  ▪ current_ratio (DOUBLE)
+  ▪ owners_equity (DOUBLE)
+  ▪ debt_per_equity (DOUBLE)
+  ▪ debt_to_equity (DOUBLE)
+  ▪ roe (DOUBLE)
+  ▪ roa (DOUBLE)
+  ▪ day_sale_outstanding (DOUBLE)
+  ▪ days_inventory_outstanding (DOUBLE)
+  ▪ days_payable_outstanding (DOUBLE)
+  ▪ gross_margin (DOUBLE)
+  ▪ ebit_margin (DOUBLE)
+  ▪ pre_tax_profit_margin (DOUBLE)
+  ▪ after_tax_profit_margin (DOUBLE)
+  ▪ asset_turnover (DOUBLE)
+  ▪ net_interest_margin (DOUBLE)
+  ▪ average_yield_on_earning_assets (DOUBLE)
+  ▪ average_cost_of_financing (DOUBLE)
+  ▪ non_and_interest_income (DOUBLE)
+  ▪ cost_to_income (DOUBLE)
+  ▪ loans_growth (DOUBLE)
+  ▪ deposit_growth (DOUBLE)
+  ▪ equity_to_liabilities (DOUBLE)
+  ▪ equity_to_loans (DOUBLE)
+  ▪ total_equity_total_asset (DOUBLE)
+  ▪ ldr_loan_deposit_ratio (DOUBLE)
+  ▪ npl (DOUBLE)
+  ▪ loans_loss_reserves_to_np_ls (DOUBLE)
+  ▪ loans_loss_reserve_to_loans (DOUBLE)
+  ▪ provision_to_outstanding_loans (DOUBLE)
+  ▪ ebit (DOUBLE)
+  ▪ ebitda (DOUBLE)
+  ▪ roic (DOUBLE)
+  ▪ cash_cycle (DOUBLE)
+  ▪ fixed_asset_turnover (DOUBLE)
+  ▪ financial_leverage (DOUBLE)
+  ▪ cir (DOUBLE)
+  ▪ car (DOUBLE)
+  ▪ casa_ratio (DOUBLE)
+  ▪ nob66 (DOUBLE)
+  ▪ nob69 (DOUBLE)
+  ▪ nob70 (DOUBLE)
+  ▪ bsb113 (DOUBLE)
+  ▪ ratio_year_id (DOUBLE)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 48459
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: ['roe']
+  - Các cột chứa ROA: ['roa']
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - symbol: Full 100% dữ liệu
+  - ticker: Full 100% dữ liệu
+  - dataset: Full 100% dữ liệu
+  - source_name: Full 100% dữ liệu
+  - source_url: Full 100% dữ liệu
+  - retrieved_at: Full 100% dữ liệu
+  - document_id: Full 100% dữ liệu
+  - year: Full 100% dữ liệu
+  - quarter: Full 100% dữ liệu
+  - ratio_ttm_id: Full 100% dữ liệu
+  - ratio_type: Full 100% dữ liệu
+  - organ_code: Full 100% dữ liệu
+  - year_report: Full 100% dữ liệu
+  - number_of_shares_mkt_cap: Rỗng 225/48459 dòng (0.46%)
+  - market_cap: Rỗng 225/48459 dòng (0.46%)
+    -> 💡 Chú ý: Biến Vốn hóa có dữ liệu rỗng. Cần fallback trong Tab 1.
+  - dividend_yield: Rỗng 121/48459 dòng (0.25%)
+  - pe: Rỗng 118/48459 dòng (0.24%)
+  - pb: Rỗng 398/48459 dòng (0.82%)
+  - ps: Rỗng 121/48459 dòng (0.25%)
+  - price_to_cash_flow: Rỗng 121/48459 dòng (0.25%)
+  - ev_to_ebitda: Rỗng 121/48459 dòng (0.25%)
+  - cash_ratio: Rỗng 124/48459 dòng (0.26%)
+  - quick_ratio: Rỗng 124/48459 dòng (0.26%)
+  - current_ratio: Rỗng 124/48459 dòng (0.26%)
+  - owners_equity: Rỗng 124/48459 dòng (0.26%)
+  - debt_per_equity: Rỗng 124/48459 dòng (0.26%)
+  - debt_to_equity: Rỗng 124/48459 dòng (0.26%)
+  - roe: Rỗng 124/48459 dòng (0.26%)
+  - roa: Rỗng 124/48459 dòng (0.26%)
+  - day_sale_outstanding: Rỗng 124/48459 dòng (0.26%)
+  - days_inventory_outstanding: Rỗng 124/48459 dòng (0.26%)
+  - days_payable_outstanding: Rỗng 124/48459 dòng (0.26%)
+  - gross_margin: Rỗng 124/48459 dòng (0.26%)
+  - ebit_margin: Rỗng 124/48459 dòng (0.26%)
+  - pre_tax_profit_margin: Rỗng 124/48459 dòng (0.26%)
+  - after_tax_profit_margin: Full 100% dữ liệu
+  - asset_turnover: Rỗng 124/48459 dòng (0.26%)
+  - net_interest_margin: Rỗng 124/48459 dòng (0.26%)
+  - average_yield_on_earning_assets: Rỗng 124/48459 dòng (0.26%)
+  - average_cost_of_financing: Rỗng 124/48459 dòng (0.26%)
+  - non_and_interest_income: Rỗng 124/48459 dòng (0.26%)
+  - cost_to_income: Rỗng 124/48459 dòng (0.26%)
+  - loans_growth: Rỗng 124/48459 dòng (0.26%)
+  - deposit_growth: Rỗng 124/48459 dòng (0.26%)
+  - equity_to_liabilities: Rỗng 124/48459 dòng (0.26%)
+  - equity_to_loans: Rỗng 124/48459 dòng (0.26%)
+  - total_equity_total_asset: Rỗng 124/48459 dòng (0.26%)
+  - ldr_loan_deposit_ratio: Rỗng 124/48459 dòng (0.26%)
+  - npl: Rỗng 124/48459 dòng (0.26%)
+  - loans_loss_reserves_to_np_ls: Rỗng 124/48459 dòng (0.26%)
+  - loans_loss_reserve_to_loans: Rỗng 124/48459 dòng (0.26%)
+  - provision_to_outstanding_loans: Rỗng 124/48459 dòng (0.26%)
+  - ebit: Full 100% dữ liệu
+  - ebitda: Full 100% dữ liệu
+  - roic: Rỗng 124/48459 dòng (0.26%)
+  - cash_cycle: Rỗng 124/48459 dòng (0.26%)
+  - fixed_asset_turnover: Rỗng 124/48459 dòng (0.26%)
+  - financial_leverage: Rỗng 124/48459 dòng (0.26%)
+  - cir: Rỗng 124/48459 dòng (0.26%)
+  - car: Rỗng 47425/48459 dòng (97.87%)
+  - casa_ratio: Rỗng 47425/48459 dòng (97.87%)
+  - nob66: Rỗng 47425/48459 dòng (97.87%)
+  - nob69: Rỗng 47425/48459 dòng (97.87%)
+  - nob70: Rỗng 47425/48459 dòng (97.87%)
+  - bsb113: Rỗng 688/48459 dòng (1.42%)
+  - ratio_year_id: Rỗng 37123/48459 dòng (76.61%)
+
+==================================================
+📦 BẢNG: gold_corporate_officers
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ symbol (VARCHAR)
+  ▪ officer_name (VARCHAR)
+  ▪ officer_position (VARCHAR)
+  ▪ officer_own_percent (DOUBLE)
+  ▪ officer_own_quantity (DOUBLE)
+  ▪ update_date (VARCHAR)
+  ▪ _officer_source (VARCHAR)
+  ▪ from_date (VARCHAR)
+  ▪ position (VARCHAR)
+  ▪ name (VARCHAR)
+  ▪ position_en (VARCHAR)
+  ▪ owner_code (VARCHAR)
+  ▪ ticker (VARCHAR)
+  ▪ dataset (VARCHAR)
+  ▪ source_name (VARCHAR)
+  ▪ source_url (VARCHAR)
+  ▪ retrieved_at (VARCHAR)
+  ▪ document_id (VARCHAR)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 23048
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: []
+  - Các cột chứa ROA: []
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - symbol: Rỗng 15702/23048 dòng (68.13%)
+  - officer_name: Rỗng 15702/23048 dòng (68.13%)
+  - officer_position: Rỗng 15702/23048 dòng (68.13%)
+  - officer_own_percent: Rỗng 15702/23048 dòng (68.13%)
+  - officer_own_quantity: Rỗng 15702/23048 dòng (68.13%)
+  - update_date: Rỗng 15702/23048 dòng (68.13%)
+  - _officer_source: Full 100% dữ liệu
+  - from_date: Rỗng 7346/23048 dòng (31.87%)
+  - position: Rỗng 7346/23048 dòng (31.87%)
+  - name: Rỗng 7346/23048 dòng (31.87%)
+  - position_en: Rỗng 7346/23048 dòng (31.87%)
+  - owner_code: Rỗng 7346/23048 dòng (31.87%)
+  - ticker: Full 100% dữ liệu
+  - dataset: Full 100% dữ liệu
+  - source_name: Full 100% dữ liệu
+  - source_url: Full 100% dữ liệu
+  - retrieved_at: Full 100% dữ liệu
+  - document_id: Full 100% dữ liệu
+
+==================================================
+📦 BẢNG: gold_corporate_overview
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ symbol_vci (VARCHAR)
+  ▪ organ_code_vci (VARCHAR)
+  ▪ current_price_vci (DOUBLE)
+  ▪ market_cap_vci (DOUBLE)
+  ▪ issue_share_vci (DOUBLE)
+  ▪ tag_vci (INTEGER)
+  ▪ rating_vci (VARCHAR)
+  ▪ rating_as_of_vci (VARCHAR)
+  ▪ organ_name_vci (VARCHAR)
+  ▪ organ_short_name_vci (VARCHAR)
+  ▪ com_type_code_vci (VARCHAR)
+  ▪ com_group_code_vci (VARCHAR)
+  ▪ sector_vci (VARCHAR)
+  ▪ average_match_value1_month_vci (DOUBLE)
+  ▪ average_match_volume1_month_vci (DOUBLE)
+  ▪ highest_price1_year_vci (DOUBLE)
+  ▪ lowest_price1_year_vci (DOUBLE)
+  ▪ foreigner_percentage_vci (DOUBLE)
+  ▪ maximum_foreign_percentage_vci (DOUBLE)
+  ▪ state_percentage_vci (DOUBLE)
+  ▪ analyst_vci (VARCHAR)
+  ▪ upside_to_target_percent_vci (DOUBLE)
+  ▪ dividend_per_share_tsr_vci (DOUBLE)
+  ▪ projected_tsr_percentage_vci (DOUBLE)
+  ▪ target_price_vci (DOUBLE)
+  ▪ company_profile_vci (VARCHAR)
+  ▪ in_cu_vci (BOOLEAN)
+  ▪ icb_code_lv2_vci (VARCHAR)
+  ▪ icb_code_lv4_vci (VARCHAR)
+  ▪ free_float_vci (BIGINT)
+  ▪ free_float_percentage_vci (DOUBLE)
+  ▪ listing_date_vci (VARCHAR)
+  ▪ prev_insight_vci (VARCHAR)
+  ▪ fund_info_vci (INTEGER)
+  ▪ is_bank_vci (BOOLEAN)
+  ▪ listing_vci (BOOLEAN)
+  ▪ bank_vci (BOOLEAN)
+  ▪ business_model_kbs (VARCHAR)
+  ▪ symbol_kbs (VARCHAR)
+  ▪ founded_date_kbs (VARCHAR)
+  ▪ charter_capital_kbs (BIGINT)
+  ▪ number_of_employees_kbs (BIGINT)
+  ▪ listing_date_kbs (VARCHAR)
+  ▪ par_value_kbs (BIGINT)
+  ▪ exchange_kbs (VARCHAR)
+  ▪ listing_price_kbs (BIGINT)
+  ▪ listed_volume_kbs (BIGINT)
+  ▪ ceo_name_kbs (VARCHAR)
+  ▪ ceo_position_kbs (VARCHAR)
+  ▪ inspector_name_kbs (VARCHAR)
+  ▪ inspector_position_kbs (VARCHAR)
+  ▪ establishment_license_kbs (VARCHAR)
+  ▪ business_code_kbs (VARCHAR)
+  ▪ tax_id_kbs (VARCHAR)
+  ▪ auditor_kbs (VARCHAR)
+  ▪ company_type_kbs (VARCHAR)
+  ▪ address_kbs (VARCHAR)
+  ▪ phone_kbs (VARCHAR)
+  ▪ fax_kbs (VARCHAR)
+  ▪ email_kbs (VARCHAR)
+  ▪ website_kbs (VARCHAR)
+  ▪ branches_kbs (VARCHAR)
+  ▪ history_kbs (VARCHAR)
+  ▪ free_float_percentage_kbs (BIGINT)
+  ▪ free_float_kbs (BIGINT)
+  ▪ outstanding_shares_kbs (BIGINT)
+  ▪ ticker (VARCHAR)
+  ▪ dataset (VARCHAR)
+  ▪ source_name (VARCHAR)
+  ▪ source_url (VARCHAR)
+  ▪ retrieved_at (VARCHAR)
+  ▪ document_id (VARCHAR)
+  ▪ as_of_date_kbs (VARCHAR)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 1525
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: []
+  - Các cột chứa ROA: []
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - symbol_vci: Full 100% dữ liệu
+  - organ_code_vci: Full 100% dữ liệu
+  - current_price_vci: Full 100% dữ liệu
+  - market_cap_vci: Full 100% dữ liệu
+  - issue_share_vci: Full 100% dữ liệu
+  - tag_vci: Rỗng 1525/1525 dòng (100.0%)
+  - rating_vci: Rỗng 1441/1525 dòng (94.49%)
+  - rating_as_of_vci: Rỗng 1441/1525 dòng (94.49%)
+  - organ_name_vci: Full 100% dữ liệu
+  - organ_short_name_vci: Full 100% dữ liệu
+  - com_type_code_vci: Full 100% dữ liệu
+  - com_group_code_vci: Full 100% dữ liệu
+  - sector_vci: Full 100% dữ liệu
+  - average_match_value1_month_vci: Full 100% dữ liệu
+  - average_match_volume1_month_vci: Full 100% dữ liệu
+  - highest_price1_year_vci: Full 100% dữ liệu
+  - lowest_price1_year_vci: Full 100% dữ liệu
+  - foreigner_percentage_vci: Full 100% dữ liệu
+  - maximum_foreign_percentage_vci: Rỗng 3/1525 dòng (0.2%)
+  - state_percentage_vci: Full 100% dữ liệu
+  - analyst_vci: Rỗng 1441/1525 dòng (94.49%)
+  - upside_to_target_percent_vci: Rỗng 1441/1525 dòng (94.49%)
+  - dividend_per_share_tsr_vci: Rỗng 1441/1525 dòng (94.49%)
+  - projected_tsr_percentage_vci: Rỗng 1441/1525 dòng (94.49%)
+  - target_price_vci: Rỗng 1441/1525 dòng (94.49%)
+  - company_profile_vci: Full 100% dữ liệu
+  - in_cu_vci: Full 100% dữ liệu
+  - icb_code_lv2_vci: Full 100% dữ liệu
+  - icb_code_lv4_vci: Full 100% dữ liệu
+  - free_float_vci: Full 100% dữ liệu
+  - free_float_percentage_vci: Full 100% dữ liệu
+  - listing_date_vci: Full 100% dữ liệu
+  - prev_insight_vci: Rỗng 1442/1525 dòng (94.56%)
+  - fund_info_vci: Rỗng 1525/1525 dòng (100.0%)
+  - is_bank_vci: Full 100% dữ liệu
+  - listing_vci: Full 100% dữ liệu
+  - bank_vci: Full 100% dữ liệu
+  - business_model_kbs: Rỗng 6/1525 dòng (0.39%)
+  - symbol_kbs: Full 100% dữ liệu
+  - founded_date_kbs: Full 100% dữ liệu
+  - charter_capital_kbs: Full 100% dữ liệu
+  - number_of_employees_kbs: Full 100% dữ liệu
+  - listing_date_kbs: Full 100% dữ liệu
+  - par_value_kbs: Full 100% dữ liệu
+  - exchange_kbs: Full 100% dữ liệu
+  - listing_price_kbs: Full 100% dữ liệu
+  - listed_volume_kbs: Full 100% dữ liệu
+  - ceo_name_kbs: Rỗng 1/1525 dòng (0.07%)
+  - ceo_position_kbs: Rỗng 1/1525 dòng (0.07%)
+  - inspector_name_kbs: Rỗng 9/1525 dòng (0.59%)
+  - inspector_position_kbs: Rỗng 10/1525 dòng (0.66%)
+  - establishment_license_kbs: Rỗng 568/1525 dòng (37.25%)
+  - business_code_kbs: Rỗng 12/1525 dòng (0.79%)
+  - tax_id_kbs: Full 100% dữ liệu
+  - auditor_kbs: Rỗng 718/1525 dòng (47.08%)
+  - company_type_kbs: Full 100% dữ liệu
+  - address_kbs: Full 100% dữ liệu
+  - phone_kbs: Full 100% dữ liệu
+  - fax_kbs: Rỗng 99/1525 dòng (6.49%)
+  - email_kbs: Rỗng 12/1525 dòng (0.79%)
+  - website_kbs: Rỗng 2/1525 dòng (0.13%)
+  - branches_kbs: Full 100% dữ liệu
+  - history_kbs: Full 100% dữ liệu
+  - free_float_percentage_kbs: Full 100% dữ liệu
+  - free_float_kbs: Full 100% dữ liệu
+  - outstanding_shares_kbs: Rỗng 1/1525 dòng (0.07%)
+  - ticker: Full 100% dữ liệu
+  - dataset: Full 100% dữ liệu
+  - source_name: Full 100% dữ liệu
+  - source_url: Full 100% dữ liệu
+  - retrieved_at: Full 100% dữ liệu
+  - document_id: Full 100% dữ liệu
+  - as_of_date_kbs: Rỗng 492/1525 dòng (32.26%)
+
+==================================================
+📦 BẢNG: gold_corporate_price_history
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ time (TIMESTAMP_NS)
+  ▪ open (DOUBLE)
+  ▪ high (DOUBLE)
+  ▪ low (DOUBLE)
+  ▪ close (DOUBLE)
+  ▪ volume (BIGINT)
+  ▪ ticker (VARCHAR)
+  ▪ dataset (VARCHAR)
+  ▪ source_name (VARCHAR)
+  ▪ source_url (VARCHAR)
+  ▪ retrieved_at (VARCHAR)
+  ▪ document_id (VARCHAR)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 1948897
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: []
+  - Các cột chứa ROA: []
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - time: Full 100% dữ liệu
+  - open: Full 100% dữ liệu
+  - high: Full 100% dữ liệu
+  - low: Full 100% dữ liệu
+  - close: Full 100% dữ liệu
+  - volume: Full 100% dữ liệu
+  - ticker: Full 100% dữ liệu
+  - dataset: Full 100% dữ liệu
+  - source_name: Full 100% dữ liệu
+  - source_url: Full 100% dữ liệu
+  - retrieved_at: Full 100% dữ liệu
+  - document_id: Full 100% dữ liệu
+
+==================================================
+📦 BẢNG: gold_corporate_ratio_summary
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ symbol (VARCHAR)
+  ▪ year (VARCHAR)
+  ▪ quarter (BIGINT)
+  ▪ ratio_ttm_id (BIGINT)
+  ▪ ratio_type (VARCHAR)
+  ▪ organ_code (VARCHAR)
+  ▪ year_report (BIGINT)
+  ▪ number_of_shares_mkt_cap (DOUBLE)
+  ▪ market_cap (DOUBLE)
+  ▪ dividend_yield (DOUBLE)
+  ▪ pe (DOUBLE)
+  ▪ pb (DOUBLE)
+  ▪ ps (DOUBLE)
+  ▪ price_to_cash_flow (DOUBLE)
+  ▪ ev_to_ebitda (DOUBLE)
+  ▪ cash_ratio (DOUBLE)
+  ▪ quick_ratio (DOUBLE)
+  ▪ current_ratio (DOUBLE)
+  ▪ owners_equity (DOUBLE)
+  ▪ debt_per_equity (DOUBLE)
+  ▪ debt_to_equity (DOUBLE)
+  ▪ roe (DOUBLE)
+  ▪ roa (DOUBLE)
+  ▪ day_sale_outstanding (DOUBLE)
+  ▪ days_inventory_outstanding (DOUBLE)
+  ▪ days_payable_outstanding (DOUBLE)
+  ▪ gross_margin (DOUBLE)
+  ▪ ebit_margin (DOUBLE)
+  ▪ pre_tax_profit_margin (DOUBLE)
+  ▪ after_tax_profit_margin (DOUBLE)
+  ▪ asset_turnover (DOUBLE)
+  ▪ net_interest_margin (DOUBLE)
+  ▪ average_yield_on_earning_assets (DOUBLE)
+  ▪ average_cost_of_financing (DOUBLE)
+  ▪ non_and_interest_income (DOUBLE)
+  ▪ cost_to_income (DOUBLE)
+  ▪ loans_growth (DOUBLE)
+  ▪ deposit_growth (DOUBLE)
+  ▪ equity_to_liabilities (DOUBLE)
+  ▪ equity_to_loans (DOUBLE)
+  ▪ total_equity_total_asset (DOUBLE)
+  ▪ ldr_loan_deposit_ratio (DOUBLE)
+  ▪ npl (DOUBLE)
+  ▪ loans_loss_reserves_to_np_ls (DOUBLE)
+  ▪ loans_loss_reserve_to_loans (DOUBLE)
+  ▪ provision_to_outstanding_loans (DOUBLE)
+  ▪ ebit (DOUBLE)
+  ▪ ebitda (DOUBLE)
+  ▪ roic (DOUBLE)
+  ▪ cash_cycle (DOUBLE)
+  ▪ fixed_asset_turnover (DOUBLE)
+  ▪ financial_leverage (DOUBLE)
+  ▪ cir (DOUBLE)
+  ▪ car (DOUBLE)
+  ▪ equity (INTEGER)
+  ▪ casa_ratio (DOUBLE)
+  ▪ nob66 (DOUBLE)
+  ▪ nob69 (DOUBLE)
+  ▪ nob70 (DOUBLE)
+  ▪ bsb113 (DOUBLE)
+  ▪ ratio_year_id (DOUBLE)
+  ▪ ticker (VARCHAR)
+  ▪ dataset (VARCHAR)
+  ▪ source_name (VARCHAR)
+  ▪ source_url (VARCHAR)
+  ▪ retrieved_at (VARCHAR)
+  ▪ document_id (VARCHAR)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 48459
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: ['roe']
+  - Các cột chứa ROA: ['roa']
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - symbol: Full 100% dữ liệu
+  - year: Full 100% dữ liệu
+  - quarter: Full 100% dữ liệu
+  - ratio_ttm_id: Full 100% dữ liệu
+  - ratio_type: Full 100% dữ liệu
+  - organ_code: Full 100% dữ liệu
+  - year_report: Full 100% dữ liệu
+  - number_of_shares_mkt_cap: Rỗng 225/48459 dòng (0.46%)
+  - market_cap: Rỗng 225/48459 dòng (0.46%)
+    -> 💡 Chú ý: Biến Vốn hóa có dữ liệu rỗng. Cần fallback trong Tab 1.
+  - dividend_yield: Rỗng 121/48459 dòng (0.25%)
+  - pe: Rỗng 118/48459 dòng (0.24%)
+  - pb: Rỗng 398/48459 dòng (0.82%)
+  - ps: Rỗng 121/48459 dòng (0.25%)
+  - price_to_cash_flow: Rỗng 121/48459 dòng (0.25%)
+  - ev_to_ebitda: Rỗng 121/48459 dòng (0.25%)
+  - cash_ratio: Rỗng 124/48459 dòng (0.26%)
+  - quick_ratio: Rỗng 124/48459 dòng (0.26%)
+  - current_ratio: Rỗng 124/48459 dòng (0.26%)
+  - owners_equity: Rỗng 124/48459 dòng (0.26%)
+  - debt_per_equity: Rỗng 124/48459 dòng (0.26%)
+  - debt_to_equity: Rỗng 124/48459 dòng (0.26%)
+  - roe: Rỗng 124/48459 dòng (0.26%)
+  - roa: Rỗng 124/48459 dòng (0.26%)
+  - day_sale_outstanding: Rỗng 124/48459 dòng (0.26%)
+  - days_inventory_outstanding: Rỗng 124/48459 dòng (0.26%)
+  - days_payable_outstanding: Rỗng 124/48459 dòng (0.26%)
+  - gross_margin: Rỗng 124/48459 dòng (0.26%)
+  - ebit_margin: Rỗng 124/48459 dòng (0.26%)
+  - pre_tax_profit_margin: Rỗng 124/48459 dòng (0.26%)
+  - after_tax_profit_margin: Full 100% dữ liệu
+  - asset_turnover: Rỗng 124/48459 dòng (0.26%)
+  - net_interest_margin: Rỗng 124/48459 dòng (0.26%)
+  - average_yield_on_earning_assets: Rỗng 124/48459 dòng (0.26%)
+  - average_cost_of_financing: Rỗng 124/48459 dòng (0.26%)
+  - non_and_interest_income: Rỗng 124/48459 dòng (0.26%)
+  - cost_to_income: Rỗng 124/48459 dòng (0.26%)
+  - loans_growth: Rỗng 124/48459 dòng (0.26%)
+  - deposit_growth: Rỗng 124/48459 dòng (0.26%)
+  - equity_to_liabilities: Rỗng 124/48459 dòng (0.26%)
+  - equity_to_loans: Rỗng 124/48459 dòng (0.26%)
+  - total_equity_total_asset: Rỗng 124/48459 dòng (0.26%)
+  - ldr_loan_deposit_ratio: Rỗng 124/48459 dòng (0.26%)
+  - npl: Rỗng 124/48459 dòng (0.26%)
+  - loans_loss_reserves_to_np_ls: Rỗng 124/48459 dòng (0.26%)
+  - loans_loss_reserve_to_loans: Rỗng 124/48459 dòng (0.26%)
+  - provision_to_outstanding_loans: Rỗng 124/48459 dòng (0.26%)
+  - ebit: Full 100% dữ liệu
+  - ebitda: Full 100% dữ liệu
+  - roic: Rỗng 124/48459 dòng (0.26%)
+  - cash_cycle: Rỗng 124/48459 dòng (0.26%)
+  - fixed_asset_turnover: Rỗng 124/48459 dòng (0.26%)
+  - financial_leverage: Rỗng 124/48459 dòng (0.26%)
+  - cir: Rỗng 124/48459 dòng (0.26%)
+  - car: Rỗng 47425/48459 dòng (97.87%)
+  - equity: Rỗng 48459/48459 dòng (100.0%)
+  - casa_ratio: Rỗng 47425/48459 dòng (97.87%)
+  - nob66: Rỗng 47425/48459 dòng (97.87%)
+  - nob69: Rỗng 47425/48459 dòng (97.87%)
+  - nob70: Rỗng 47425/48459 dòng (97.87%)
+  - bsb113: Rỗng 688/48459 dòng (1.42%)
+  - ratio_year_id: Rỗng 37123/48459 dòng (76.61%)
+  - ticker: Full 100% dữ liệu
+  - dataset: Full 100% dữ liệu
+  - source_name: Full 100% dữ liệu
+  - source_url: Full 100% dữ liệu
+  - retrieved_at: Full 100% dữ liệu
+  - document_id: Full 100% dữ liệu
+
+==================================================
+📦 BẢNG: gold_corporate_shareholders
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ symbol (VARCHAR)
+  ▪ share_holder (VARCHAR)
+  ▪ quantity (BIGINT)
+  ▪ share_own_percent (DOUBLE)
+  ▪ update_date (VARCHAR)
+  ▪ ticker (VARCHAR)
+  ▪ dataset (VARCHAR)
+  ▪ source_name (VARCHAR)
+  ▪ source_url (VARCHAR)
+  ▪ retrieved_at (VARCHAR)
+  ▪ document_id (VARCHAR)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 25859
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: []
+  - Các cột chứa ROA: []
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - symbol: Full 100% dữ liệu
+  - share_holder: Full 100% dữ liệu
+  - quantity: Full 100% dữ liệu
+  - share_own_percent: Full 100% dữ liệu
+  - update_date: Full 100% dữ liệu
+  - ticker: Full 100% dữ liệu
+  - dataset: Full 100% dữ liệu
+  - source_name: Full 100% dữ liệu
+  - source_url: Full 100% dữ liệu
+  - retrieved_at: Full 100% dữ liệu
+  - document_id: Full 100% dữ liệu
+
+==================================================
+📦 BẢNG: gold_financial_ratios
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ ticker (VARCHAR)
+  ▪ period (VARCHAR)
+  ▪ report_period (VARCHAR)
+  ▪ net_revenue (DOUBLE)
+  ▪ gross_profit (DOUBLE)
+  ▪ net_income (DOUBLE)
+  ▪ total_assets (DOUBLE)
+  ▪ total_liabilities (DOUBLE)
+  ▪ total_equity (DOUBLE)
+  ▪ roe_pct (DOUBLE)
+  ▪ roa_pct (DOUBLE)
+  ▪ debt_to_equity (DOUBLE)
+  ▪ gross_margin_pct (DOUBLE)
+  ▪ net_margin_pct (DOUBLE)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 4337
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: ['roe_pct']
+  - Các cột chứa ROA: ['roa_pct']
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - ticker: Full 100% dữ liệu
+  - period: Full 100% dữ liệu
+  - report_period: Full 100% dữ liệu
+  - net_revenue: Full 100% dữ liệu
+  - gross_profit: Full 100% dữ liệu
+  - net_income: Full 100% dữ liệu
+  - total_assets: Full 100% dữ liệu
+  - total_liabilities: Full 100% dữ liệu
+  - total_equity: Full 100% dữ liệu
+  - roe_pct: Full 100% dữ liệu
+  - roa_pct: Full 100% dữ liệu
+  - debt_to_equity: Full 100% dữ liệu
+  - gross_margin_pct: Full 100% dữ liệu
+  - net_margin_pct: Full 100% dữ liệu
+
+==================================================
+📦 BẢNG: silver_financials
+==================================================
+
+📌 CẤU TRÚC BẢNG:
+  ▪ ticker (VARCHAR)
+  ▪ statement_type (VARCHAR)
+  ▪ period (VARCHAR)
+  ▪ item (VARCHAR)
+  ▪ item_id (VARCHAR)
+  ▪ item_en (VARCHAR)
+  ▪ source_name (VARCHAR)
+  ▪ report_period (VARCHAR)
+  ▪ value (DOUBLE)
+
+📊 TỔNG SỐ DÒNG DỮ LIỆU: 1347842
+
+⚠️ KIỂM TRA TRÙNG LẶP ĐẶC TRƯNG (ROE / ROA):
+  - Các cột chứa ROE: []
+  - Các cột chứa ROA: []
+
+📉 TỈ LỆ DỮ LIỆU RỖNG (NULL/NA):
+  - ticker: Full 100% dữ liệu
+  - statement_type: Full 100% dữ liệu
+  - period: Full 100% dữ liệu
+  - item: Full 100% dữ liệu
+  - item_id: Full 100% dữ liệu
+  - item_en: Rỗng 338890/1347842 dòng (25.14%)
+  - source_name: Full 100% dữ liệu
+  - report_period: Full 100% dữ liệu
+  - value: Full 100% dữ liệu

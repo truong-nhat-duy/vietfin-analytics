@@ -58,7 +58,7 @@ try:
         """Trả về tên cột nếu tồn tại trong parquet, ngược lại trả về giá trị mặc định"""
         return col_name if col_name.lower() in existing_cols else default_val
 
-    # Truy vấn tạo/cập nhật bảng dim_company chuẩn hóa
+    # Truy vấn tạo/cập nhật bảng dim_company chuẩn hóa (Đã mapping tên cột chuẩn xác 100%)
     query_dim_company = f"""
         CREATE OR REPLACE TABLE dim_company AS
         WITH ranked_overview AS (
@@ -77,7 +77,6 @@ try:
             COALESCE(
                 {safe_col('organ_name_kbs')}, 
                 {safe_col('organ_name_vci')}, 
-                {safe_col('organ_name')}, 
                 ticker
             ) AS company_name,
             
@@ -86,24 +85,24 @@ try:
             {safe_col('address_kbs')} AS address,
             
             -- ============================================================
-            -- BỔ SUNG THÔNG TIN NGÀNH VÀ CỤM NGÀNH CHUẨN ICB (VCI)
+            -- THÔNG TIN LIÊN HỆ & VỐN HÓA (ĐÃ KHỚP VỚI CẤU TRÚC THỰC TẾ)
             -- ============================================================
-            {safe_col('icb_code_vci', safe_col('icb_code'))} AS icb_code,
-            
-            -- Ngành Cấp 1 (Cụm ngành lớn: VD: Tài chính, Dầu khí, Công nghệ...)
-            {safe_col('icb_name1_vci', safe_col('sector_vci', safe_col('sector')))} AS sector_level1,
-            
-            -- Ngành Cấp 2 (Nhóm ngành: VD: Ngân hàng, Bất động sản, Dịch vụ tài chính...)
-            {safe_col('icb_name2_vci', safe_col('industry_vci', safe_col('industry')))} AS industry_level2,
-            
-            -- Ngành Cấp 3 (Ngành phụ: VD: Ngân hàng thương mại...)
-            {safe_col('icb_name3_vci')} AS sub_industry_level3,
-            
-            -- Ngành Cấp 4 (Chi tiết)
-            {safe_col('icb_name4_vci')} AS detail_industry_level4,
+            {safe_col('phone_kbs')} AS phone,
+            {safe_col('email_kbs')} AS email,
+            {safe_col('website_kbs')} AS website,
+            {safe_col('ceo_name_kbs')} AS ceo,
+            TRY_CAST(COALESCE({safe_col('market_cap_vci')}, '0') AS DOUBLE) AS market_cap,
+
+            -- ============================================================
+            -- THÔNG TIN NGÀNH VÀ CỤM NGÀNH CHUẨN ICB (VCI)
+            -- ============================================================
+            {safe_col('icb_code_vci')} AS icb_code,
+            {safe_col('sector_vci')} AS sector_level1,
+            {safe_col('icb_code_lv2_vci')} AS industry_level2,
+            {safe_col('icb_code_lv4_vci')} AS detail_industry_level4,
             
             -- Sàn giao dịch (HOSE, HNX, UPCOM)
-            COALESCE({safe_col('exchange_vci')}, {safe_col('exchange_kbs')}, {safe_col('exchange')}) AS exchange,
+            COALESCE({safe_col('exchange_kbs')}, {safe_col('exchange')}) AS exchange,
             
             retrieved_at
         FROM ranked_overview

@@ -5,23 +5,34 @@ import numpy as np
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-import urllib.parse
 from dotenv import load_dotenv
 from PIL import Image
 
-# Safe OpenAI Import
+# Import tập trung biến cấu hình & hàm helper tọa độ từ config.py
+from config import VN_COORDS, get_coords_from_address
+
+# OpenAI Import An Toàn
 try:
     import openai
     HAS_OPENAI = True
 except ImportError:
     HAS_OPENAI = False
 
-# Machine Learning Modules
+# Google Gemini AI Import An Toàn
+try:
+    import google.generativeai as genai
+    HAS_GEMINI = True
+except ImportError:
+    HAS_GEMINI = False
+
+# Machine Learning & Explainable AI
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
-from sklearn.ensemble import IsolationForest, RandomForestClassifier
+from sklearn.ensemble import IsolationForest, RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import silhouette_score
+import shap
+import matplotlib.pyplot as plt
 
 # ==========================================
 # 0. KHAI BÁO TỪ ĐIỂN NGÔN NGỮ & HÀM BỔ TRỢ
@@ -40,32 +51,23 @@ def clean_val(val, default="N/A"):
         return default
     return s
 
-def get_coords_from_address(address):
-    """Trích xuất Vĩ độ, Kinh độ và Mức Zoom dựa trên địa chỉ text"""
-    vn_coords = {
-        'hồ chí minh': (10.762622, 106.660172), 'hcm': (10.762622, 106.660172), 'tp.hcm': (10.762622, 106.660172),
-        'hà nội': (21.028511, 105.804817), 'ha noi': (21.028511, 105.804817),
-        'đà nẵng': (16.054407, 108.202167),
-        'hải phòng': (20.844912, 106.688084),
-        'đồng nai': (10.946458, 106.824248),
-        'bình dương': (11.229415, 106.626359),
-        'vũng tàu': (10.497557, 107.168535),
-        'cần thơ': (10.045162, 105.746853),
-        'hải dương': (20.9373, 106.3146),
-        'bắc ninh': (21.1861, 106.0763),
-        'long an': (10.5364, 106.4067)
-    }
-    if not address or pd.isna(address) or address == "N/A":
-        return 16.0, 106.0, 5  # Mặc định trung tâm VN, Zoom out
-    
-    addr_lower = str(address).lower()
-    for k, (lat, lon) in vn_coords.items():
-        if k in addr_lower:
-            return lat, lon, 14  # Tọa độ tỉnh/thành, Zoom in
-    return 16.0, 106.0, 5
+def format_pct(val):
+    """
+    Tự động nhận diện và quy đổi giá trị dạng thập phân (0.34) 
+    hoặc dạng phần trăm (34.0) về chuỗi hiển thị % chính xác.
+    """
+    if pd.isna(val) or val is None or str(val).strip() == "":
+        return "0.00"
+    try:
+        v = float(val)
+        if -1.0 <= v <= 1.0 and v != 0:
+            v = v * 100
+        return f"{v:.2f}"
+    except (ValueError, TypeError):
+        return "0.00"
 
 def create_compatible_scatter_map(df, lat, lon, zoom, center, height=300, color=None, size=None, size_max=45, hover_name=None, hover_data=None, color_discrete_sequence=None):
-    """Tự động tương thích với cả Plotly 5.x (scatter_mapbox) và Plotly 6.x+ (scatter_map)"""
+    """Tự động tương thích giữa Plotly 5.x (scatter_mapbox) và Plotly 6.x+ (scatter_map)"""
     scatter_func = getattr(px, "scatter_map", None) or getattr(px, "scatter_mapbox")
     style_param = "map_style" if hasattr(px, "scatter_map") else "mapbox_style"
     
@@ -81,6 +83,16 @@ def create_compatible_scatter_map(df, lat, lon, zoom, center, height=300, color=
     if color_discrete_sequence: kwargs["color_discrete_sequence"] = color_discrete_sequence
 
     return scatter_func(df, **kwargs)
+
+def apply_custom_plotly_layout(fig):
+    fig.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(family="Inter, sans-serif", color="#334155"),
+        margin=dict(l=20, r=20, t=40, b=20),
+        xaxis=dict(showgrid=False, zeroline=False),
+        yaxis=dict(showgrid=True, gridcolor='#f1f5f9', zeroline=False)
+    )
+    return fig
 
 # ==========================================
 # 1. CẤU HÌNH TRANG & THIẾT KẾ ĐỒ HỌA
@@ -108,16 +120,6 @@ st.markdown("""
     .metric-value { font-size: 1.8rem; font-weight: 800; margin: 6px 0; color: #0f172a; }
 </style>
 """, unsafe_allow_html=True)
-
-def apply_custom_plotly_layout(fig):
-    fig.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Inter, sans-serif", color="#334155"),
-        margin=dict(l=20, r=20, t=40, b=20),
-        xaxis=dict(showgrid=False, zeroline=False),
-        yaxis=dict(showgrid=True, gridcolor='#f1f5f9', zeroline=False)
-    )
-    return fig
 
 # ==========================================
 # 2. KẾT NỐI DỮ LIỆU MOTHERDUCK
@@ -221,11 +223,26 @@ if 'df_profile' in locals() and not df_profile.empty:
 feature_cols = ['roe_pct', 'roa_pct', 'debt_to_equity', 'gross_margin_pct', 'net_margin_pct']
 existing_features = [col for col in feature_cols if col in df_raw.columns]
 
-if existing_features:
-    df_ml = df_raw.sort_values("report_period").groupby("ticker").last().reset_index()
-    df_ml_clean = df_ml.dropna(subset=existing_features).copy()
-    scaled_features = StandardScaler().fit_transform(df_ml_clean[existing_features]) if len(df_ml_clean) >= 3 else None
+if existing_features and not df_raw.empty:
+    df_ml_time = df_raw.copy()
+    
+    # Đảm bảo xử lý cột net_income để tránh lỗi y_shap chứa NaN
+    if 'net_income' not in df_ml_time.columns:
+        target_col = [c for c in df_ml_time.columns if 'loi_nhuan' in c.lower() or 'income' in c.lower()]
+        df_ml_time['net_income'] = df_ml_time[target_col[0]] if target_col else 0.0
+
+    df_ml = df_ml_time.sort_values("report_period").groupby("ticker").last().reset_index()
+    
+    # Dataset sạch cho K-Means và Isolation Forest
+    df_ml_clean = df_ml.copy()
+    df_ml_clean[existing_features] = df_ml_clean[existing_features].fillna(0)
+    
+    if len(df_ml_clean) >= 3:
+        scaled_features = StandardScaler().fit_transform(df_ml_clean[existing_features])
+    else:
+        scaled_features = None
 else:
+    df_ml_time = pd.DataFrame()
     df_ml_clean = pd.DataFrame()
     scaled_features = None
 
@@ -263,7 +280,6 @@ with col_title:
     """, unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Khởi tạo thông tin toàn cục an toàn
 latest = {}
 p_ind = "N/A"
 p_cluster = "Chưa xác định"
@@ -271,7 +287,6 @@ p_cluster = "Chưa xác định"
 # ==========================================
 # 6. KHU VỰC TABS PHÂN TÍCH 
 # ==========================================
-
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab_quant, tab_chat = st.tabs([
     "🎯 Tổng Quan", "🤖 Phân Cụm ML", "🚨 Cảnh Báo", "📋 Raw Data", 
     "📈 Lịch Sử Giá", "🏆 Xếp Hạng Tín Dụng", "👥 Quản Trị", "🗺️ Phân Tích Ngành",
@@ -281,70 +296,52 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab_quant, tab_chat = st.tabs([
 # ==========================================
 # --- TAB 1: TỔNG QUAN ---
 # ==========================================
-
 with tab1:
     df_ticker = df_raw[df_raw['ticker'] == selected_ticker].sort_values("report_period").copy()
+    df_fin = load_financial_statements(selected_ticker)
+    latest_fin = {}
+    if not df_fin.empty:
+        df_fin.columns = [str(c).lower().strip() for c in df_fin.columns]
+        latest_fin = df_fin.sort_values("report_period").iloc[-1].fillna(0).to_dict()
     
     if not df_ticker.empty:
-        latest = df_ticker.iloc[-1].to_dict()
+        latest_series = df_ticker.iloc[-1].fillna(0)
+        latest = latest_series.to_dict()
         
-        # Mặc định thông tin ban đầu
         p_name = f"Công ty Cổ phần {selected_ticker}"
         p_tax = p_web = p_address = p_phone = p_email = p_ceo = p_mcap = p_ind = p_cluster = "N/A"
         
-        region_keywords = {
-            'hồ chí minh': 'Hồ Chí Minh', 'hcm': 'Hồ Chí Minh', 'tp.hcm': 'Hồ Chí Minh',
-            'hà nội': 'Hà Nội', 'ha noi': 'Hà Nội', 
-            'đà nẵng': 'Đà Nẵng', 'hải phòng': 'Hải Phòng',
-            'đồng nai': 'Đồng Nai', 'bình dương': 'Bình Dương',
-            'vũng tàu': 'Vũng Tàu', 'cần thơ': 'Cần Thơ',
-            'hải dương': 'Hải Dương', 'bắc ninh': 'Bắc Ninh', 'long an': 'Long An'
-        }
-        
-        # Áp dụng chính xác tên cột từ bảng vietfin_db.dim_company
         if not df_profile.empty:
             p_row = df_profile[df_profile['ticker'] == selected_ticker]
             if not p_row.empty:
                 row_data = p_row.iloc[0]
-                
-                # Khớp các trường từ dim_company
                 p_name = clean_val(row_data.get('company_name'), p_name)
                 p_tax = clean_val(row_data.get('tax_id'))
                 p_address = clean_val(row_data.get('address'))
                 p_ind = clean_val(row_data.get('sector_level1'))
-                p_icb = clean_val(row_data.get('icb_code'))
-                
-                # Các trường không có trong dim_company sẽ lấy an toàn từ row_data hoặc df_raw
                 p_phone = clean_val(row_data.get('phone'))
                 p_email = clean_val(row_data.get('email'))
                 p_ceo = clean_val(row_data.get('ceo'))
                 p_web = clean_val(row_data.get('website'))
                 
-                # Ưu tiên lấy vốn hóa từ dim_company, nếu không có thì lấy từ df_raw (latest)
                 raw_mcap = row_data.get('market_cap', latest.get('market_cap', latest.get('marketcap')))
                 if pd.notna(raw_mcap) and raw_mcap != 0:
                     try:
-                        p_mcap = f"{float(raw_mcap):,.0f} Tỷ VNĐ"
+                        mcap_val = float(raw_mcap)
+                        if mcap_val > 1000000:
+                            mcap_val = mcap_val / 1000000000
+                        p_mcap = f"{mcap_val:,.0f} Tỷ VNĐ"
                     except (ValueError, TypeError):
                         p_mcap = clean_val(raw_mcap)
                 
-                # Phân tích vùng miền & cụm ngành Porter từ địa chỉ và sector_level1
+                _, _, _, company_region = get_coords_from_address(p_address)
                 sector_level1 = clean_val(row_data.get('sector_level1'), p_ind)
-                company_region = "Khác"
-                if p_address != "N/A":
-                    addr_lower = p_address.lower()
-                    for key, region_name in region_keywords.items():
-                        if key in addr_lower:
-                            company_region = region_name
-                            break
-                
                 if sector_level1 != "N/A":
                     p_cluster = f"Cụm {sector_level1} - {company_region}"
 
         web_display = f'<a href="{p_web if p_web.startswith("http") else "http://" + p_web}" target="_blank" style="color:#2563eb; text-decoration:none;">{p_web}</a>' if p_web != "N/A" else "N/A"
 
         col_info, col_map = st.columns([1.8, 1])
-        
         with col_info:
             st.markdown(f"""
             <div class="glass-card" style="padding: 20px; height: 100%; margin-bottom: 20px;">
@@ -366,34 +363,42 @@ with tab1:
             """, unsafe_allow_html=True)
             
         with col_map:
-            lat, lon, zoom_level = get_coords_from_address(p_address)
+            lat, lon, zoom_level, _ = get_coords_from_address(p_address)
             df_loc = pd.DataFrame({'lat': [lat], 'lon': [lon], 'company': [p_name], 'address': [p_address]})
             
             fig_loc = create_compatible_scatter_map(
-                df_loc, lat="lat", lon="lon", 
-                hover_name="company", 
+                df_loc, lat="lat", lon="lon", hover_name="company", 
                 hover_data={"lat": False, "lon": False, "address": True},
-                zoom=zoom_level, center={"lat": lat, "lon": lon},
-                height=260
+                zoom=zoom_level, center={"lat": lat, "lon": lon}, height=260
             )
             fig_loc.update_traces(marker=dict(size=18, color="#ef4444", opacity=0.85))
             fig_loc.update_layout(margin={"r":0,"t":0,"l":0,"b":20}, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
             st.plotly_chart(fig_loc, use_container_width=True)
 
         st.markdown("#### 📊 Chỉ Số Tài Chính Cốt Lõi | Financial Ratios")
+        
+        # Áp dụng format phần trăm an toàn và chuẩn xác
+        v_roe = format_pct(latest.get('roe_pct', 0))
+        v_roa = format_pct(latest.get('roa_pct', 0))
+        v_nm = format_pct(latest.get('net_margin_pct', 0))
+        v_gm = format_pct(latest.get('gross_margin_pct', 0))
+        
+        raw_de = latest.get('debt_to_equity', 0)
+        v_de = f"{float(raw_de):.2f}" if pd.notnull(raw_de) and str(raw_de).strip() != "" else "0.00"
+
         c1, c2, c3, c4, c5 = st.columns(5)
-        c1.markdown(f'<div class="metric-container"><div class="metric-label">ROE</div><div class="metric-value">{latest.get("roe_pct", 0):.2f}%</div></div>', unsafe_allow_html=True)
-        c2.markdown(f'<div class="metric-container"><div class="metric-label">ROA</div><div class="metric-value">{latest.get("roa_pct", 0):.2f}%</div></div>', unsafe_allow_html=True)
-        c3.markdown(f'<div class="metric-container"><div class="metric-label">D/E Ratio</div><div class="metric-value">{latest.get("debt_to_equity", 0):.2f}x</div></div>', unsafe_allow_html=True)
-        c4.markdown(f'<div class="metric-container"><div class="metric-label">Biên LN Ròng</div><div class="metric-value">{latest.get("net_margin_pct", 0):.2f}%</div></div>', unsafe_allow_html=True)
-        c5.markdown(f'<div class="metric-container"><div class="metric-label">Biên LN Gộp</div><div class="metric-value">{latest.get("gross_margin_pct", 0):.2f}%</div></div>', unsafe_allow_html=True)
+        c1.markdown(f'<div class="metric-container"><div class="metric-label">ROE</div><div class="metric-value">{v_roe}%</div></div>', unsafe_allow_html=True)
+        c2.markdown(f'<div class="metric-container"><div class="metric-label">ROA</div><div class="metric-value">{v_roa}%</div></div>', unsafe_allow_html=True)
+        c3.markdown(f'<div class="metric-container"><div class="metric-label">D/E Ratio</div><div class="metric-value">{v_de}x</div></div>', unsafe_allow_html=True)
+        c4.markdown(f'<div class="metric-container"><div class="metric-label">Biên LN Ròng</div><div class="metric-value">{v_nm}%</div></div>', unsafe_allow_html=True)
+        c5.markdown(f'<div class="metric-container"><div class="metric-label">Biên LN Gộp</div><div class="metric-value">{v_gm}%</div></div>', unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
         st.markdown("#### 💰 Kết Quả Kinh Doanh | Financial Performance")
-        period_mode = st.radio("Kỳ thời gian | Period View:", options=["Theo Quý | Quarterly", "Theo Năm | Yearly"], horizontal=True, key="tab1_period_mode")
+        period_mode = st.radio("Kỳ thời gian | Period View:", options=["Theo Quý | Quarterly", "Theo Năm | Yearly"], horizontal=True)
 
-        df_chart = df_ticker.copy()
+        df_chart = df_ticker.copy().fillna(0)
         if "Năm" in period_mode:
             df_chart_y = df_chart[~df_chart['report_period'].astype(str).str.contains('Q', case=False, na=False)]
             if not df_chart_y.empty:
@@ -403,8 +408,7 @@ with tab1:
                 df_chart = df_chart.groupby('year_extracted', as_index=False).agg({'net_revenue': 'sum', 'net_income': 'sum', 'roe_pct': 'mean', 'roa_pct': 'mean'}).rename(columns={'year_extracted': 'report_period'})
         else:
             df_chart_q = df_chart[df_chart['report_period'].astype(str).str.contains('Q', case=False, na=False)]
-            if not df_chart_q.empty:
-                df_chart = df_chart_q
+            if not df_chart_q.empty: df_chart = df_chart_q
 
         col_chart1, col_chart2 = st.columns([3, 2])
         with col_chart1:
@@ -417,7 +421,14 @@ with tab1:
 
         with col_chart2:
             st.caption("Xu hướng Chỉ số Sinh lời (%)")
-            fig_ratios = px.line(df_chart, x="report_period", y=["roe_pct", "roa_pct"], markers=True, color_discrete_sequence=["#1e3a8a", "#10b981"])
+            # Tự động scale dữ liệu nếu nó nằm trong khoảng nhỏ
+            chart_roe = df_chart['roe_pct'].apply(lambda x: x*100 if -1 <= x <= 1 else x)
+            chart_roa = df_chart['roa_pct'].apply(lambda x: x*100 if -1 <= x <= 1 else x)
+            df_chart_display = df_chart.copy()
+            df_chart_display['ROE (%)'] = chart_roe
+            df_chart_display['ROA (%)'] = chart_roa
+            
+            fig_ratios = px.line(df_chart_display, x="report_period", y=["ROE (%)", "ROA (%)"], markers=True, color_discrete_sequence=["#1e3a8a", "#10b981"])
             fig_ratios.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
             st.plotly_chart(apply_custom_plotly_layout(fig_ratios), use_container_width=True) 
 
@@ -425,86 +436,166 @@ with tab1:
         
         st.markdown(f"#### 🍩 Cơ Cấu Tài Sản & Nguồn Vốn Kỳ {latest.get('report_period', '')}")
         col_pie1, col_pie2 = st.columns(2)
+        
         with col_pie1:
-            st.caption("Cơ cấu Tài sản ước tính | Assets Structure")
-            rev_val = abs(latest.get('net_revenue', 100))
-            asset_labels = ['Tiền & Tương đương', 'Đầu tư tài chính', 'Phải thu', 'Hàng tồn kho', 'TSCĐ', 'Tài sản khác']
-            asset_values = [rev_val * 0.15, rev_val * 0.10, rev_val * 0.25, rev_val * 0.20, rev_val * 0.22, rev_val * 0.08]
-            fig_asset = px.pie(names=asset_labels, values=asset_values, hole=0.45, color_discrete_sequence=px.colors.qualitative.Pastel)
-            fig_asset.update_traces(textinfo='percent+label')
-            st.plotly_chart(fig_asset, use_container_width=True)
+            st.caption("Cơ cấu Tài sản | Assets Structure")
+            cash = latest_fin.get('cash_and_equivalents', 0)
+            investments = latest_fin.get('short_term_investments', 0)
+            receivables = latest_fin.get('receivables', 0)
+            inventory = latest_fin.get('inventory', 0)
+            fixed_assets = latest_fin.get('fixed_assets', 0)
+            
+            total_assets = latest_fin.get('total_assets', 0)
+            sum_known = sum(pd.to_numeric([cash, investments, receivables, inventory, fixed_assets], errors='coerce'))
+            other_assets = total_assets - sum_known if total_assets > sum_known else latest_fin.get('other_assets', 0)
+            total_check = sum_known + other_assets
+            
+            if total_check > 0:
+                asset_labels = ['Tiền mặt', 'Đầu tư TC', 'Phải thu', 'Tồn kho', 'TSCĐ', 'Khác']
+                asset_values = [cash, investments, receivables, inventory, fixed_assets, other_assets]
+            else:
+                rev_val = abs(latest.get('net_revenue', 100))
+                asset_labels = ['Tiền & Tương đương', 'Đầu tư tài chính', 'Phải thu', 'Hàng tồn kho', 'TSCĐ', 'Tài sản khác']
+                asset_values = [rev_val * 0.15, rev_val * 0.10, rev_val * 0.25, rev_val * 0.20, rev_val * 0.22, rev_val * 0.08]
+
+            filtered_assets = [(lbl, val) for lbl, val in zip(asset_labels, asset_values) if val > 0]
+            if filtered_assets:
+                labels, values = zip(*filtered_assets)
+                fig_asset = px.pie(names=labels, values=values, hole=0.45, color_discrete_sequence=px.colors.qualitative.Pastel)
+                fig_asset.update_traces(textinfo='percent+label')
+                st.plotly_chart(fig_asset, use_container_width=True)
 
         with col_pie2:
             st.caption("Cơ cấu Nguồn vốn | Capital Structure")
-            de_ratio = float(latest.get('debt_to_equity', 1.0)) if pd.notnull(latest.get('debt_to_equity')) else 1.0
-            equity_pct = 100 / (1 + de_ratio)
-            debt_pct = 100 - equity_pct
-            fig_capital = px.pie(names=['Vốn Chủ Sở Hữu', 'Nợ Phải Trả'], values=[equity_pct, debt_pct], hole=0.45, color_discrete_sequence=['#2563eb', '#f59e0b'])
+            total_equity = latest_fin.get('total_equity', 0)
+            total_liabilities = latest_fin.get('total_liabilities', 0)
+            
+            if total_equity > 0 or total_liabilities > 0:
+                cap_labels = ['Vốn Chủ Sở Hữu', 'Nợ Phải Trả']
+                cap_values = [total_equity, total_liabilities]
+            else:
+                de_ratio = float(v_de)
+                equity_pct = 100 / (1 + de_ratio)
+                debt_pct = 100 - equity_pct
+                cap_labels = ['Vốn Chủ Sở Hữu', 'Nợ Phải Trả']
+                cap_values = [equity_pct, debt_pct]
+
+            fig_capital = px.pie(names=cap_labels, values=cap_values, hole=0.45, color_discrete_sequence=['#2563eb', '#f59e0b'])
             fig_capital.update_traces(textinfo='percent+label')
             st.plotly_chart(fig_capital, use_container_width=True)
 
         st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
         st.markdown("#### 🧩 Phân Tích Mô Hình DuPont")
+        # Sử dụng ký tự ASCII chuẩn cho LaTeX để tránh lỗi KaTeX với Tiếng Việt
         st.latex(r"\text{ROE} = \text{ROA} \times \left(1 + \frac{\text{Debt}}{\text{Equity}}\right)")
-        de_val = latest.get('debt_to_equity', 0) if pd.notnull(latest.get('debt_to_equity', 0)) else 0
-        st.markdown(f"Kỳ **{latest.get('report_period', 'N/A')}**: ROE = **{latest.get('roe_pct', 0):.2f}%** | ROA = **{latest.get('roa_pct', 0):.2f}%** | Đòn bẩy = **{(1 + de_val):.2f}x**")
+        
+        lev_val = 1.0 + float(v_de)
+        st.markdown(f"Kỳ **{latest.get('report_period', 'N/A')}**: ROE = **{v_roe}%** | ROA = **{v_roa}%** | Đòn bẩy (1 + D/E) = **{lev_val:.2f}x**")
         st.markdown("</div>", unsafe_allow_html=True)
     else:
         st.warning(f"Chưa có dữ liệu chỉ số tài chính cho mã {selected_ticker}.")
 
 # ==========================================
-# --- TAB 2: K-MEANS ---
+# --- TAB 2: K-MEANS & SHAP ---
 # ==========================================
-
-with tab2:
+with tab2: 
     st.markdown("### 🤖 Phân Cụm Ngành & Doanh Nghiệp (K-Means)")
-    if not df_ml_clean.empty and scaled_features is not None and len(df_ml_clean) >= k_clusters:
-        kmeans = KMeans(n_clusters=k_clusters, random_state=42, n_init='auto')
+    
+    if not df_ml_clean.empty and scaled_features is not None and len(df_ml_clean) >= 3:
+        n_clusters = min(k_clusters, len(df_ml_clean) - 1) if len(df_ml_clean) > 3 else 2
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init='auto')
         df_ml_clean['Cluster'] = ["Cụm " + str(c) for c in kmeans.fit_predict(scaled_features)]
         
-        sil_score = silhouette_score(scaled_features, kmeans.labels_)
+        sil_score = silhouette_score(scaled_features, kmeans.labels_) if len(df_ml_clean) > 3 else 0
         st.caption(f"**Chỉ số Silhouette Score:** {sil_score:.2f} *(Càng gần 1.0 thì các cụm phân tách càng tốt)*")
         
         pca_t = PCA(n_components=2).fit_transform(scaled_features)
         df_ml_clean['PCA_1'], df_ml_clean['PCA_2'] = pca_t[:, 0], pca_t[:, 1]
         
-        fig_pca = px.scatter(df_ml_clean, x='PCA_1', y='PCA_2', color='Cluster', hover_name='ticker', hover_data=existing_features, color_discrete_sequence=px.colors.qualitative.Bold)
+        fig_pca = px.scatter(
+            df_ml_clean, x='PCA_1', y='PCA_2', color='Cluster', 
+            hover_name='ticker', hover_data=existing_features, 
+            color_discrete_sequence=px.colors.qualitative.Bold
+        )
         st.plotly_chart(apply_custom_plotly_layout(fig_pca), use_container_width=True)
-        
-        st.markdown("#### 📊 Đặc trưng của từng Cụm (Trung vị)")
-        cluster_summary = df_ml_clean.groupby('Cluster')[existing_features].median().reset_index()
-        st.dataframe(cluster_summary.style.background_gradient(cmap='Blues'), use_container_width=True)
     else:
-        st.warning(f"⚠️ Cần ít nhất dữ liệu hợp lệ của {k_clusters} doanh nghiệp để chạy K-Means.")
+        st.warning(f"⚠️ Cần ít nhất dữ liệu hợp lệ của 3 doanh nghiệp để chạy K-Means.")
+
+    st.divider()
+    st.markdown("### 🧠 Đánh giá Động lực Lợi nhuận (SHAP Values)")
+    st.caption("Phân tích mức độ tác động của các chỉ số tài chính cốt lõi đến Lợi nhuận sau thuế qua các năm và các quý.")
+
+    if not df_ml_time.empty:
+        # XỬ LÝ LỖI VALUEERROR: Loại bỏ hoàn toàn NaN trước khi đưa vào fit
+        valid_mask = df_ml_time['net_income'].notna() & df_ml_time[existing_features].notna().all(axis=1)
+        df_shap_clean = df_ml_time[valid_mask].copy()
+
+        if len(df_shap_clean) >= 5:
+            with st.spinner("Đang tính toán giá trị phân bổ SHAP..."):
+                X_shap = df_shap_clean[existing_features]
+                y_shap = df_shap_clean['net_income']
+                
+                try:
+                    rf_reg = RandomForestRegressor(n_estimators=100, random_state=42, max_depth=5)
+                    rf_reg.fit(X_shap, y_shap)
+                    
+                    explainer = shap.TreeExplainer(rf_reg)
+                    shap_values = explainer.shap_values(X_shap)
+                    
+                    col_shap1, col_shap2 = st.columns(2)
+                    with col_shap1:
+                        st.markdown("**Biểu đồ SHAP Summary**")
+                        fig_shap, ax = plt.subplots(figsize=(6, 4))
+                        shap.summary_plot(shap_values, X_shap, show=False, plot_size=(6,4))
+                        st.pyplot(fig_shap, transparent=True)
+                        plt.close(fig_shap)
+                        
+                    with col_shap2:
+                        st.markdown("**Feature Importance (Tác động trung bình)**")
+                        df_shap_imp = pd.DataFrame({
+                            'Chỉ số': existing_features,
+                            'Tác động trung bình': np.abs(shap_values).mean(axis=0)
+                        }).sort_values('Tác động trung bình', ascending=True)
+                        
+                        fig_shap_bar = px.bar(
+                            df_shap_imp, x='Tác động trung bình', y='Chỉ số', 
+                            orientation='h', color='Tác động trung bình', color_continuous_scale='Teal'
+                        )
+                        st.plotly_chart(apply_custom_plotly_layout(fig_shap_bar), use_container_width=True)
+                except Exception as e:
+                    st.error(f"Lỗi khi huấn luyện mô hình SHAP: {str(e)}")
+        else:
+            st.warning(f"⚠️ Cần ít nhất 5 bản ghi hợp lệ (không chứa giá trị trống ở các cột tính năng và lợi nhuận) để huấn luyện mô hình SHAP.")
 
 # ==========================================
 # --- TAB 3: ISOLATION FOREST ---
 # ==========================================
-
 with tab3:
     st.markdown("### 🚨 Phát Hiện Dữ Liệu Bất Thường (Isolation Forest)")
     if len(df_ml_clean) > 5 and scaled_features is not None:
-        df_ml_clean['Status'] = IsolationForest(contamination=contamination, random_state=42).fit_predict(scaled_features)
-        df_ml_clean['Status'] = df_ml_clean['Status'].map({1: 'Bình thường', -1: 'Bất thường'})
-        
-        if 'PCA_1' not in df_ml_clean.columns:
-            pca_t = PCA(n_components=2).fit_transform(scaled_features)
-            df_ml_clean['PCA_1'], df_ml_clean['PCA_2'] = pca_t[:, 0], pca_t[:, 1]
+        try:
+            df_ml_clean['Status'] = IsolationForest(contamination=contamination, random_state=42).fit_predict(scaled_features)
+            df_ml_clean['Status'] = df_ml_clean['Status'].map({1: 'Bình thường', -1: 'Bất thường'})
+            
+            if 'PCA_1' not in df_ml_clean.columns:
+                pca_t = PCA(n_components=2).fit_transform(scaled_features)
+                df_ml_clean['PCA_1'], df_ml_clean['PCA_2'] = pca_t[:, 0], pca_t[:, 1]
 
-        fig_ano = px.scatter(df_ml_clean, x='PCA_1', y='PCA_2', color='Status', hover_name='ticker', color_discrete_map={'Bình thường': '#cbd5e1', 'Bất thường': '#ef4444'})
-        st.plotly_chart(apply_custom_plotly_layout(fig_ano), use_container_width=True)
-        
-        anomalies = df_ml_clean[df_ml_clean['Status'] == 'Bất thường']
-        if not anomalies.empty:
-            st.warning(f"Phát hiện {len(anomalies)} doanh nghiệp có chỉ số tài chính dị biệt.")
-            st.dataframe(anomalies[['ticker'] + feature_cols], use_container_width=True)
+            fig_ano = px.scatter(df_ml_clean, x='PCA_1', y='PCA_2', color='Status', hover_name='ticker', color_discrete_map={'Bình thường': '#cbd5e1', 'Bất thường': '#ef4444'})
+            st.plotly_chart(apply_custom_plotly_layout(fig_ano), use_container_width=True)
+            
+            anomalies = df_ml_clean[df_ml_clean['Status'] == 'Bất thường']
+            if not anomalies.empty:
+                st.warning(f"Phát hiện {len(anomalies)} doanh nghiệp có chỉ số tài chính dị biệt.")
+                st.dataframe(anomalies[['ticker'] + feature_cols], use_container_width=True)
+        except Exception as e:
+            st.error(f"Lỗi khi chạy Isolation Forest: {str(e)}")
     else:
-        st.info("Chưa đủ dữ liệu để mô hình hóa bất thường.")
+        st.info("Chưa đủ dữ liệu (tối thiểu 6 mã hợp lệ) để chạy mô hình bất thường.")
 
 # ==========================================
 # --- TAB 4: RAW DATA ---
 # ==========================================
-
 with tab4:
     st.markdown(f"### 📋 Báo Cáo Tài Chính Chuẩn Hóa ({selected_ticker})")
     unit_option = st.radio("Đơn vị tính:", options=["Giá trị gốc", "Triệu VNĐ", "Tỷ VNĐ"], horizontal=True, index=2)
@@ -549,14 +640,12 @@ with tab4:
                 for col in df_raw_disp.select_dtypes(include=['number']).columns:
                     df_raw_disp[col] = df_raw_disp[col].apply(format_vn_number)
                 st.dataframe(df_raw_disp, use_container_width=True, hide_index=True)
-            else: st.info("Chưa có dữ liệu.")
     else:
         st.info(f"Chưa có dữ liệu Báo cáo tài chính chi tiết cho mã {selected_ticker}.")
 
 # ==========================================
 # --- TAB 5: LỊCH SỬ GIÁ ---
 # ==========================================
-
 with tab5:
     st.markdown(f"### 📈 Lịch Sử Giá ({selected_ticker})")
     df_price = load_price_history(selected_ticker)
@@ -585,15 +674,19 @@ with tab5:
 # ==========================================
 # --- TAB 6: XẾP HẠNG TÍN DỤNG ---
 # ==========================================
-
 with tab6:
     st.markdown(f"### 🏆 Mô Hình Đánh Giá Tín Dụng ({selected_ticker})")
     df_tick_latest = df_raw[df_raw['ticker'] == selected_ticker].sort_values("report_period")
     
     if not df_tick_latest.empty:
         last_rec = df_tick_latest.iloc[-1]
-        de_ratio = last_rec.get('debt_to_equity', 0) if pd.notnull(last_rec.get('debt_to_equity', 0)) else 0
-        roe_val = last_rec.get('roe_pct', 0) if pd.notnull(last_rec.get('roe_pct', 0)) else 0
+        # Xử lý an toàn các giá trị None, NaN
+        de_val_raw = last_rec.get('debt_to_equity', 0)
+        roe_val_raw = last_rec.get('roe_pct', 0)
+        
+        de_ratio = float(de_val_raw) if pd.notna(de_val_raw) and str(de_val_raw).strip() != "" else 0
+        roe_val_dec = float(roe_val_raw) if pd.notna(roe_val_raw) and str(roe_val_raw).strip() != "" else 0
+        roe_val = roe_val_dec * 100 if -1 <= roe_val_dec <= 1 else roe_val_dec
         
         if de_ratio < 1.0 and roe_val > 15: rating, color, risk = "AAA", "#10b981", "Rủi ro cực thấp"
         elif de_ratio < 2.0 and roe_val > 10: rating, color, risk = "A+", "#3b82f6", "Rủi ro thấp"
@@ -614,20 +707,18 @@ with tab6:
             st.markdown("#### Tác Động Biến Số (Feature Importance)")
             if len(df_ml_clean) > 10:
                 X = df_ml_clean[feature_cols]
-                y = ((df_ml_clean['roe_pct'] > 12) & (df_ml_clean['debt_to_equity'] < 2.0)).astype(int)
+                # Adjust label scaling logic based on formatting
+                y = ((df_ml_clean['roe_pct'].apply(lambda x: x*100 if -1<=x<=1 else x) > 12) & (df_ml_clean['debt_to_equity'] < 2.0)).astype(int)
                 clf = RandomForestClassifier(n_estimators=100, random_state=42).fit(X, y)
                 df_imp = pd.DataFrame({'Feature': feature_cols, 'Importance': clf.feature_importances_}).sort_values('Importance')
                 fig_imp = px.bar(df_imp, x='Importance', y='Feature', orientation='h', color='Importance', color_continuous_scale='Blues')
                 st.plotly_chart(apply_custom_plotly_layout(fig_imp), use_container_width=True)
             else:
                 st.info("Không đủ dữ liệu sạch trên toàn thị trường để chạy mô hình Feature Importance.")
-    else: 
-        st.info("Không đủ dữ liệu của doanh nghiệp để xếp hạng tín dụng.")
 
 # ==========================================
 # --- TAB 7: CỔ ĐÔNG & QUẢN TRỊ ---
 # ==========================================
-
 with tab7:
     st.markdown(f"### 👥 Cơ Cấu Cổ Đông & Ban Lãnh Đạo ({selected_ticker})")
     col_sh, col_of = st.columns([1, 1.2])
@@ -646,7 +737,6 @@ with tab7:
                 fig_sh.update_layout(showlegend=False, margin=dict(t=0, b=0, l=0, r=0))
                 st.plotly_chart(fig_sh, use_container_width=True)
             st.dataframe(df_sh[[name_col, pct_col]], use_container_width=True, hide_index=True)
-        else: st.info(f"Chưa có dữ liệu cổ đông cho mã {selected_ticker}.")
             
     with col_of:
         st.markdown("<div class='glass-card'>#### 👔 Ban Lãnh Đạo Doanh Nghiệp</div>", unsafe_allow_html=True)
@@ -654,47 +744,24 @@ with tab7:
         if not df_of.empty:
             disp_cols = [c for c in df_of.columns if c.lower() != 'ticker']
             st.dataframe(df_of[disp_cols], use_container_width=True, hide_index=True, height=500)
-        else: st.info(f"Chưa có dữ liệu ban lãnh đạo cho mã {selected_ticker}.")
 
 # ==========================================
 # --- TAB 8: PHÂN TÍCH CỤM NGÀNH ---
 # ==========================================
-
 with tab8:
     st.markdown("### 🗺️ Bản Đồ Lợi Thế Cạnh Tranh & Cụm Ngành (Porter's Cluster)")
     
     if not df_profile.empty and 'address' in df_profile.columns:
-        vn_coords = {
-            'hồ chí minh': (10.762622, 106.660172), 'hcm': (10.762622, 106.660172),
-            'hà nội': (21.028511, 105.804817), 'ha noi': (21.028511, 105.804817),
-            'đà nẵng': (16.054407, 108.202167),
-            'hải phòng': (20.844912, 106.688084),
-            'đồng nai': (10.946458, 106.824248),
-            'bình dương': (11.229415, 106.626359),
-            'vũng tàu': (10.497557, 107.168535),
-            'cần thơ': (10.045162, 105.746853),
-            'hải dương': (20.9373, 106.3146),
-            'bắc ninh': (21.1861, 106.0763),
-            'long an': (10.5364, 106.4067)
-        }
-
-        def get_lat_lon(address):
-            if pd.isna(address): return pd.Series([16.0, 106.0, 'Khác'])
-            addr_lower = str(address).lower()
-            for prov, (lat, lon) in vn_coords.items():
-                if prov in addr_lower:
-                    return pd.Series([lat + np.random.uniform(-0.05, 0.05), 
-                                      lon + np.random.uniform(-0.05, 0.05), prov.title()])
-            return pd.Series([16.0, 106.0, 'Khác'])
-
         df_geo = df_profile.copy()
-        
         if 'sector_level1' not in df_geo.columns:
             ind_cols = [c for c in ['industry', 'icb_name', 'industry_name', 'sector'] if c in df_geo.columns]
             df_geo['sector_level1'] = df_geo[ind_cols[0]] if ind_cols else 'Chưa phân loại'
         df_geo['sector_level1'] = df_geo['sector_level1'].fillna('Chưa phân loại')
 
-        df_geo[['lat', 'lon', 'region']] = df_geo['address'].apply(get_lat_lon)
+        coords_tuples = df_geo['address'].apply(lambda addr: get_coords_from_address(addr, add_jitter=True))
+        df_geo['lat'] = [t[0] for t in coords_tuples]
+        df_geo['lon'] = [t[1] for t in coords_tuples]
+        df_geo['region'] = [t[3] for t in coords_tuples]
         
         if 'market_cap' in df_geo.columns:
             df_geo['mcap_numeric'] = pd.to_numeric(df_geo['market_cap'], errors='coerce').fillna(100)
@@ -712,27 +779,20 @@ with tab8:
                     size="mcap_numeric", size_max=45,
                     hover_name="company_name" if "company_name" in df_geo.columns else "ticker", 
                     hover_data={
-                        "ticker": True, 
-                        "region": True, 
-                        "mcap_numeric": ":,.0f",
+                        "ticker": True, "region": True, "mcap_numeric": ":,.0f",
                         "lat": False, "lon": False
                     },
                     color_discrete_sequence=px.colors.qualitative.Alphabet,
                     zoom=4.8, center={"lat": 16.0, "lon": 106.0}, height=650
                 )
-                fig_map.update_layout(
-                    margin={"r":0,"t":0,"l":0,"b":0}, 
-                    legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01)
-                )
+                fig_map.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01))
                 st.plotly_chart(fig_map, use_container_width=True)
                 
             with c2:
                 st.markdown("<div class='glass-card'>#### 🏙️ Trọng Tâm Cụm Ngành</div>", unsafe_allow_html=True)
-                st.caption("Mức độ tập trung theo vùng (Hiệu ứng Cluster)")
-                
+                st.caption("Mức độ tập trung theo vùng")
                 cluster_stats = df_geo.groupby(['region', 'sector_level1']).size().reset_index(name='count')
-                top_clusters = cluster_stats.sort_values(by=['region', 'count'], ascending=[True, False])
-                top_clusters = top_clusters.drop_duplicates(subset=['region']).sort_values('count', ascending=False)
+                top_clusters = cluster_stats.sort_values(by=['region', 'count'], ascending=[True, False]).drop_duplicates(subset=['region']).sort_values('count', ascending=False)
                 
                 for _, row in top_clusters.head(6).iterrows():
                     if row['region'] != 'Khác':
@@ -742,110 +802,112 @@ with tab8:
                             <span style="color: #64748b; font-size: 0.9rem;">Cụm ưu thế: <b style="color: #0ea5e9;">{row['sector_level1']}</b> ({row['count']} Cty)</span>
                         </div>
                         """, unsafe_allow_html=True)
-                        
-                st.markdown("""
-                *Bong bóng trên bản đồ thể hiện quy mô Vốn hóa thị trường. Các khu vực có nhiều bong bóng lớn tập trung cho thấy lợi thế cạnh tranh địa phương rõ rệt.*
-                """)
-        else:
-            st.warning("Không thể trích xuất tọa độ địa lý.")
-    else:
-        st.info("Chưa có dữ liệu thông tin doanh nghiệp (địa chỉ) để lập bản đồ.")
 
 # ==========================================
 # --- TAB 9: ĐỊNH GIÁ ---
 # ==========================================
-
 with tab_quant:
     st.markdown("### 🧮 Mô Hình Định Lượng & Định Giá Nâng Cao")
     
-    q_col1, q_col2 = st.columns(2)
+    df_tick_latest = df_raw[df_raw['ticker'] == selected_ticker].sort_values("report_period")
+    latest_fin_data = {}
     
-    with q_col1:
-        st.markdown("<div class='glass-card'>#### 💵 Định Giá Chiết Khấu Dòng Tiền (DCF)</div>", unsafe_allow_html=True)
-        wacc = st.slider("Chi phí vốn bình quân WACC (%)", 8.0, 18.0, 11.5) / 100.0
-        g_rate = st.slider("Tốc độ tăng trưởng vĩnh viễn g (%)", 1.0, 5.0, 2.5) / 100.0
-        forecast_years = st.slider("Số năm dự báo", 3, 10, 5)
+    df_fin_all = load_financial_statements(selected_ticker)
+    if not df_fin_all.empty:
+        df_fin_all.columns = [str(c).lower().strip() for c in df_fin_all.columns]
+        latest_fin_data = df_fin_all.sort_values("report_period").iloc[-1].fillna(0).to_dict()
+    
+    if not df_tick_latest.empty:
+        last_rec = df_tick_latest.iloc[-1].fillna(0)
+        net_income = last_rec.get('net_income', 0)
+        fcf_base = net_income * 0.8 if net_income > 0 else 0
         
-        fcf_base = 5000
-        future_fcfs = [fcf_base * ((1 + 0.08) ** i) for i in range(1, forecast_years + 1)]
-        pv_fcfs = sum([fcf / ((1 + wacc) ** i) for i, fcf in enumerate(future_fcfs, 1)])
+        q_col1, q_col2 = st.columns(2)
         
-        terminal_value = (future_fcfs[-1] * (1 + g_rate)) / (wacc - g_rate)
-        pv_terminal = terminal_value / ((1 + wacc) ** forecast_years)
-        
-        intrinsic_value = pv_fcfs + pv_terminal
-        st.metric("Giá trị doanh nghiệp nội tại (EV)", f"{intrinsic_value:,.0f} Tỷ VNĐ")
+        with q_col1:
+            st.markdown("<div class='glass-card'>#### 💵 Định Giá Chiết Khấu Dòng Tiền (DCF)</div>", unsafe_allow_html=True)
+            wacc = st.slider("Chi phí vốn bình quân WACC (%)", 8.0, 18.0, 11.5) / 100.0
+            g_rate = st.slider("Tốc độ tăng trưởng vĩnh viễn g (%)", 1.0, 5.0, 2.5) / 100.0
+            forecast_years = st.slider("Số năm dự báo", 3, 10, 5)
+            
+            if fcf_base > 0:
+                future_fcfs = [fcf_base * ((1 + 0.08) ** i) for i in range(1, forecast_years + 1)]
+                pv_fcfs = sum([fcf / ((1 + wacc) ** i) for i, fcf in enumerate(future_fcfs, 1)])
+                terminal_value = (future_fcfs[-1] * (1 + g_rate)) / (wacc - g_rate)
+                pv_terminal = terminal_value / ((1 + wacc) ** forecast_years)
+                intrinsic_value = pv_fcfs + pv_terminal
+                
+                st.metric("Giá Trị Nội Tại Ước Tính (EV)", f"{intrinsic_value:,.0f} Tỷ VNĐ")
+                st.caption(f"*Dựa trên LNST gần nhất ({net_income:,.0f} Tỷ) và ước tính FCF ban đầu ({fcf_base:,.0f} Tỷ).*")
+            else:
+                st.warning("Doanh nghiệp đang có lợi nhuận âm hoặc thiếu dữ liệu, không thể định giá DCF.")
 
-    with q_col2:
-        st.markdown("<div class='glass-card'>#### ⚠️ Mô Hình Cảnh Báo Phá Sản Altman Z-Score</div>", unsafe_allow_html=True)
-        z_score = 2.85
-        
-        if z_score > 2.99:
-            st.success(f"Z-Score: {z_score:.2f} ➔ Vùng An Toàn (Safe Zone)")
-        elif 1.81 <= z_score <= 2.99:
-            st.warning(f"Z-Score: {z_score:.2f} ➔ Vùng Cảnh Báo (Grey Zone)")
-        else:
-            st.error(f"Z-Score: {z_score:.2f} ➔ Vùng Nguy Hiểm (Distress Zone)")
+        with q_col2:
+            st.markdown("<div class='glass-card'>#### ⚠️ Cảnh Báo Phá Sản Altman Z-Score</div>", unsafe_allow_html=True)
+            total_assets = latest_fin_data.get('total_assets', 1) or 1
+            total_liabilities = latest_fin_data.get('total_liabilities', 0)
+            working_capital = latest_fin_data.get('current_assets', 0) - latest_fin_data.get('current_liabilities', 0)
+            retained_earnings = latest_fin_data.get('retained_earnings', 0)
+            ebit = latest_fin_data.get('ebit', net_income * 1.25)
+            sales = latest_fin_data.get('net_revenue', last_rec.get('net_revenue', 0))
+            
+            mcap_raw = latest_fin_data.get('market_cap', last_rec.get('market_cap', 0))
+            mcap = float(mcap_raw) / 1e9 if float(mcap_raw) > 1e6 else float(mcap_raw)
+            
+            x1 = working_capital / total_assets
+            x2 = retained_earnings / total_assets
+            x3 = ebit / total_assets
+            x4 = mcap / (total_liabilities if total_liabilities > 0 else 1)
+            x5 = sales / total_assets
+            
+            z_score = (1.2 * x1) + (1.4 * x2) + (3.3 * x3) + (0.6 * x4) + (1.0 * x5)
+            
+            if z_score > 2.99: st.success(f"Z-Score: **{z_score:.2f}** ➔ **Vùng An Toàn (Safe Zone)**")
+            elif 1.81 <= z_score <= 2.99: st.warning(f"Z-Score: **{z_score:.2f}** ➔ **Vùng Cảnh Báo (Grey Zone)**")
+            else: st.error(f"Z-Score: **{z_score:.2f}** ➔ **Vùng Nguy Hiểm (Distress Zone)**")
 
 # ==========================================
-# --- TAB 10: TRỢ LÝ AI ---
+# --- TAB 10: TRỢ LÝ AI (SỬ DỤNG GEMINI) ---
 # ==========================================
-
 with tab_chat:
     st.markdown("### 💬 VietFin AI Financial Advisor & Sector Analyst")
-    st.caption("Trợ lý ảo phân tích tài chính chuyên sâu dựa trên dữ liệu MotherDuck Gold Layer")
+    st.caption("Trợ lý ảo phân tích tài chính chuyên sâu dựa trên dữ liệu MotherDuck Gold Layer (Powered by Gemini)")
 
     if "messages" not in st.session_state:
-        st.session_state.messages = [
-            {"role": "assistant", "content": f"Xin chào! Tôi có thể tư vấn gì về mã cổ phiếu **{selected_ticker}** hoặc phân tích cụm ngành cho bạn hôm nay?"}
-        ]
+        st.session_state.messages = [{"role": "assistant", "content": f"Xin chào! Tôi có thể tư vấn gì về mã cổ phiếu **{selected_ticker}** cho bạn hôm nay?"}]
 
     for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+        with st.chat_message(message["role"]): st.markdown(message["content"])
 
     if prompt := st.chat_input("Hỏi về sức khỏe tài chính, định giá hoặc triển vọng ngành..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+        with st.chat_message("user"): st.markdown(prompt)
 
-        context_data = f"""
-        Mã cổ phiếu đang chọn: {selected_ticker}
-        Các chỉ số tài chính gần nhất của {selected_ticker}:
-        - ROE: {latest.get('roe_pct', 'N/A')}%
-        - ROA: {latest.get('roa_pct', 'N/A')}%
+        # Sử dụng các biến đã chuẩn hóa (như v_roe, v_de)
+        context_data = f"""Mã cổ phiếu: {selected_ticker}
+        - ROE: {format_pct(latest.get('roe_pct', 0))}%
+        - ROA: {format_pct(latest.get('roa_pct', 0))}%
         - D/E: {latest.get('debt_to_equity', 'N/A')}
-        - Biên LN Ròng: {latest.get('net_margin_pct', 'N/A')}%
-        - Ngành/Cụm: {p_ind} / {p_cluster}
-        """
+        - Ngành/Cụm: {p_ind} / {p_cluster}"""
 
-        system_prompt = f"""
-        Bạn là một chuyên gia phân tích tài chính và tư vấn đầu tư chứng khoán cao cấp tại Việt Nam.
-        Dưới đây là ngữ cảnh dữ liệu thực tế của doanh nghiệp:
-        {context_data}
-        
-        Hãy trả lời câu hỏi của người dùng một cách ngắn gọn, súc tích, dựa trên dữ liệu được cung cấp và đưa ra góc nhìn phân tích ngành chuyên sâu.
-        """
+        system_prompt = f"Bạn là một chuyên gia phân tích tài chính. Dữ liệu thực tế: {context_data}. Hãy trả lời súc tích và chính xác."
 
         with st.chat_message("assistant"):
             with st.spinner("AI đang phân tích dữ liệu BCTC..."):
-                if HAS_OPENAI and (os.getenv("OPENAI_API_KEY") or getattr(st, "secrets", {}).get("OPENAI_API_KEY")):
-                    try:
-                        api_key = os.getenv("OPENAI_API_KEY") or st.secrets["OPENAI_API_KEY"]
-                        client = openai.OpenAI(api_key=api_key)
-                        response = client.chat.completions.create(
-                            model="gpt-4o-mini",
-                            messages=[
-                                {"role": "system", "content": system_prompt},
-                                {"role": "user", "content": prompt}
-                            ],
-                            temperature=0.3
-                        )
-                        answer = response.choices[0].message.content
-                    except Exception as e:
-                        answer = f"⚠️ Không thể kết nối tới mô hình AI: {str(e)}"
-                else:
-                    answer = f"🤖 **Tóm Tắt Phân Tích Fast-Track ({selected_ticker}):** ROE đạt {latest.get('roe_pct', 'N/A')}%, Tỷ lệ Nợ/VCSH ở mức {latest.get('debt_to_equity', 'N/A')}x. *(Vui lòng cài đặt gói `openai` và cấu hình `OPENAI_API_KEY` để nhận phản hồi LLM sinh động)*."
+                gemini_key = os.getenv("GEMINI_API_KEY")
+                if not gemini_key:
+                    try: gemini_key = st.secrets["GEMINI_API_KEY"]
+                    except Exception: gemini_key = None
 
-                st.markdown(answer)
-                st.session_state.messages.append({"role": "assistant", "content": answer})
+                if HAS_GEMINI and gemini_key:
+                    try:
+                        genai.configure(api_key=gemini_key)
+                        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=system_prompt)
+                        answer = model.generate_content(prompt).text
+                    except Exception as e:
+                        answer = f"⚠️ Không thể kết nối tới mô hình Gemini AI: {str(e)}"
+                else:
+                    answer = f"🤖 **Tóm Tắt Nhanh ({selected_ticker}):** ROE đạt {format_pct(latest.get('roe_pct', 0))}%, Tỷ lệ Nợ/VCSH ở mức {latest.get('debt_to_equity', 'N/A')}x. *(Vui lòng cung cấp `GEMINI_API_KEY` để kích hoạt AI)*."
+
+            st.markdown(answer)
+            st.session_state.messages.append({"role": "assistant", "content": answer})
